@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 import { ICopilotAdapter, OnPageNavigationCallbackFunction, GetDataRequest, GetDataResponse, ProcessDataRequest, ProcessDataResponse, newEventCallbackFunction } from "./ICopilotAdpter";
 
 declare global {

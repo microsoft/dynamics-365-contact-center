@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 export interface CustomerInfo {
 	phonenumber?: string;
 	email?: string;
