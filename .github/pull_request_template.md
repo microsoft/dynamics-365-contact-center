@@ -12,7 +12,7 @@ Please ensure that you have completed the following tasks before submitting this
 
 - [ ] I have updated the documentation or README if necessary.
 - [ ] My code follows the project's coding style guidelines.
-- [ ] My changes are self reviwed
+- [ ] My changes are self reviewed
 
 ## Screenshots (if applicable)
 
