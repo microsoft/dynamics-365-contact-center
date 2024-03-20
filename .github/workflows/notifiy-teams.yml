@@ -3,6 +3,8 @@ name: Notify Teams
 on:
   pull_request:
     types: [opened]
+    branches:
+      - test-new
 
 jobs:
   notify:
