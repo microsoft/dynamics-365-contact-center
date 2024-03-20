@@ -11,13 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Notify Microsoft Teams
-        uses: bdougie/send-to-teams-action@v1
-        with:
-          webhook_url: ${{ secrets.TEAMS_WEBHOOK_URL }}
-          message: |
-            New Pull Request Created!
-            Repository: ${{ github.repository }}
-            PR Title: ${{ github.event.pull_request.title }}
-            Author: ${{ github.event.pull_request.user.login }}
-            URL: ${{ github.event.pull_request.html_url }}
+      - name: Send notification to Microsoft Teams
+        run: |
+          curl -X POST -H 'Content-Type: application/json' -d '{
+            "text": "New Pull Request Created!\nRepository: ${{ github.repository }}\nPR Title: ${{ github.event.pull_request.title }}\nAuthor: ${{ github.event.pull_request.user.login }}\nURL: ${{ github.event.pull_request.html_url }}"
+          }' ${{ secrets.TEAMS_WEBHOOK_URL }}
