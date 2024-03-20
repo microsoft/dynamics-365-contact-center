@@ -10,9 +10,9 @@ jobs:
 
     steps:
       - name: Notify Microsoft Teams
-        uses: distributhor/action-ms-teams@v2
+        uses: bdougie/send-to-teams-action@v1
         with:
-          webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          webhook_url: ${{ secrets.TEAMS_WEBHOOK_URL }}
           message: |
             New Pull Request Created!
             Repository: ${{ github.repository }}
