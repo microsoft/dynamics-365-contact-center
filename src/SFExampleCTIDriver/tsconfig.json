@@ -1,0 +1,16 @@
+/* 
+  Copyright (c) Microsoft Corporation.
+  Licensed under the MIT License.
+*/
+
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "declaration": false,
+    "declarationMap": false,
+    "experimentalDecorators": true
+  }
+}

@@ -1,3 +1,6 @@
+[//]: # "Copyright (c) Microsoft Corporation."
+[//]: # "Licensed under the MIT License."
+
 <!-- BEGIN MICROSOFT SECURITY.MD V0.0.9 BLOCK -->
 
 ## Security
