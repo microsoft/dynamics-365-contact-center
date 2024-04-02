@@ -1,5 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+
 import {
     ClickDialPayloadInfo, ClickToDialCallbackFunction,
     ConversationDetails,
@@ -89,7 +90,7 @@ class SFExampleCTIDriver implements ICTIInterface {
     }
 
     /**
-     * Prepares for a conversation by fetching necessary data and creating or retrieving associated tasks in Salesforce.
+     * Prepares a conversation, if an account/contact is found then it shows sreen pop with customer information
      * 
      * @param {ConversationInfo} conversationData - An object containing conversation details and customer data.
      * @returns {Promise<void>} A promise that resolves when the conversation is ready, or rejects with an error if any issues occur.
@@ -138,7 +139,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * @param {ClickToDialCallbackFunction} callbackFuntion func to be registered for click-to-dial.
      * @returns void
      */
-    onClickToDial(callbackFuntion: ClickToDialCallbackFunction): void {
+    public onClickToDial(callbackFuntion: ClickToDialCallbackFunction): void {
         window.sforce.opencti.enableClickToDial();
         window.sforce.opencti.onClickToDial({
             listener: (payload) => {
@@ -160,7 +161,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * @param {boolean} visible flag to indicate visibility
      * @returns void
      */
-    setSoftPhonePanelVisibility(status: boolean = true): void {
+    public setSoftPhonePanelVisibility(status: boolean = true): void {
         const isPanelVisible = window.sforce.opencti.isSoftphonePanelVisible({
             callback: (response) => {
                 if (response.success) {
@@ -230,7 +231,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * @param {string} recordId - The ID of the record to be displayed in the screen pop.
      * @returns {Promise<string>} A promise that resolves with a success message upon successful screen pop, or rejects with an error message if screen pop fails.
      */
-    static screenPop(recordId: string): Promise<string> {
+    private static screenPop(recordId: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             window.sforce.opencti.screenPop({
                 type: window.sforce.opencti.SCREENPOP_TYPE.SOBJECT,
@@ -255,7 +256,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * @param {string} callType - The type of call being made.
      * @returns {Promise<SFRecordInfo[]>} A promise that resolves with an array of records found from the search.
      */
-    static async searchForRecords(searchParam: string, callType: string): Promise<SFRecordInfo[]> {
+    private static async searchForRecords(searchParam: string, callType: string): Promise<SFRecordInfo[]> {
         return new Promise((resolve, reject) => {
             window.sforce.opencti.searchAndScreenPop({
                 searchParams: searchParam,
@@ -286,9 +287,9 @@ class SFExampleCTIDriver implements ICTIInterface {
      * Method to fetch ContactId and accountId using current convesation information
      * @param conversationData conversationData Object containing conversation details and customer data.
      * @param conversationCallType Call Type
-     * @returns {Promise<contactId, accountId>} 
+     * @returns {Promise<contactId: string | null, accountId: string | null>} 
      */
-    static async getContactOrAccountId(conversationData: ConversationInfo, coversationCallType: string): Promise<{ contactId: string | null, accountId: string | null }> {
+    private static async getContactOrAccountId(conversationData: ConversationInfo, coversationCallType: string): Promise<{ contactId: string | null, accountId: string | null }> {
         const contactIds: Set<string> = new Set();
         const accountIds: Set<string> = new Set();
 
@@ -316,7 +317,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * @param conversationCallType Call Type
      * @returns {Promise<SFRecordInfo[]>} 
      */
-    static async getRecords(conversationData: ConversationInfo, coversationCallType: string): Promise<SFRecordInfo[]> {
+    private static async getRecords(conversationData: ConversationInfo, coversationCallType: string): Promise<SFRecordInfo[]> {
         const customerData: CustomerInfo = conversationData.customerData;
         let records: SFRecordInfo[] = [];
 
@@ -341,7 +342,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * @param customerData object to be search in
      * @returns boolean
      */
-    static checkIfNotEmtpy(fieldName: string, customerData: CustomerInfo) {
+    private static checkIfNotEmtpy(fieldName: string, customerData: CustomerInfo) {
         return customerData[fieldName] !== undefined && customerData[fieldName] !== null && customerData[fieldName] !== "";
     }
 
@@ -350,7 +351,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * 
      * @param {string} source url
      */
-    static loadScript(source: string): Promise<boolean> {
+    private static loadScript(source: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
             script.type = 'text/javascript';
@@ -368,6 +369,11 @@ class SFExampleCTIDriver implements ICTIInterface {
     }
 }
 
+/**
+ * Checks and initializes the CCaaS namespace and CTIDriver object if they don't exist.
+ * If CCaaS namespace does not exist, it creates it as an empty object.
+ * If CTIDriver object does not exist within CCaaS namespace, it assigns it the value of SFExampleCTIDriver.
+ */
 window.CCaaS = window.CCaaS || {};
 if (!window.CCaaS.CTIDriver) {
     window.CCaaS.CTIDriver = SFExampleCTIDriver;
