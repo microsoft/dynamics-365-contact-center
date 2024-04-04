@@ -28,6 +28,7 @@ interface SFRecordInfo {
 interface SFRecord {
     RecordType: string
 }
+
 export const CUSTOMERDATAENUM = {
     PHONENUMBER: 'phonenumber',
     EMAIL: 'email',
@@ -50,7 +51,6 @@ class SFExampleCTIDriver implements ICTIInterface {
     ccaaSSDKInstance: any; // This is CCaaSSDK Instance, sdk will get loaded from widget itself and after intialization we can pass this instance to SF constructor.
     contactId: string;
     accountId: string;
-    taskId: string;
     coversationCallType: string;
 
     /**
@@ -130,8 +130,8 @@ class SFExampleCTIDriver implements ICTIInterface {
      * @param {string} conversationId - Unique identifier of the conversation.
      * @returns void
      */
-    public async endConversation(conversationId: string): Promise<void> {
-        window.sforce.opencti.refreshView();
+    public async endConversation(): Promise<void> {
+        throw new Error('Method is not defined.');
     }
 
     /**
@@ -139,7 +139,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * @param {ClickToDialCallbackFunction} callbackFuntion func to be registered for click-to-dial.
      * @returns void
      */
-    public onClickToDial(callbackFuntion: ClickToDialCallbackFunction): void {
+    public clickToDial(callbackFuntion: ClickToDialCallbackFunction): void {
         window.sforce.opencti.enableClickToDial();
         window.sforce.opencti.onClickToDial({
             listener: (payload) => {
