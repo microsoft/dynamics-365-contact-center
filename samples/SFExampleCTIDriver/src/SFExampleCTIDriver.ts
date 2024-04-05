@@ -202,30 +202,6 @@ class SFExampleCTIDriver implements ICTIInterface {
     }
 
     /**
-     * Function to get conversation details
-     * @param {string[]} conversationIds Array of ids
-     * @returns {Promise<ConversationDetails[]>} Array of conversation details
-     */
-    public async getConversationDetails(conversationIds: string[]): Promise<ConversationDetails[]> {
-        return new Promise((resolve, reject) => {
-            const callback = (response) => {
-                if (response.success) {
-                    const items = JSON.parse(response.returnValue.runApex);
-                    resolve(items);
-                } else {
-                    reject(response.errors);
-                }
-            };
-            window.sforce.opencti.runApex({
-                apexClass: "CCaaSHelper", // This class is part of CCaaSSF Package 
-                methodName: "queryConversations",
-                methodParams: "conversationIds=" + conversationIds.join(','),
-                callback: callback
-            });
-        });
-    }
-
-    /**
      * Initiates a screen pop action in OpenCTI.
      * 
      * @param {string} recordId - The ID of the record to be displayed in the screen pop.
