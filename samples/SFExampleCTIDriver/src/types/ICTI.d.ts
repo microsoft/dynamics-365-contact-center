@@ -71,9 +71,9 @@ export interface ICTIInterface {
      * @description Function to handle operations on Click to dial, Add operations to be performed when outbound call is performed 
      * @param {ClickToDialCallbackFunction} callbackFuntion function to be registered for click-to-dial.
      * @returns void
-     * @example onClickToDial((payload: ClickToDialCallbackFunction) => {// implementation})
+     * @example clickToDial((payload: ClickToDialCallbackFunction) => {// implementation})
      */
-    onClickToDial(callbackFuntion: ClickToDialCallbackFunction): void;
+    clickToDial(callbackFuntion: ClickToDialCallbackFunction): void;
     
     /**
      * @description Funtion to set visibility of softphone panel
@@ -98,13 +98,4 @@ export interface ICTIInterface {
      * @example setSoftPhonePanelHeight(748)
      */
     setSoftPhonePanelHeight(height: number): void;
-    
-    /**
-     * @description Function to get conversation details
-     *              Query conversations inside third party crm system with the conversation ids in the parameter, return the result of the query
-     * @param {string[]} conversationIds Array of ids
-     * @returns {Promise<ConversationDetails[]>} Array of conversation details
-     * @example getConversationDetails(["fab5422f-32a2-49c7-ad19-b3d713c558d0" , "b46d915e-f7da-4c58-80e9-9f842517617b"])
-     */
-    getConversationDetails(conversationIds: string[]): Promise<ConversationDetails[]>;
 }

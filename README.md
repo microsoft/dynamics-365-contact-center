@@ -1,3 +1,6 @@
+[//]: # "Copyright (c) Microsoft Corporation."
+[//]: # "Licensed under the MIT License."
+
 # Project
 
 > This repo has been populated by an initial template to help get you started. Please

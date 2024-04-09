@@ -1,3 +1,6 @@
+[//]: # "Copyright (c) Microsoft Corporation."
+[//]: # "Licensed under the MIT License."
+
 # TODO: The maintainer of this repo has not yet edited this file
 
 **REPO OWNER**: Do you want Customer Service & Support (CSS) support for this product/project?
