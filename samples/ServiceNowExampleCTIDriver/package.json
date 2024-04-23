@@ -1,0 +1,15 @@
+{
+  "name": "sn-example-ctidriver",
+  "version": "1.0.0",
+  "description": "This is sample SN Example CTIDriver package",
+  "scripts": {
+    "build": "webpack --config webpack-snctidriver.config.js"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.4.3",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^5.0.4"
+  }
+}
