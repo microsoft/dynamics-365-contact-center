@@ -89,11 +89,7 @@ class SNExampleCTIDriver implements IOpenFrame {
 
         return new Promise<void>(async (resolve, reject) => {
             // TO IMPLEMENT.
-
-            // Check if customer data for search is missing
-            if (!conversationData['phonenumber'] || !conversationData['email'] || !conversationData['name']) { //confirm if this is right
-                reject(new Error('Customer data for search is missing'));
-            }
+            reject(new Error('Customer data for search is missing'));
         });
     }
 
@@ -105,18 +101,6 @@ class SNExampleCTIDriver implements IOpenFrame {
     */
     onClickToDial(callbackFuntion: ClickToDialCallbackFunction): void {
         throw new Error('To implement');
-    }
-
-
-    /**
-     * Function to get conversation details. Needed implementation from ccaasclient repo
-     * 
-     * @param {string[]} conversationIds Array of ids
-     * 
-     * @returns {Promise<void>} Array of conversation details
-     */
-    public async getConversationDetails(conversationIds: string[]): Promise<void> {
-        throw new Error("To implement");
     }
 
     /**
