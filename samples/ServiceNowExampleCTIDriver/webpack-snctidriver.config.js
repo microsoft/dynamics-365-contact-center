@@ -2,14 +2,11 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    SNCTIDriver: "./SNCTIDriver/src/SNCTIDriver.ts"
+    SNCTIDriver: "./ServiceNowExampleCTIDriver/src/SNExampleCTIDriver.ts"
   },
   output: {
     filename: "[name].js", // Output bundle filename
-    path: path.resolve(
-      "./force-app/main/default/staticresources/assets/",
-      "dist"
-    ) // Output directory
+    path: path.resolve( "./", "dist" ) // Output directory
   },
   mode: 'development',
   resolve: {

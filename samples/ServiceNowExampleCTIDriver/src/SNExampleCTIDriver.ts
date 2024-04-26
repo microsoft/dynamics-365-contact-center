@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-import {IOpenFrame, ConversationInfo} from "./types/IOpenFrame";
+import {IOpenFrame, ConversationInfo, ClickToDialCallbackFunction} from "./types/IOpenFrame";
 
 class SNExampleCTIDriver implements IOpenFrame {
     ccaaSSDKInstance: any;
