@@ -1,0 +1,11 @@
+<callCenter>
+   <section sortOrder="0" name="reqGeneralInfo" label="General Information">
+    <item sortOrder="0" name="reqInternalName" label="InternalName">Dynamics365CallCenter</item>
+    <item sortOrder="1" name="reqDisplayName" label="Display Name">Dynamics 365 Call Center Adapter</item>
+    <item sortOrder="2" name="reqAdapterUrl" label="CTI Adapter URL">https://TobeUpdatedfromDynamicsAdminCenter.ms</item>
+    <item sortOrder="3" name="reqUseApi" label="Use CTI API">true</item>
+    <item sortOrder="4" name="reqSoftphoneHeight" label="Softphone Height">600</item>
+    <item sortOrder="5" name="reqSoftphoneWidth" label="Softphone Width">400</item>
+    <item sortOrder="6" name="reqSalesforceCompatibilityMode" label="Salesforce Compatibility Mode">Classic_and_Lightning</item>
+   </section>
+</callCenter>
