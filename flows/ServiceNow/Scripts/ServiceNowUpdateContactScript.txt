@@ -1,0 +1,56 @@
+(function executeRule(current, previous /*null when async*/) {
+
+	try { 
+
+var r = new sn_ws.RESTMessageV2('UpdateTriggerEndpointsContact', 'DefaultPut');
+
+r.setStringParameterNoEscape('baseURL', 'prod-29.eastus2euap.logic.azure.com:443');
+
+r.setRequestHeader("Accept","application/json");
+
+r.setRequestHeader('Content-Type','application/json');
+
+var insertedRecord = current;
+
+var insertedData = {
+
+    id : insertedRecord.getUniqueValue(),
+
+	first_name : insertedRecord.getValue('first_name'),
+
+	last_name : insertedRecord.getValue('last_name'),
+
+	email : insertedRecord.getValue('email'),
+
+	phone : insertedRecord.getValue('phone'),
+
+	mobile_phone : insertedRecord.getValue('mobile_phone'),
+
+	account : insertedRecord.getValue('account'),
+
+	sys_id : insertedRecord.getValue('sys_id'),
+
+	sys_created_on : insertedRecord.getValue('sys_created_on')
+
+
+};
+
+ var test = JSON.stringify(insertedData);
+
+   r.setRequestBody(JSON.stringify(insertedData));
+ 
+var response = r.execute();
+
+var responseBody = response.getBody().JSON;
+
+var httpStatus = response.getStatusCode();
+
+}
+
+catch(ex) {
+
+var message = ex.message;
+
+}
+
+})(current, previous);

@@ -1,0 +1,56 @@
+(function executeRule(current, previous /*null when async*/) {
+
+	try { 
+
+var r = new sn_ws.RESTMessageV2('CreateFlowEndpoints', 'DefaultPost');
+
+r.setStringParameterNoEscape('baseURL', 'prod-12.eastus2euap.logic.azure.com:443');
+
+r.setRequestHeader("Accept","application/json");
+
+r.setRequestHeader('Content-Type','application/json');
+
+var insertedRecord = current;
+
+var insertedData = {
+
+    id : insertedRecord.getUniqueValue(),
+
+	Number : insertedRecord.getValue('number'),
+
+	Name : insertedRecord.getValue('name'),
+
+	City : insertedRecord.getValue('city'),
+
+	Phone : insertedRecord.getValue('phone'),
+
+	zip : insertedRecord.getValue('zip'),
+
+	sys_id : insertedRecord.getValue('sys_id'),
+
+	sys_created_on : insertedRecord.getValue('sys_created_on'),
+
+	u_base_url : insertedRecord.getValue('u_base_url')
+
+
+};
+
+ var test = JSON.stringify(insertedData);
+
+   r.setRequestBody(JSON.stringify(insertedData));
+ 
+var response = r.execute();
+
+var responseBody = response.getBody().JSON;
+
+var httpStatus = response.getStatusCode();
+
+}
+
+catch(ex) {
+
+var message = ex.message;
+
+}
+
+})(current, previous);
