@@ -1,7 +1,7 @@
 [//]: # "Copyright (c) Microsoft Corporation."
 [//]: # "Licensed under the MIT License."
 
-# Flows and Scripts for Zendesk Data Sync
+# Flows for Zendesk Data Sync
 
 The Microsoft Omnichannel Add-on is package of Power Automate flows for Zendesk connector that allows organizations to sync(one-time-initial-bulk sync or real-time sync) the CRM data to Dataverse.
 
