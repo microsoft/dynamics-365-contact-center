@@ -12,8 +12,8 @@ The zip files in this folder are Power Automate flows and are used for import.
  2. SNCreateTriggerContact_[DateTimeStamp].zip : This Automated-triggered flow sync the newly created Contact record at CRM end into Dataverse in realtime.
  3. SNUpdateTriggerContact_[DateTimeStamp].zip : This Automated-triggered flow sync the newly/recently updated Contact record at CRM end into Dataverse in realtime.
  4. SNDeleteTriggerContact_[DateTimeStamp].zip : This Automated-triggered flow sync the newly/recently deleted Contact record at CRM end into Dataverse in realtime.
- 5. SNTODVCreateAccountTrigger_[DateTimeStamp].zip : This Automated-triggered flow sync the newly created Account record at CRM end into Dataverse in realtime.
- 6. SNTODVUpdateAccountTrigger_[DateTimeStamp].zip : This Automated-triggered flow sync the newly/recently updated Account record at CRM end into Dataverse in realtime.
+ 5. SNTODVCreateTrigger_[DateTimeStamp].zip : This Automated-triggered flow sync the newly created Account record at CRM end into Dataverse in realtime.
+ 6. SNTODVUpdateTrigger_[DateTimeStamp].zip : This Automated-triggered flow sync the newly/recently updated Account record at CRM end into Dataverse in realtime.
  7. SNTODVDeleteAccountTrigger_[DateTimeStamp].zip : This Automated-triggered flow sync the newly/recently deleted Account record at CRM end into Dataverse in realtime.
 
 The Scripts folder contains the scripts that are required while configuring the Business Rules in ServiceNow instance.
