@@ -8,7 +8,7 @@ The Microsoft Omnichannel Add-on is package of Power Automate flows for ServiceN
 # Overall Process 
 
 The zip files in this folder are Power Automate flows and are used for import.
- 1. SNToDVAccountContactInitialFlow_20240611130010.zip : This Manually-triggered flow sync(one-time-initial-bulk sync) the existing bulk data from CRM to Dataverse.
+ 1. SNToDVAccountContactInitialFlow_<DateTimeStamp>.zip : This Manually-triggered flow sync(one-time-initial-bulk sync) the existing bulk data from CRM to Dataverse.
  2. SNCreateTriggerContact_<DateTimeStamp>.zip : This Automated-triggered flow sync the newly created Contact record at CRM end into Dataverse in realtime.
  3. SNUpdateTriggerContact_<DateTimeStamp>.zip : This Automated-triggered flow sync the newly/recently updated Contact record at CRM end into Dataverse in realtime.
  4. SNDeleteTriggerContact_<DateTimeStamp>.zip : This Automated-triggered flow sync the newly/recently deleted Contact record at CRM end into Dataverse in realtime.
