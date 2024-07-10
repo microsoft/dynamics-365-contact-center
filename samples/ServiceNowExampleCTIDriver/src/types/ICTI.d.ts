@@ -71,7 +71,7 @@ export interface ICTIInterface {
      * @description Function to handle operations on Click to dial, Add operations to be performed when outbound call is performed
      * @param {ClickToDialCallbackFunction} callbackFuntion function to be registered for click-to-dial.
      * @returns void
-     * @example clickToDial((payload: ClickToDialCallbackFunction) => {// implementation})
+     * @example onClickToDial((payload: ClickToDialCallbackFunction) => {// implementation})
      */
     onClickToDial(callbackFuntion: ClickToDialCallbackFunction): void;
 
