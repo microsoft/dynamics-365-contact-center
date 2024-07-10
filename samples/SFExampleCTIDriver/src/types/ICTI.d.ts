@@ -48,11 +48,11 @@ export interface ICTIInterface {
      initialize():Promise<boolean>;
 
       /**
-       * @description Function to be called when conversation is ready. Could be used for operations like 
+       * @description Function to be called when conversation is ready. Could be used for operations like
        *              opening up contact/account record in third party crm system
        * @param {ConversationInfo} conversationData Object containing conversation details and customer data.
-       * @returns void 
-       * @example conversationReady({ conversationId: "c6e27f69-c9ea-4547-8040-dc26c2712c07" , 
+       * @returns void
+       * @example conversationReady({ conversationId: "c6e27f69-c9ea-4547-8040-dc26c2712c07" ,
        *                              customerData: { phonenumber: "+1-212-456-7890" , email: "firstname.secondname@domain.com" , name: "John"}})
        */
     conversationReady(conversationData: ConversationInfo): Promise<void>;
@@ -64,17 +64,17 @@ export interface ICTIInterface {
       * @param {string} conversationId - Unique identifier of the conversation that is being ended.
       * @returns void
       * @example endConversation("b46d915e-f7da-4c58-80e9-9f842517617b")
-      */  
+      */
     endConversation(conversationId: string): void;
-    
+
     /**
-     * @description Function to handle operations on Click to dial, Add operations to be performed when outbound call is performed 
+     * @description Function to handle operations on Click to dial, Add operations to be performed when outbound call is performed
      * @param {ClickToDialCallbackFunction} callbackFuntion function to be registered for click-to-dial.
      * @returns void
      * @example clickToDial((payload: ClickToDialCallbackFunction) => {// implementation})
      */
-    clickToDial(callbackFuntion: ClickToDialCallbackFunction): void;
-    
+    onClickToDial(callbackFuntion: ClickToDialCallbackFunction): void;
+
     /**
      * @description Funtion to set visibility of softphone panel
      * @param {boolean} visible flag to indicate visibility
@@ -82,7 +82,7 @@ export interface ICTIInterface {
      * @example setSoftPhonePanelVisibility(true)
      */
     setSoftPhonePanelVisibility(visible: boolean): void;
-    
+
     /**
      * @description Funtion to set width of softphone panel
      * @param {number} width number to set width
@@ -90,7 +90,7 @@ export interface ICTIInterface {
      * @example setSoftPhonePanelWidth(500)
      */
     setSoftPhonePanelWidth(width: number): void;
-    
+
     /**
      * @description Funtion to set height of softphone panel
      * @param {number} height number to set height
