@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
-import { ICTIInterface, ConversationInfo, ClickToDialCallbackFunction } from "./types/ICTI";
+import {ICTIInterface, ConversationInfo, ClickToDialCallbackFunction} from "./types/IOpenFrame";
 
 class SNExampleCTIDriver implements ICTIInterface {
     ccaaSSDKInstance: any;
