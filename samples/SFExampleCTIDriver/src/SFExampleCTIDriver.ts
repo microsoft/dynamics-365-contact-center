@@ -35,6 +35,12 @@ export const CUSTOMERDATAENUM = {
     NAME: 'name'
 };
 
+interface SaveLog {
+    success: boolean;
+    returnValue?:string;
+    errors: Error; 
+}
+
 const OPEN_CTI_VERSION = '54.0';
 
 const RECORD_TYPE = {
@@ -127,11 +133,23 @@ class SFExampleCTIDriver implements ICTIInterface {
     /**
      * Function for ending a conversation.
      * 
-     * @param {string} conversationId - Unique identifier of the conversation.
      * @returns void
      */
     public async endConversation(): Promise<void> {
-        throw new Error('Method is not defined.');
+        // Create the task object data for creating new task
+        const taskData = {
+            entityApiName: "Task",
+            Subject: "New Conversation Task",
+            Status: "In Progress" 
+        }
+
+        try {
+            const result = await this.createTask(taskData) // create a task
+            const taskId  = result.returnValue.recordId // get the new taskid 
+            await this.screenPop(taskId); // open the task in teh background
+        } catch(e) {
+            console.log("Error while creating task..Details are.. ", e);
+        }
     }
 
     /**
@@ -198,6 +216,49 @@ class SFExampleCTIDriver implements ICTIInterface {
     setSoftPhonePanelHeight(height: number): void {
         window.sforce.opencti.setSoftphonePanelHeight({
             heightPX: height
+        });
+    }
+    
+    /**
+     * Creates a task object in SF
+     * @param logData : object
+     * @returns 
+     */
+    private createTask(logData: object): Promise<Record<string, any>> {
+        return new Promise<SaveLog>((resolve, reject) => {
+            window.sforce.opencti.saveLog({
+                value: logData,
+                callback: (response) => {
+                    if (response.success) {
+                        resolve(response);
+                    } else {
+                        reject(response.errors || "An unknown error occurred.");
+                    }
+                }
+            });
+        });
+    }
+    
+    /**
+     * Opens the screen with the given id in thebackground 
+     * @param {string} recordId 
+     * @returns 
+     */
+    private screenPop(recordId: string): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            window.sforce.opencti.screenPop({
+                type: window.sforce.opencti.SCREENPOP_TYPE.SOBJECT,
+                params: {
+                    recordId: recordId
+                },
+                callback: (response) => {
+                    if (response.success) {
+                        resolve(response.success);
+                    } else {
+                        reject(response.errors);
+                    }
+                }
+            });
         });
     }
 

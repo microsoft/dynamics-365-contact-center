@@ -79,7 +79,7 @@ class SNExampleCTIDriver implements IOpenFrame {
     }
 
     /**
-     * 
+     * Function that gets called when conversation arrives
      * @param {ConversationInfo} conversationData Object containing conversation details and customer data.
      * 
      * @returns void 
