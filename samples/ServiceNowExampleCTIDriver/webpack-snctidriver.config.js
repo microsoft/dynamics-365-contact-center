@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    SNCTIDriver: "./ServiceNowExampleCTIDriver/src/SNExampleCTIDriver.ts"
+    SNCTIDriver: "./src/SNExampleCTIDriver.ts"
   },
   output: {
     filename: "[name].js", // Output bundle filename
