@@ -14,7 +14,7 @@ The following steps will guide you to get the Omnichannel Add-on embedded mode w
 
 Required Steps: 
 
-1. Setup Dynamics OC 
+1. Setup Dynamics OmniChannel 
    
 2. Setup Salesforce (for Embedded Model; optional for Standalone) 
 
@@ -30,13 +30,17 @@ Required Steps:
 - The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and Salesforce CRM, allowing for the integration of telephony features into the CRM environment.
  
 
-# CTIDriver Customization 
 
 Note: These steps can be omitted if the default CTIDriver file is used. 
- 
-1. Develop your CTIDriver file by implementing the ICTIDriver interface, which is available in the repository microsoft/copilot-for-service (github.com) 
 
-2. Make the class created in step 6 accessible within the window.CCaaS object. The class name created in step 6 is SFCTIDriver. 
+# CTIDriver Extention for SF and SN
+
+# CTIDriver Implementation for Generic CRM 
+
+1. Develop your CTIDriver file by implementing the ICTIDriver interface (ICTI.d.ts), which is available in the repository microsoft/copilot-for-service (github.com) 
+
+// Remove this.
+2. Make the class created in step 1? accessible within the window.CCaaS object. The class name created in step 1? is SFCTIDriver. 
  
 window.CCaaS = window.CCaaS || {}; 
 
@@ -47,7 +51,8 @@ if (!window.CCaaS.CTIDriver) {
 } 
 
 3. Add implementations for the methods provided by ICTI Interface. 
- 
+execute this command from path: `npm run build`
+ // Number 4 and 5 can be combined.
 4. Host the compiled file on a CDN and include the CDN URL as a query parameter in the call center definition file imported/seen in step 3 under “Salesforce specific instructions: CTI Adapter instructions” heading. 
 
 5. Note: It does not need to be a CDN URL, any URL with public access will also work 
@@ -73,4 +78,3 @@ Please note that: If User is writing his own code, then User can define types in
    
 5. Give the path of generated JS file in the URL inside query parameter **ctiDriverUrl**
 eg: https://ccaas-embed-ppe.azureedge.net/widget/index.html?dynamicsUrl=https://msdynccaasdemo.crm.dynamics.com&msdynembedmode=3&ctiDriverUrl=https://samplectidriver.blob.core.windows.net/ctidriver/SFExampleCTIDriver.js
-
