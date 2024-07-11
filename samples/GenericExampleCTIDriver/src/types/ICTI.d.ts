@@ -19,6 +19,7 @@ export interface ConversationInfo {
 	customerData: CustomerInfo;
 }
 
+
 type ClickToDialCallbackFunction = (payload: ClickDialPayloadInfo) => void;
 
 export interface ICTIInterface {
