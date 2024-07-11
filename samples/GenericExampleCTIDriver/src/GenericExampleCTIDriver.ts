@@ -58,7 +58,7 @@ class GenericExampleCTIDriver implements ICTIInterface {
      * @param {string} conversationId - Unique identifier of the conversation.
      * @returns void
      */
-    public async endConversation(): Promise<void> {
+    public endConversation(): void {
         throw new Error('Method not implemented.');
     }
 
