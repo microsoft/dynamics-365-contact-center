@@ -26,18 +26,19 @@ Required Steps:
 
 5. Sync (one-time or as needed) CRM data with Dataverse. 
 
+# CTIDriver Setup
 
-- The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and Salesforce CRM, allowing for the integration of telephony features into the CRM environment.
+The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and Salesforce CRM, allowing for the integration of telephony features into the CRM environment.
  
-Note: These steps can be omitted if the default CTIDriver file is used. 
+**Note:** These steps can be omitted if the default CTIDriver file is used. 
 
-# Prerequisite
+## Prerequisite
 1. Install Node [latest version](https://nodejs.org/en/download/package-manager)
 2. git clone `https://github.com/microsoft/dynamics-365-contact-center.git`
 
-# CTIDriver Extention for SF and SN
+## CTIDriver Extention for SF and SN
 
-## SF Extension
+### Salesforce Extension
 
 1. Navigate to /samples/SFExampleCTIDriver
 
@@ -62,20 +63,48 @@ Note: These steps can be omitted if the default CTIDriver file is used.
      
     Replace `<CDN-url>` with the actual URL of the hosted compiled file on the CDN. 
 
-7. Import the [Call center defination file](https://github.com/microsoft/dynamics-365-contact-center/blob/main/samples/SFCallCenter/Dynamics365CallCenter.xml) file in the salesforce call center.
+7. Import the [Call center definition file](https://github.com/microsoft/dynamics-365-contact-center/blob/main/samples/SFCallCenter/Dynamics365CallCenter.xml) file in the salesforce call center.
 
-   Update the Salesforce Call center defination file by replacing the `<ctiDriverUrl>` parameter with the URL generated in Step 6.
+   Update the Salesforce Call center definition file by replacing the `<ctiDriverUrl>` parameter with the URL generated in Step 6.
 
    ![alt text](image.png)
 
 7. Follow Salesforce's instructions to configure your softphone using the integrated SF Extension.
    
-8. Your SF Extension integration is now complete and ready to use with Salesforce.
+8. Your Salesforce Extension integration is now complete and ready to use.
 
+### ServiceNow Extension
+
+1. Navigate to /samples/SNExampleCTIDriver
+
+2. Run command `npm install`
+
+3. Open the file /samples/SNExampleCTIDriver/src/SNExampleCTIDriver.ts
+
+4. Implement your desired functionality within any of the methods provided by the ICTIDriver interface.
+    Refer to the [ServiceNow OpenFrame Methods Documentation](https://developer.servicenow.com/dev.do#!/reference/api/washingtondc/client/c_openFrameAPI) for available methods and their usage.
+
+5. Run command `npm run build`, dist/SNExampleCTIDriver.js file will get generated inside /SNExampleCTIDriver folder
+
+6. Host the compiled file (dist/SNExampleCTIDriver.js) on a CDN and include the CDN URL as a query parameter in the CCaaS URL.
+
+    Note: It does not need to be a CDN URL, any URL with public access will also work 
+     
+    The format of the URL should be: 
+     
+    `https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&ctiDriverUrl=<CDN-url>`
+    
+    **example-ccaas-domain**: `https://ccaas-embed-prod.azureedge.net` 
+     
+    Replace `<CDN-url>` with the actual URL of the hosted compiled file on the CDN. 
+
+7. Import the above url in the openFrame configurations < more details soon .....>
+
+8. Your ServiceNow Extension integration is now complete and ready to use.
 
 ## CTIDriver Implementation for Generic CRM 
 
-1. Copy the code from `samples/GenericExampleCTIDriver`.
+1. Navigate to `samples/GenericExampleCTIDriver`.
 
 2. Run `npm install` to install the project dependencies.
 
