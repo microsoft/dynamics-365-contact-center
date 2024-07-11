@@ -3,7 +3,6 @@
 
 import {
     ClickDialPayloadInfo, ClickToDialCallbackFunction,
-    ConversationDetails,
     ConversationInfo,
     CustomerInfo,
     ICTIInterface
