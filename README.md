@@ -69,9 +69,11 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
 
    ![alt text](image.png)
 
-7. Follow Salesforce's instructions to configure your softphone using the integrated SF Extension.
+8. Follow Salesforce's instructions to configure your softphone using the integrated SF Extension.
+![image](https://github.com/microsoft/dynamics-365-contact-center/assets/122857590/ec5b9832-df01-415a-a604-d3c4f70bd44b)
+
    
-8. Your Salesforce Extension integration is now complete and ready to use.
+9. Your Salesforce Extension integration is now complete and ready to use.
 
 ### ServiceNow Extension
 
