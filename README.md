@@ -37,55 +37,64 @@ Note: These steps can be omitted if the default CTIDriver file is used.
 
 # CTIDriver Extention for SF and SN
 
-##SF extension
+## SF Extension
 
-1. Go to <path of SFExampleCTIDriver>/src
-2. Open the file <SFCTIDriver> file path
-3. Add your implementation in any of the methods from ICTIDriver ineterface ex: endConversation
-   a. All the openCTI methods can be found here https://developer.salesforce.com/docs/atlas.en-us.api_cti.meta/api_cti/sforce_api_cti_methods_intro_lightning.htm
-4. Run command npm run build, dist/.js file would be generated
+1. Navigate to /samples/SFExampleCTIDriver/src
 
-5. Host the compiled file on a CDN and include the CDN URL as a query parameter in the call center definition file imported/seen in step 3 under “Salesforce specific instructions: CTI Adapter instructions” heading. 
-Note: It does not need to be a CDN URL, any URL with public access will also work 
- 
-The format of the URL should be: 
- 
-https://<ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&ctiDriverUrl=<CDN-url> 
+2. Open the file /samples/SFExampleCTIDriver/src/SFExampleCTIDriver.ts
 
-ccaas-domain prod urls examples
- 
-Replace <CDN-url> with the actual URL of the hosted compiled file on the CDN. 
+3. Implement your desired functionality within any of the methods provided by the ICTIDriver interface.
+    Refer to the [Salesforce OpenCTI Methods Documentation](https://developer.salesforce.com/docs/atlas.en-us.api_cti.meta/api_cti/sforce_api_cti_methods_intro_lightning.htm) for available methods and their usage.
 
-6. import the call center definition file in the salesforce call center. <Give file path for the xml file from repo>
-  <give which url to change with the url generated from #5
-   <add-screenshot-call-center>
+4. Run command npm install
+    `npm install`
 
-7. Setup your softphone refer salesforce softphone setup
+5. Run command npm run build, dist/SFExampleCTIDriver.js file will get generated inside /SFExampleCTIDriver folder
+    `npm run build`
+6. Host the compiled file on a CDN and include the CDN URL as a query parameter in the call center definition file imported/seen in step 3 under “Salesforce specific instructions: CTI Adapter instructions” heading. 
+
+    Note: It does not need to be a CDN URL, any URL with public access will also work 
+     
+    The format of the URL should be: 
+     
+    `https://<ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&ctiDriverUrl=<CDN-url>`
+    
+    ccaas-domain: `https://ccaas-embed-prod.azureedge.net` 
+     
+    Replace <CDN-url> with the actual URL of the hosted compiled file on the CDN. 
+
+7. Import the call center definition file in the salesforce call center.
+
+   [Call center defination file](https://github.com/microsoft/dynamics-365-contact-center/blob/main/samples/SFCallCenter/Dynamics365CallCenter.xml)
+   Update the Salesforce Call Center definition file by replacing the <ctiDriverUrl> parameter with the URL generated in Step 6.
+
+   ![alt text](image.png)
+
+7. Follow Salesforce's instructions to configure your softphone using the integrated SF Extension.
    
-Application is ready to use
+8. Your SF Extension integration is now complete and ready to use with Salesforce.
 
-# CTIDriver Implementation for Generic CRM 
 
-1. Copy the code from samples/GenericExampleCTIDriver
+## CTIDriver Implementation for Generic CRM 
 
-2. Go to GenericExampleCTIDriver/src/GenericExampleCTIDriver.ts
+1. Copy the code from `samples/GenericExampleCTIDriver`.
 
-3. Implement the methods of the ICTIInterface as per your CRM requirements.
+2. Navigate to `GenericExampleCTIDriver/src/GenericExampleCTIDriver.ts`.
 
-4. npm run build
+3. Implement the methods defined in `ICTIInterface` according to your CRM requirements.
 
-5. Host the compiled file on a CDN and include the CDN URL as a query parameter of the CCaaS url (give an example of CCaaS url)
+4. Run `npm install` to install the project dependencies.
 
-Note: It does not need to be a CDN URL, any URL with public access will also work 
- 
-The format of the URL should be: 
- 
-https://<ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&ctiDriverUrl=<CDN-url> 
+5. Run `npm run build` to compile the project.
 
-ccaas-domain prod urls examples
- 
-Replace <CDN-url> with the actual URL of the hosted compiled file on the CDN. 
+6. Host the compiled file on a CDN. Include the CDN URL as a query parameter in the CCaaS URL. For example, the CCaaS URL format should be:
+   `https://<ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&ctiDriverUrl=<CDN-url> `
+   Replace <CDN-url> with the actual URL of the hosted compiled file on the CDN.
+   
+   Note: It does not need to be a CDN URL, any URL with public access will also work 
 
-6. use this url in your phone/softphone configurations of your CRM 
+   ccaas-domain: `https://ccaas-embed-prod.azureedge.net` 
+
+7. Incorporate this URL into the phone/softphone settings of your CRM.
 
 
