@@ -34,5 +34,3 @@ export declare class CCaaSSdk {
 	get conversation(): IConversation;
 	static getInstance(): CCaaSSdk;
 }
-
-export {};
