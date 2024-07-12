@@ -8,23 +8,10 @@ The Microsoft Omnichannel Add-on is transforming customer engagement through Gen
 Built upon the Dynamics Contact Center Platform (DCCP) infrastructure, the Omnichannel Add-on extends its capabilities by seamlessly integrating OC and AI features with existing 3P solutions. Agents have the flexibility to utilize the add-on in either Embedded mode, where the 3P CRM serves as the primary user experience (UX) with OC/AI functionalities embedded, or Standalone mode, where Dynamics OC/AI capabilities take precedence while maintaining connectivity with 3P CRM data.
 You can find more details in (https://microsoft.sharepoint.com/:w:/t/Dynamics365CustomerCareApplications/Ee3vBYzRVh9OqGQgNq0ehj8BSSgmm17L1susO6wn7jKnSQ?e=sii0Le)
 
-# Overall Process 
-
-The following steps will guide you to get the Omnichannel Add-on embedded mode working within Salesforce. You should budget for 40 minutes or more to complete the Required Steps. 
-
-Required Steps: 
-
-1. Setup Dynamics OmniChannel 
-   
-2. Setup Salesforce (for Embedded Model; optional for Standalone) 
-
-3. Integrate Dynamics Omnichannel Add-on with Salesforce (for Embedded Model; optional for Standalone) 
-
- Optional Steps: 
-
-4. Make updates to your CRM integrations. 
-
-5. Sync (one-time or as needed) CRM data with Dataverse. 
+# Prerequisites
+1. [Set up D365 Contact Center embedded experience](https://review.learn.microsoft.com/en-us/dynamics365/contact-center/administer/set-up-embedded-experience?branch=main)
+2. Install Node [latest version](https://nodejs.org/en/download/package-manager)
+3. git clone `https://github.com/microsoft/dynamics-365-contact-center.git`
 
 # CTIDriver Setup
 
@@ -32,11 +19,7 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
  
 **Note:** These steps can be omitted if the default CTIDriver file is used. 
 
-## Prerequisite
-1. Install Node [latest version](https://nodejs.org/en/download/package-manager)
-2. git clone `https://github.com/microsoft/dynamics-365-contact-center.git`
-
-## CTIDriver Extention for SF and SN
+## CTIDriver Extention for Salesforce and ServiceNow
 
 ### Salesforce Extension
 
@@ -63,13 +46,9 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
      
     Replace `<CDN-url>` with the actual URL of the hosted compiled file on the CDN. 
 
-7. Import the [Call center definition file](https://github.com/microsoft/dynamics-365-contact-center/blob/main/samples/SFCallCenter/Dynamics365CallCenter.xml) file in the salesforce call center.
-
-   Update the Salesforce Call center definition file by replacing the `<ctiDriverUrl>` parameter with the URL generated in Step 6.
+7. Update the Salesforce Call center definition file (imported in prerequisite) by replacing the `<ctiDriverUrl>` parameter with the URL generated in Step 6.
 
    ![alt text](image.png)
-
-7. Follow Salesforce's instructions to configure your softphone using the integrated SF Extension.
    
 8. Your Salesforce Extension integration is now complete and ready to use.
 
@@ -98,9 +77,13 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
      
     Replace `<CDN-url>` with the actual URL of the hosted compiled file on the CDN. 
 
-7. Import the above url in the openFrame configurations < more details soon .....>
+7. Add the above url in the respective OpenFrame Configuration as shown in the screenshot below:
 
-8. Your ServiceNow Extension integration is now complete and ready to use.
+   **Url to the list of OpenFrame Configuration:** `https://<ServiceNow-domain>/now/nav/ui/classic/params/target/sn_openframe_configuration_list.do`
+   
+   ![image](https://github.com/user-attachments/assets/b15100c2-8765-4f2c-bbcd-ea1af7a21bcf)
+
+9. Your ServiceNow Extension integration is now complete and ready to use.
 
 ## CTIDriver Implementation for Generic CRM 
 
