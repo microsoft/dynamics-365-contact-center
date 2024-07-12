@@ -36,7 +36,7 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
 1. Install Node [latest version](https://nodejs.org/en/download/package-manager)
 2. git clone `https://github.com/microsoft/dynamics-365-contact-center.git`
 
-## CTIDriver Extention for SF and SN
+## CTIDriver Extention for Salesforce and ServiceNow
 
 ### Salesforce Extension
 
