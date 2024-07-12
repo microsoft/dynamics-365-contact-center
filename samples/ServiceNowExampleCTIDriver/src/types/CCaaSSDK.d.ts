@@ -8,7 +8,7 @@ interface IConversation {
 	 * @description Get conversation data
 	 * @param id
 	 * @param columns
-	 * @returns Promise<Entitiy>
+	 * @returns Promise<Entity>
 	 * @memberof IConversation
 	 * @example
      * ccaaSDKInstance.conversation.getData('123', ['id', 'sender', 'timestamp', 'content']);
@@ -30,7 +30,6 @@ interface IConversation {
 }
 
 export declare class CCaaSSdk {
-	private static instance;
 	get conversation(): IConversation;
 	static getInstance(): CCaaSSdk;
 }

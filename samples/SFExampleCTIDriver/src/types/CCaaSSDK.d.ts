@@ -30,7 +30,6 @@ interface IConversation {
 }
 
 export declare class CCaaSSdk {
-	private static instance;
 	get conversation(): IConversation;
 	static getInstance(): CCaaSSdk;
 }
