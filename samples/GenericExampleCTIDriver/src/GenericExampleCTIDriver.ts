@@ -33,7 +33,7 @@ class GenericExampleCTIDriver implements ICTIInterface {
      * @returns Promise void
      */
     public initialize(): Promise<boolean> {
-        const crmCTILibUrlPath = `<crm-ctidriver-file-path`; // give crm's cti js lib path
+        const crmCTILibUrlPath = `/scripts/openframe/latest/openFrameAPI.min.js`; // give crm's cti js lib path
         const crmorgdomain: string = window.location.ancestorOrigins[0];
         const source = `${crmorgdomain}${crmCTILibUrlPath}`;
         const sourceResult = GenericExampleCTIDriver.loadScript(source);
@@ -60,7 +60,7 @@ class GenericExampleCTIDriver implements ICTIInterface {
      * @returns void
      */
     public endConversation(): void {
-        throw new Error('Method not implemented.');
+        (window as any).openFrameAPI.hide();
     }
 
     /**
