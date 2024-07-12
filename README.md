@@ -35,6 +35,8 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
 ## Prerequisite
 1. Install Node [latest version](https://nodejs.org/en/download/package-manager)
 2. git clone `https://github.com/microsoft/dynamics-365-contact-center.git`
+3. For Salesforce
+Import the [Call center definition file](https://github.com/microsoft/dynamics-365-contact-center/blob/main/samples/SFCallCenter/Dynamics365CallCenter.xml) file in the salesforce call center.
 
 ## CTIDriver Extention for Salesforce and ServiceNow
 
@@ -63,13 +65,9 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
      
     Replace `<CDN-url>` with the actual URL of the hosted compiled file on the CDN. 
 
-7. Import the [Call center definition file](https://github.com/microsoft/dynamics-365-contact-center/blob/main/samples/SFCallCenter/Dynamics365CallCenter.xml) file in the salesforce call center.
-
-   Update the Salesforce Call center definition file by replacing the `<ctiDriverUrl>` parameter with the URL generated in Step 6.
+7. Update the Salesforce Call center definition file (imported in prerequisite) by replacing the `<ctiDriverUrl>` parameter with the URL generated in Step 6.
 
    ![alt text](image.png)
-
-7. Follow Salesforce's instructions to configure your softphone using the integrated SF Extension.
    
 8. Your Salesforce Extension integration is now complete and ready to use.
 

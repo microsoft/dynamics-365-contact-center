@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { CCaaSSdk } from "./types/CCaaSSDK";
 import {
     ClickDialPayloadInfo, ClickToDialCallbackFunction,
     ConversationInfo,
@@ -47,7 +48,7 @@ const CONVERSATION_TYPE = {
 }
 
 class SFExampleCTIDriver implements ICTIInterface {
-    ccaaSSDKInstance: any; // This is CCaaSSDK Instance, sdk will get loaded from widget itself and after intialization we can pass this instance to SF constructor.
+    ccaaSSDKInstance: CCaaSSdk; // This is CCaaSSDK Instance, sdk will get loaded from widget itself and after intialization we can pass this instance to SF constructor.
     contactId: string;
     accountId: string;
     coversationCallType: string;
@@ -55,11 +56,11 @@ class SFExampleCTIDriver implements ICTIInterface {
     /**
      * Constructor
      *
-     * @param {any} ccaaSSDKInstance Instance of CCaaSSDK
+     * @param {CCaaSSdk} ccaaSSDKInstance Instance of CCaaSSDK
      *
      * @returns Instance
      */
-    constructor(ccaaSSDKInstance: any) {
+    constructor(ccaaSSDKInstance: CCaaSSdk) {
 
         if (!ccaaSSDKInstance) {
             throw new Error('ccaaSSDKInstance cannot be null or undefined');
@@ -104,7 +105,7 @@ class SFExampleCTIDriver implements ICTIInterface {
             let conversationCallType = window.sforce.opencti.CALL_TYPE.INBOUND;
 
             if (conversationDetails.msdyn_channel) {
-                if (conversationDetails.msdyn_channel === CONVERSATION_TYPE.VOICE || conversationDetails.msdyn_channel === CONVERSATION_TYPE.VOICE_CALL) {
+                if (Number(conversationDetails.msdyn_channel) === CONVERSATION_TYPE.VOICE || Number(conversationDetails.msdyn_channel) === CONVERSATION_TYPE.VOICE_CALL) {
                     if (conversationDetails.msdyn_isoutbound) {
                         conversationCallType = window.sforce.opencti.CALL_TYPE.OUTBOUND;
                     }

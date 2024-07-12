@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { CCaaSSdk } from "./types/CCaaSSDK";
 import {
     ClickToDialCallbackFunction,
     ConversationInfo,
@@ -8,7 +9,7 @@ import {
 } from "./types/ICTI";
 
 class GenericExampleCTIDriver implements ICTIInterface {
-    ccaaSSDKInstance: any; // This is CCaaSSDK Instance, sdk will get loaded from ccaas itself and after intialization ccaas passes this instance to the constructor.
+    ccaaSSDKInstance: CCaaSSdk; // This is CCaaSSDK Instance, sdk will get loaded from ccaas itself and after intialization ccaas passes this instance to the constructor.
 
     /**
      * Constructor
@@ -17,7 +18,7 @@ class GenericExampleCTIDriver implements ICTIInterface {
      *
      * @returns Instance
      */
-    constructor(ccaaSSDKInstance: any) {
+    constructor(ccaaSSDKInstance: CCaaSSdk) {
 
         if (!ccaaSSDKInstance) {
             throw new Error('ccaaSSDKInstance cannot be null or undefined');

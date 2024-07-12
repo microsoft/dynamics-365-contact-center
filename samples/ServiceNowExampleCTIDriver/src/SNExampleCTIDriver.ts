@@ -1,18 +1,19 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
+import { CCaaSSdk } from "./types/CCaaSSDK";
 import {ICTIInterface, ConversationInfo, ClickToDialCallbackFunction} from "./types/IOpenFrame";
 
 class SNExampleCTIDriver implements ICTIInterface {
-    ccaaSSDKInstance: any;
+    ccaaSSDKInstance: CCaaSSdk;
 
     /**
      * Constructor
      *
-     * @param {any} ccaaSSDKInstance Instance of CCaaSSDK
+     * @param {CCaaSSdk} ccaaSSDKInstance Instance of CCaaSSDK
      *
      * @returns Instance
      */
-    constructor(ccaaSSDKInstance: any) {
+    constructor(ccaaSSDKInstance: CCaaSSdk) {
         if (!ccaaSSDKInstance) {
             throw new Error('ccaaSSDKInstance cannot be null or undefined');
         }
