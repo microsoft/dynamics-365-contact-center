@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
+import { CCaaSSdk } from "./types/CCaaSSDK";
 import {
     ClickDialPayloadInfo, ClickToDialCallbackFunction,
-    ConversationDetails,
     ConversationInfo,
     CustomerInfo,
     ICTIInterface
@@ -48,19 +48,19 @@ const CONVERSATION_TYPE = {
 }
 
 class SFExampleCTIDriver implements ICTIInterface {
-    ccaaSSDKInstance: any; // This is CCaaSSDK Instance, sdk will get loaded from widget itself and after intialization we can pass this instance to SF constructor.
+    ccaaSSDKInstance: CCaaSSdk; // This is CCaaSSDK Instance, sdk will get loaded from widget itself and after intialization we can pass this instance to SF constructor.
     contactId: string;
     accountId: string;
     coversationCallType: string;
 
     /**
      * Constructor
-     * 
-     * @param {any} ccaaSSDKInstance Instance of CCaaSSDK
-     * 
-     * @returns Instance 
+     *
+     * @param {CCaaSSdk} ccaaSSDKInstance Instance of CCaaSSDK
+     *
+     * @returns Instance
      */
-    constructor(ccaaSSDKInstance: any) {
+    constructor(ccaaSSDKInstance: CCaaSSdk) {
 
         if (!ccaaSSDKInstance) {
             throw new Error('ccaaSSDKInstance cannot be null or undefined');
@@ -71,10 +71,10 @@ class SFExampleCTIDriver implements ICTIInterface {
 
     /**
      * Function to initialize the scripts and do the operations once it is loaded
-     * 
+     *
      * @returns Promise void
      */
-    initialize(): Promise<boolean> {
+    public initialize(): Promise<boolean> {
         let isSforcePresent = typeof window.sforce !== 'undefined' && typeof window.sforce.opencti !== 'undefined';
 
         if (!isSforcePresent) {
@@ -90,8 +90,8 @@ class SFExampleCTIDriver implements ICTIInterface {
     }
 
     /**
-     * Prepares a conversation, if an account/contact is found then it shows sreen pop with customer information
-     * 
+     * Prepares a conversation, if an account/contact is found then it shows screen pop with customer information
+     *
      * @param {ConversationInfo} conversationData - An object containing conversation details and customer data.
      * @returns {Promise<void>} A promise that resolves when the conversation is ready, or rejects with an error if any issues occur.
      */
@@ -105,7 +105,7 @@ class SFExampleCTIDriver implements ICTIInterface {
             let conversationCallType = window.sforce.opencti.CALL_TYPE.INBOUND;
 
             if (conversationDetails.msdyn_channel) {
-                if (conversationDetails.msdyn_channel === CONVERSATION_TYPE.VOICE || conversationDetails.msdyn_channel === CONVERSATION_TYPE.VOICE_CALL) {
+                if (Number(conversationDetails.msdyn_channel) === CONVERSATION_TYPE.VOICE || Number(conversationDetails.msdyn_channel) === CONVERSATION_TYPE.VOICE_CALL) {
                     if (conversationDetails.msdyn_isoutbound) {
                         conversationCallType = window.sforce.opencti.CALL_TYPE.OUTBOUND;
                     }
@@ -126,7 +126,7 @@ class SFExampleCTIDriver implements ICTIInterface {
 
     /**
      * Function for ending a conversation.
-     * 
+     *
      * @param {string} conversationId - Unique identifier of the conversation.
      * @returns void
      */
@@ -135,11 +135,11 @@ class SFExampleCTIDriver implements ICTIInterface {
     }
 
     /**
-     * Function to handle operations on Click to dial 
+     * Function to handle operations on Click to dial
      * @param {ClickToDialCallbackFunction} callbackFuntion func to be registered for click-to-dial.
      * @returns void
      */
-    public clickToDial(callbackFuntion: ClickToDialCallbackFunction): void {
+    public onClickToDial(callbackFuntion: ClickToDialCallbackFunction): void {
         window.sforce.opencti.enableClickToDial();
         window.sforce.opencti.onClickToDial({
             listener: (payload) => {
@@ -184,7 +184,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * @param {number} width number to set width
      * @returns void
      */
-    setSoftPhonePanelWidth(width: number): void {
+    public setSoftPhonePanelWidth(width: number): void {
         window.sforce.opencti.setSoftphonePanelWidth({
             widthPX: width
         });
@@ -195,7 +195,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * @param {number} height number to set height
      * @returns void
      */
-    setSoftPhonePanelHeight(height: number): void {
+    public setSoftPhonePanelHeight(height: number): void {
         window.sforce.opencti.setSoftphonePanelHeight({
             heightPX: height
         });
@@ -203,7 +203,7 @@ class SFExampleCTIDriver implements ICTIInterface {
 
     /**
      * Initiates a screen pop action in OpenCTI.
-     * 
+     *
      * @param {string} recordId - The ID of the record to be displayed in the screen pop.
      * @returns {Promise<string>} A promise that resolves with a success message upon successful screen pop, or rejects with an error message if screen pop fails.
      */
@@ -227,7 +227,7 @@ class SFExampleCTIDriver implements ICTIInterface {
 
     /**
      * Searches for records based on the specified search parameters and call type.
-     * 
+     *
      * @param {string} searchParam - The value used to search for records.
      * @param {string} callType - The type of call being made.
      * @returns {Promise<SFRecordInfo[]>} A promise that resolves with an array of records found from the search.
@@ -263,7 +263,7 @@ class SFExampleCTIDriver implements ICTIInterface {
      * Method to fetch ContactId and accountId using current convesation information
      * @param conversationData conversationData Object containing conversation details and customer data.
      * @param conversationCallType Call Type
-     * @returns {Promise<contactId: string | null, accountId: string | null>} 
+     * @returns {Promise<contactId: string | null, accountId: string | null>}
      */
     private static async getContactOrAccountId(conversationData: ConversationInfo, coversationCallType: string): Promise<{ contactId: string | null, accountId: string | null }> {
         const contactIds: Set<string> = new Set();
@@ -288,10 +288,10 @@ class SFExampleCTIDriver implements ICTIInterface {
     }
 
     /**
-     * Get Records data using conversation details 
+     * Get Records data using conversation details
      * @param conversationData conversationData Object containing conversation details and customer data.
      * @param conversationCallType Call Type
-     * @returns {Promise<SFRecordInfo[]>} 
+     * @returns {Promise<SFRecordInfo[]>}
      */
     private static async getRecords(conversationData: ConversationInfo, coversationCallType: string): Promise<SFRecordInfo[]> {
         const customerData: CustomerInfo = conversationData.customerData;
@@ -324,7 +324,7 @@ class SFExampleCTIDriver implements ICTIInterface {
 
     /**
      * Function to get script to load
-     * 
+     *
      * @param {string} source url
      */
     private static loadScript(source: string): Promise<boolean> {

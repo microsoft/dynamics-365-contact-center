@@ -8,69 +8,103 @@ The Microsoft Omnichannel Add-on is transforming customer engagement through Gen
 Built upon the Dynamics Contact Center Platform (DCCP) infrastructure, the Omnichannel Add-on extends its capabilities by seamlessly integrating OC and AI features with existing 3P solutions. Agents have the flexibility to utilize the add-on in either Embedded mode, where the 3P CRM serves as the primary user experience (UX) with OC/AI functionalities embedded, or Standalone mode, where Dynamics OC/AI capabilities take precedence while maintaining connectivity with 3P CRM data.
 You can find more details in (https://microsoft.sharepoint.com/:w:/t/Dynamics365CustomerCareApplications/Ee3vBYzRVh9OqGQgNq0ehj8BSSgmm17L1susO6wn7jKnSQ?e=sii0Le)
 
-# Overall Process 
+# Prerequisites
+1. [Set up D365 Contact Center embedded experience](https://review.learn.microsoft.com/en-us/dynamics365/contact-center/administer/set-up-embedded-experience?branch=main)
+2. Install Node [latest version](https://nodejs.org/en/download/package-manager)
+3. git clone `https://github.com/microsoft/dynamics-365-contact-center.git`
 
-The following steps will guide you to get the Omnichannel Add-on embedded mode working within Salesforce. You should budget for 40 minutes or more to complete the Required Steps. 
+# CTIDriver Setup
 
-Required Steps: 
+The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and Salesforce CRM, allowing for the integration of telephony features into the CRM environment.
+ 
+**Note:** These steps can be omitted if the default CTIDriver file is used. 
 
-1. Setup Dynamics OC 
+## CTIDriver Extention for Salesforce and ServiceNow
+
+### Salesforce Extension
+
+1. Navigate to /samples/SFExampleCTIDriver
+
+2. Run command `npm install`
+
+3. Open the file /samples/SFExampleCTIDriver/src/SFExampleCTIDriver.ts
+
+4. Implement your desired functionality within any of the methods provided by the ICTIDriver interface.
+    Refer to the [Salesforce OpenCTI Methods Documentation](https://developer.salesforce.com/docs/atlas.en-us.api_cti.meta/api_cti/sforce_api_cti_methods_intro_lightning.htm) for available methods and their usage.
+
+5. Run command `npm run build`, dist/SFExampleCTIDriver.js file will get generated inside /SFExampleCTIDriver folder
+
+6. Host the compiled file (dist/SFExampleCTIDriver.js) on a CDN and include the CDN URL as a query parameter in the CCaaS URL.
+
+    Note: It does not need to be a CDN URL, any URL with public access will also work 
+     
+    The format of the URL should be: 
+     
+    `https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&ctiDriverUrl=<CDN-url>`
+    
+    **example-ccaas-domain**: `https://ccaas-embed-prod.azureedge.net` 
+     
+    Replace `<CDN-url>` with the actual URL of the hosted compiled file on the CDN. 
+
+7. Update the Salesforce Call center definition file (imported in prerequisite) by replacing the `<ctiDriverUrl>` parameter with the URL generated in Step 6.
+
+   ![alt text](image.png)
    
-2. Setup Salesforce (for Embedded Model; optional for Standalone) 
+8. Your Salesforce Extension integration is now complete and ready to use.
 
-3. Integrate Dynamics Omnichannel Add-on with Salesforce (for Embedded Model; optional for Standalone) 
+### ServiceNow Extension
 
- Optional Steps: 
+1. Navigate to /samples/SNExampleCTIDriver
 
-4. Make updates to your CRM integrations. 
+2. Run command `npm install`
 
-5. Sync (one-time or as needed) CRM data with Dataverse. 
+3. Open the file /samples/SNExampleCTIDriver/src/SNExampleCTIDriver.ts
 
+4. Implement your desired functionality within any of the methods provided by the ICTIDriver interface.
+    Refer to the [ServiceNow OpenFrame Methods Documentation](https://developer.servicenow.com/dev.do#!/reference/api/washingtondc/client/c_openFrameAPI) for available methods and their usage.
 
-- The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and Salesforce CRM, allowing for the integration of telephony features into the CRM environment.
- 
+5. Run command `npm run build`, dist/SNExampleCTIDriver.js file will get generated inside /SNExampleCTIDriver folder
 
-# CTIDriver Customization 
+6. Host the compiled file (dist/SNExampleCTIDriver.js) on a CDN and include the CDN URL as a query parameter in the CCaaS URL.
 
-Note: These steps can be omitted if the default CTIDriver file is used. 
- 
-1. Develop your CTIDriver file by implementing the ICTIDriver interface, which is available in the repository microsoft/copilot-for-service (github.com) 
+    Note: It does not need to be a CDN URL, any URL with public access will also work 
+     
+    The format of the URL should be: 
+     
+    `https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&ctiDriverUrl=<CDN-url>`
+    
+    **example-ccaas-domain**: `https://ccaas-embed-prod.azureedge.net` 
+     
+    Replace `<CDN-url>` with the actual URL of the hosted compiled file on the CDN. 
 
-2. Make the class created in step 6 accessible within the window.CCaaS object. The class name created in step 6 is SFCTIDriver. 
- 
-window.CCaaS = window.CCaaS || {}; 
+7. Add the above url in the respective OpenFrame Configuration as shown in the screenshot below:
 
-if (!window.CCaaS.CTIDriver) { 
-
-    window.CCaaS.CTIDriver = SFCTIDriver; 
-
-} 
-
-3. Add implementations for the methods provided by ICTI Interface. 
- 
-4. Host the compiled file on a CDN and include the CDN URL as a query parameter in the call center definition file imported/seen in step 3 under “Salesforce specific instructions: CTI Adapter instructions” heading. 
-
-5. Note: It does not need to be a CDN URL, any URL with public access will also work 
- 
-The format of the URL should be: 
- 
-https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&ctiDriverUrl=<CDN-url> 
- 
-Replace <CDN-url> with the actual URL of the hosted compiled file on the CDN. 
-
-
-# How to use sample code for Salesforce CTI Driver
-
-1. Using "git clone" command, clone the repository
-
-2. User can add customized methods to SFExampleCTIDriver.ts file or User can also use current file
-Please note that: If User is writing his own code, then User can define types in ICTI.d.ts first and then write methods in SFExampleCTIDriver.ts file
-
-3. To run build: 
-`npm run build`
-
-4. User will get SFExampleCTIDriver.js file generated in **dist** folder
+   **Url to the list of OpenFrame Configuration:** `https://<ServiceNow-domain>/now/nav/ui/classic/params/target/sn_openframe_configuration_list.do`
    
-5. Give the path of generated JS file in the URL inside query parameter **ctiDriverUrl**
-eg: https://ccaas-embed-ppe.azureedge.net/widget/index.html?dynamicsUrl=https://msdynccaasdemo.crm.dynamics.com&msdynembedmode=3&ctiDriverUrl=https://samplectidriver.blob.core.windows.net/ctidriver/SFExampleCTIDriver.js
+   ![image](https://github.com/user-attachments/assets/b15100c2-8765-4f2c-bbcd-ea1af7a21bcf)
+
+9. Your ServiceNow Extension integration is now complete and ready to use.
+
+## CTIDriver Implementation for Generic CRM 
+
+1. Navigate to `samples/GenericExampleCTIDriver`.
+
+2. Run `npm install` to install the project dependencies.
+
+3. Navigate to `GenericExampleCTIDriver/src/GenericExampleCTIDriver.ts`.
+
+4. Implement the methods defined in `ICTIInterface` according to your CRM requirements.
+
+5. Run `npm run build` to compile the project.
+
+6. Host the compiled file on a CDN. Include the CDN URL as a query parameter in the CCaaS URL. For example, the CCaaS URL format should be:
+   `https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&ctiDriverUrl=<CDN-url> `
+   Replace `<CDN-url>` with the actual URL of the hosted compiled file on the CDN.
+   
+   Note: It does not need to be a CDN URL, any URL with public access will also work 
+
+   **example-ccaas-domain**: `https://ccaas-embed-prod.azureedge.net` 
+
+7. Incorporate this URL into the phone/softphone settings of your CRM.
+
 
