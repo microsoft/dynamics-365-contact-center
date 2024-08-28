@@ -106,4 +106,10 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
 
 7. Incorporate this URL into the phone/softphone settings of your CRM.
 
+# Contact Us
 
+If you have any questions, feedback, or issues, feel free to contact us at:
+
+**Email:** [ccaasfeedback@microsoft.com](mailto:ccaasfeedback@microsoft.com)
+
+We would love to hear from you!
