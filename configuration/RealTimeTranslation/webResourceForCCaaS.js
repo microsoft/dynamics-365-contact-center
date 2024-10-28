@@ -204,7 +204,14 @@ var C1WebResourceNamespace = {
 		});
 		if (C1WebResourceNamespace.dictForAllConversation[conversationId]['msdyn_C2_language_id'] == null) {
 			// create record
-			C1WebResourceNamespace.createXHRRequestPromise("POST", crmUrl + "/api/data/v9.0/msdyn_ocliveworkitemcontextitems", data, token).then(
+			var createPromiseRecord;
+			if (token || crmUrl) {
+				createPromiseRecord = C1WebResourceNamespace.createXHRRequestPromise("POST", crmUrl + "/api/data/v9.0/msdyn_ocliveworkitemcontextitems", data, token);
+			} else {
+				createPromiseRecord = window.top.Xrm.WebApi.createRecord("msdyn_ocliveworkitemcontextitem", data);
+			}
+
+			createPromiseRecord.then(
 				function success(result) {
 					consoleLogHelper(conversationId, "created msdyn_ocliveworkitemcontextitem when msdyn_C2_language_id is null", {
 						result
@@ -218,7 +225,14 @@ var C1WebResourceNamespace = {
 			);
 		} else {
 			// update record
-			C1WebResourceNamespace.createXHRRequestPromise("PATCH", crmUrl + "/api/data/v9.0/msdyn_ocliveworkitemcontextitems(" + C1WebResourceNamespace.dictForAllConversation[conversationId]["msdyn_C2_language_id"] + ")", data, token).then(
+			var updatePromiseRecord;
+			if (token || crmUrl) {
+				updatePromiseRecord = C1WebResourceNamespace.createXHRRequestPromise("PATCH", crmUrl + "/api/data/v9.0/msdyn_ocliveworkitemcontextitems(" + C1WebResourceNamespace.dictForAllConversation[conversationId]["msdyn_C2_language_id"] + ")", data, token);
+			} else {
+				updatePromiseRecord = window.top.Xrm.WebApi.createRecord("msdyn_ocliveworkitemcontextitem", data);
+			}
+
+			updatePromiseRecord.then(
 				function success(result) {
 					consoleLogHelper(conversationId, "updated msdyn_ocliveworkitemcontextitem", {
 						result
@@ -300,10 +314,14 @@ var C1WebResourceNamespace = {
 			engine = "google";
 		try {
 			//check if CDS already know the C2 language for the conversation and if found use it.
-			var options = "?$select=msdyn_value,msdyn_name&$filter=_msdyn_ocliveworkitemid_value eq '" + conversationId + "' and msdyn_name eq 'msdyn_C2_language'";
-      		var url = conversationConfig.crmUrl + "/api/data/v9.0/msdyn_ocliveworkitemcontextitems" + options;
-			var finalC2langPromiseRecord = C1WebResourceNamespace.createXHRRequestPromise("GET", url, null, conversationConfig.CCaaSAuthToken);
-
+			var finalC2langPromiseRecord;
+			if (token || crmUrl) {
+				var options = "?$select=msdyn_value,msdyn_name&$filter=_msdyn_ocliveworkitemid_value eq '" + conversationId + "' and msdyn_name eq 'msdyn_C2_language'";
+      			var url = conversationConfig.crmUrl + "/api/data/v9.0/msdyn_ocliveworkitemcontextitems" + options;
+				finalC2langPromiseRecord = C1WebResourceNamespace.createXHRRequestPromise("GET", url, null, conversationConfig.CCaaSAuthToken);
+			} else {
+				finalC2langPromiseRecord = window.top.Xrm.WebApi.retrieveMultipleRecords("msdyn_ocliveworkitemcontextitem", "?$select=msdyn_value,msdyn_name&$filter=_msdyn_ocliveworkitemid_value eq '" + conversationId + "' and msdyn_name eq 'msdyn_C2_language'");
+			}
 			var finalC2langPromise = await finalC2langPromiseRecord;
 			consoleLogHelper(conversationId, "Loaded msdyn_ocliveworkitemcontextitem", {
 				fetchedResult: finalC2langPromise
