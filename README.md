@@ -85,7 +85,7 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
 9. Your ServiceNow Extension integration is now complete and ready to use.
 
 
-[ServiceNow setup click to dial](./documentation/ServiceNowSetup.md)
+[ServiceNow setup Document](./documentation/ServiceNowSetup.md)
 
 ## CTIDriver Implementation for Generic CRM 
 
