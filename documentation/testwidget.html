@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Third-party CRM system</title> <!-- Title updated here -->
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden; /* Prevent scrollbars if the iframe exceeds the viewport */
+    }
+    iframe {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 800px;
+      height: 600px;
+      border: none;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a shadow for better visibility */
+    }
+  </style>
+</head>
+<body>
+	<h1>Third-party CRM system</h1>
+  <iframe
+    src="https://ccaas-embed-prod.azureedge.net/widget/index.html?dynamicsUrl=https://orgc0f0c1fc.crm.dynamics.com/"
+    allow="fullscreen; encrypted-media"
+    loading="lazy"
+    referrerpolicy="no-referrer">
+  </iframe>
+</body>
+</html>
