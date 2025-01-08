@@ -14,6 +14,13 @@
 
 ## How to configure Embed widget in ServiceNow
 
+####  Install Openframe plugin
+
+Install the Openframe plugin, by following the steps below:
+- Click on All. Search for Plugins, and click on Plugins menu item.
+- Search for Openframe plugin. The search should give back the openframe plugin 	 (Plugin id:: com.sn_openframe). Click on the Openframe plugin card.
+- Click on Install button to start the plugin installation process. Select the latest version and install now. Wait for installation to complete.
+
 #### Configure Openframe CTI
 1. Login to Servicenow instance.
 2. Click on All. Search for openframe. Select OpenFrame > Configurations.
@@ -41,13 +48,6 @@ Install the plugin for Knowledge API, by following the steps below:
 ![image](https://github.com/user-attachments/assets/1e0a39f7-52d8-4dd8-9dbe-de609ba8cc47)
 
 - Click on Install button to start the plugin installation process. Select the latest version and install now. Wait for the Knowledge API to complete installation.
-
-####  Install Openframe plugin
-
-Install the Openframe plugin, by following the steps below:
-- Click on All. Search for Plugins, and click on Plugins menu item.
-- Search for Openframe plugin. The search should give back the openframe plugin 	 (Plugin id:: com.sn_openframe). Click on the Openframe plugin card.
-- Click on Install button to start the plugin installation process. Select the latest version and install now. Wait for installation to complete.
 
 #### Install Customer Service plugin
 
