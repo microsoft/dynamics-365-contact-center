@@ -313,7 +313,7 @@ Follow the document to [Configure the connector for ServiceNow](https://learn.mi
 
 ```javascript
 // define the data to update a record
-var Sample data =
+var data =
     {
         "firstname": "Updated Sample contact",
         "lastname": "updated last name",
@@ -333,9 +333,10 @@ Xrm.WebApi.updateRecord("contact", "dataverse record id to be updated", data).th
         // handle error conditions
     }
 );
+```
 
-
-// define the data to update a record
+```javascript
+// define the data to create a record
 var data = {
         "firstname": "Fourth",
         "lastname": "coffee",
