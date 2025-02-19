@@ -66,71 +66,6 @@ Make sure you are in the "Global" workspace.
 
 - Click on All. Search for UI Scripts, and click on UI Scripts menu item.
 - Click on New button. Fill in the form as follows:
-   - **API Name:** Copilot open frame workspace script
-   - **UI Type:** Mobile / Service Portal
-   - **Script:** Copy the contents of the script below. 
- ```javascript
-(function () {
-  try {
-    var logMoniker = "Copilot Navigator UI script: ";
-
-    if (!globalThis.copilotNavigationWorkspaceListenerAdded) {
-      console.log(logMoniker + "loading workspace navigator....");
-      var payload = {
-        url: globalThis.window.location.href,
-        source: "workspaceUIScript",
-        sourceId: "b54abfa8-3d78-4aa0-ae3f-1e2ffbc56850",
-        configType: "singleFrame"
-      };
-      var context = {
-        payload: JSON.stringify(payload),
-        method: "openframe_communication"
-      };
-      globalThis.CustomEvent.fireAll("openframe_request", context);
-
-      globalThis.window.navigation.addEventListener("navigate", (event) => {
-        console.log(
-          logMoniker +
-            "Workspace PAGE NAVIGATED: " +
-            "\n Old Url: " +
-            globalThis.window.location.href +
-            "\n New url: " +
-            event.destination.url
-        );
-
-        var payload = {
-          url: event.destination.url,
-          source: "workspaceUIScript",
-          sourceId: "b54abfa8-3d78-4aa0-ae3f-1e2ffbc56850",
-          configType: "singleFrame"
-        };
-        var context = {
-          payload: JSON.stringify(payload),
-          method: "openframe_communication"
-        };
-        globalThis.CustomEvent.fireAll("openframe_request", context);
-      });
-
-      globalThis.copilotNavigationWorkspaceListenerAdded = true;
-    } else {
-      console.log(logMoniker + "Workspace navigator already loaded....");
-    }
-  } catch (error) {
-    console.error(logMoniker + "Workspace Navigator error");
-    console.error(error);
-  }
-
-  function initialiseScript() {
-    // do nothing
-  }
-
-  return initialiseScript;
-})();
-```
-
-  
-#### Add another UI script 
-- Click on New button. Fill in the form as follows:
    - **API Name:** Copilot open frame desktop script
    - **UI Type:** Desktop
    - Check the Global checkbox
@@ -200,6 +135,74 @@ Create the client scripts for supporting the CoPilot widget by following the ste
 ![image](https://github.com/user-attachments/assets/f8d744d7-8b12-43f6-8b5f-3fcc2234ddc4)
 
 - Click on All. Search for Client Scripts, and click on Client Scripts menu item.
+- Click on New button. Fill in the form as follows:
+	- **Name:** Copilot open frame workspace navigation script
+	- **Table:** Global [global]
+	- **UI Type:**  Mobile/Service Portal
+	- **Type:** onLoad
+	- **Script:** Copy the contents of the script below
+```javascript
+function onLoad() {
+  var table = g_form.getTableName();
+  try {
+    if (
+      table == "incident" ||
+      table == "sys_email" ||
+      table == "sn_customerservice_case" ||
+      table == "interaction"
+    ) {
+      var logMoniker = "Copilot Navigator Workspaces Client script: ";
+
+      if (!globalThis.copilotNavigationWorkspaceListenerAdded) {
+        console.log(logMoniker + "loading workspace navigator....");
+        var payload = {
+          url: globalThis.window.location.href,
+          source: "workspaceClientScript",
+          sourceId: "b54abfa8-3d78-4aa0-ae3f-1e2ffbc56850",
+          configType: "singleFrame",
+        };
+        var context = {
+          payload: JSON.stringify(payload),
+          method: "openframe_communication",
+        };
+        globalThis.CustomEvent.fireAll("openframe_request", context);
+
+        globalThis.window.navigation.addEventListener("navigate", (event) => {
+          console.log(
+            logMoniker +
+              "Workspace PAGE NAVIGATED: " +
+              "\n Old Url: " +
+              globalThis.window.location.href +
+              "\n New url: " +
+              event.destination.url,
+          );
+
+          var payload = {
+            url: event.destination.url,
+            source: "workspaceClientScript",
+            sourceId: "b54abfa8-3d78-4aa0-ae3f-1e2ffbc56850",
+            configType: "singleFrame",
+          };
+          var context = {
+            payload: JSON.stringify(payload),
+            method: "openframe_communication",
+          };
+          globalThis.CustomEvent.fireAll("openframe_request", context);
+        });
+
+        globalThis.copilotNavigationWorkspaceListenerAdded = true;
+      } else {
+        console.log(logMoniker + "Workspace navigator already loaded....");
+      }
+    }
+  } catch (error) {
+    console.error(logMoniker + "Workspace Navigator error");
+    console.error(error);
+  }
+}
+```
+
+#### Add another Client Script
 - Click on New button. Fill in the form as follows:
 	- **Name:** Copilot open frame incident table script
 	- **Table:** Incident
