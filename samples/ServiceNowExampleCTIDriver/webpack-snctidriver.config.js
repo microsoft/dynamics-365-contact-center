@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = {
   entry: {
-    SNExampleCTIDriver: "./src/SNExampleCTIDriver.ts"
+    SNCTIDriver: "./src/SNExampleCTIDriver.ts"
   },
   output: {
     filename: "[name].js", // Output bundle filename
@@ -10,7 +10,7 @@ module.exports = {
   },
   mode: 'development',
   resolve: {
-    extensions: [".ts"] // Allow importing TypeScript files without extension
+    extensions: [".ts"] // Allow importing TypeScript files without extension,
   },
   module: {
     rules: [
@@ -20,5 +20,9 @@ module.exports = {
         exclude: /node_modules/
       }
     ]
+  },
+  externals: {
+    '@ccaas/CCaaSEmbedSDK': '@ccaas/CCaaSEmbedSDK',
+    '@ccaas/ictiinterface': '@ccaas/ictiinterface'
   }
 };
