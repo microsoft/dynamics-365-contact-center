@@ -38,6 +38,9 @@ This API fetches records based on the provided entityLogicalName and options.
 A promise that resolves with the list of records fetched from the Dataverse.
 The records are returned as an array of objects of type `T`, where `T` is a generic type representing the structure of the records.
 
+**`Throws`**
+
+Throws an error if `entityLogicalName`, r `options` are missing or invalid
 
 **`Example`**
 
@@ -99,6 +102,10 @@ This API fetches a specific record based on the provided entity logical name, re
 A promise that resolves with the record fetched from the Dataverse.
 The record is returned as an object of type `Entity`, representing the structure of the record.
 
+
+**`Throws`**
+
+Throws an error if `entityLogicalName`, `id`, or `options` are missing or invalid
 
 **`Example`**
 

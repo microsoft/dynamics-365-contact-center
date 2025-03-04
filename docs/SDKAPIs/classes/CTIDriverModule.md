@@ -30,6 +30,9 @@ It is triggered by the CTI Driver when an outbound call needs to be initiated fr
 
 `void`
 
+**`Throws`**
+
+Throws an error if `dialPayload` is missing, if `dialPayload.number` is not provided, or if the phone number format is invalid.
 
 **`Example`**
 

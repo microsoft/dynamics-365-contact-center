@@ -30,6 +30,10 @@ such as alerts, reminders, or updates about ongoing tasks or system events.
 
 A promise that resolves to a `string`, representing the `notificationId` of the newly added notification.
 
+**`Throws`**
+
+Throws an error if `newNotificationData` is missing, if required properties (`level`, `message`) are not provided, or if the notification level is invalid.
+
 
 **`Example`**
 

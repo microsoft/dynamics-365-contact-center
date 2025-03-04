@@ -45,6 +45,9 @@ Retrieves the list of conversations assigned to the logged-in agent based on the
 A promise that resolves to an `IAssignedConversationList` object,
 containing details of the conversations assigned to the logged-in agent.
 
+**`Throws`**
+
+Throws an error if the provided `status` is invalid or not part of the `OCLiveWorkItemStatus` enum.
 
 **`Example`**
 
@@ -204,6 +207,9 @@ Retrieves the transcript of messages for a specified liveWorkItemId.
 
 A promise that resolves to an array of `ITranscriptMessage` objects, each representing a message in the transcript.
 
+**`Throws`**
+
+Throws an error if the provided `liveWorkItemId` is not a valid string or is empty.
 
 **`Example`**
 

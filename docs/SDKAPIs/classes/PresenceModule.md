@@ -137,6 +137,10 @@ This method updates the agent's presence to reflect their current availability o
 
 A promise that resolves when the presence status is successfully updated.
 
+**`Throws`**
+
+Throws an error if `presenceId` is missing or is not a valid string.
+
 
 **`Example`**
 

@@ -20,9 +20,5 @@ module.exports = {
         exclude: /node_modules/
       }
     ]
-  },
-  externals: {
-    '@ccaas/CCaaSEmbedSDK': '@ccaas/CCaaSEmbedSDK',
-    '@ccaas/ictiinterface': '@ccaas/ictiinterface'
   }
 };
