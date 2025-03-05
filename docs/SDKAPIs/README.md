@@ -26,7 +26,9 @@ Embed SDK is designed for applications that run within an embedded environment, 
 
 Standalone SDK provides the same powerful CCaaS integration capabilities but operates within the dynamics environment. It is useful for:
 
-[....TBD....]
+Executing custom logic on supported events such as onCustomerSentimentChange
+
+Perform actions to retrieve specific data such as getPresenceOptions or getTranscipt
 
 Both SDKs offer event-driven capabilities enabling developers to create highly customizable and scalable solutions.
 
