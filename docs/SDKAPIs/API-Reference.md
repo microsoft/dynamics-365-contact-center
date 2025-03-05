@@ -77,3 +77,12 @@ Provides APIs and events for handling notifications within the CCaaS environment
 | [addNewNotification](classes/NotificationModule.md#addnewnotification) | Embed |
 | [onNewConversationNotification](classes/NotificationModule.md#onnewconversationnotification) | Embed |
 | [onNewNotification](classes/NotificationModule.md#onnewnotification) | Embed |
+
+---
+
+### Standalone SDK Exclusive Modules
+#### 1. [Utility Module](classes/UtilityModule.md)
+Provides utility function for the SDK.
+| Method                                        | Availability     |
+|-----------------------------------------------|-----------------|
+| [removeEventHandlerById](classes/UtilityModule.md#removeeventhandlerbyid) | Standalone |

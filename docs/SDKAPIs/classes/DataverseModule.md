@@ -40,7 +40,7 @@ The records are returned as an array of objects of type `T`, where `T` is a gene
 
 **`Throws`**
 
-Throws an error if `entityLogicalName`, r `options` are missing or invalid
+Throws an error if `entityLogicalName`, `options` are missing or invalid
 
 **`Example`**
 
@@ -105,7 +105,7 @@ The record is returned as an object of type `Entity`, representing the structure
 
 **`Throws`**
 
-Throws an error if `entityLogicalName`, `id`, or `options` are missing or invalid
+Throws an error if `entityLogicalName`, `id`, `options` are missing or invalid
 
 **`Example`**
 

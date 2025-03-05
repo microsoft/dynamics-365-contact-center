@@ -421,7 +421,7 @@ declare enum BasePresenceStatus {
 	BUSY_DO_NOT_DISTURB = "BUSY_DO_NOT_DISTURB",
 	OFFLINE = "OFFLINE"
 }
-export interface IPresenceObject {
+export interface IPresence{
 	presenceId: string;
 	presenceName: string;
 	presenceText: string;
@@ -437,7 +437,7 @@ declare class PresenceModule {
 	/**
 	 * @description Retrieves the current presence status of the logged-in agent.
 	 * This method returns information about the agent's presence, such as their availability or activity status.
-	 * @returns A promise that resolves to a `IPresenceObject` object,
+	 * @returns A promise that resolves to a `IPresence` object,
 	 * containing details about the agent's current presence status, including fields like `presenceId`,
 	 * `presenceName`, `presenceText`, and other relevant information.
 	 * @example
@@ -452,7 +452,7 @@ declare class PresenceModule {
 	 *   console.error("Failed to retrieve agent's presence status:", error);
 	 * });
 	 */
-	getPresence(): Promise<IPresenceObject>;
+	getPresence(): Promise<IPresence>;
 	/**
 	 * @description Sets the presence status of the logged-in agent based on the specified presence ID.
 	 * This method updates the agent's presence to reflect their current availability or activity status.
@@ -471,7 +471,7 @@ declare class PresenceModule {
 	 * This event is triggered whenever the agent's presence status is updated,
 	 * reflecting a change in their availability or activity state.
 	 * @param callback - A function to be invoked when the presence change occurs.
-	 * The `callback` receives a `presenceChangeData` object of type `IPresenceObject`,
+	 * The `callback` receives a `presenceChangeData` object of type `IPresence`,
 	 * containing details about the updated presence, such as its ID, name, and other relevant information.
 	 * @example
 	 * window.Microsoft.CCaaS.EmbedSDK.presence.onPresenceChange((presenceChangeData) => {
@@ -479,12 +479,12 @@ declare class PresenceModule {
 	 *   console.log(`New Presence: ${presenceChangeData.presenceName}`);
 	 * });
 	 */
-	onPresenceChange(callback: (presenceChangeData: IPresenceObject) => void): void;
+	onPresenceChange(callback: (presenceChangeData: IPresence) => void): void;
 	/**
 	 * @description Retrieves all the available presence options for the logged-in agent.
 	 * These options represent the different presence states (e.g., "Available", "Busy", "Do Not Disturb")
 	 * that the agent can choose from.
-	 * @returns A promise that resolves to an array of `IPresenceObject` items.
+	 * @returns A promise that resolves to an array of `IPresence` items.
 	 * Each object contains details about a specific presence option, including its ID, name, description,
 	 * and other relevant information.
 	 * @example
@@ -497,7 +497,7 @@ declare class PresenceModule {
 	 *   console.error("Failed to retrieve presence options:", error);
 	 * });
 	 */
-	getPresenceOptions(): Promise<IPresenceObject[]>;
+	getPresenceOptions(): Promise<IPresence[]>;
 }
 declare enum NotificationLevels {
 	Success = 1,

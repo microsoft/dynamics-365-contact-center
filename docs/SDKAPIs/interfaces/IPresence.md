@@ -1,16 +1,17 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / IPresenceObject
+[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / IPresence
 
-# Interface: IPresenceObject
+# Interface: IPresence
 
 ## Table of contents
 
 ### Properties
 
--   [basePresenceStatus](IPresenceObject.md#basepresencestatus)
--   [presenceColor](IPresenceObject.md#presencecolor)
--   [presenceId](IPresenceObject.md#presenceid)
--   [presenceName](IPresenceObject.md#presencename)
--   [presenceText](IPresenceObject.md#presencetext)
+-   [basePresenceStatus](IPresence.md#basepresencestatus)
+-   [canUserSet](IPresence.md#canuserset)
+-   [presenceColor](IPresence.md#presencecolor)
+-   [presenceId](IPresence.md#presenceid)
+-   [presenceName](IPresence.md#presencename)
+-   [presenceText](IPresence.md#presencetext)
 
 ## Properties
 
@@ -19,10 +20,14 @@
 • **basePresenceStatus**: [`BasePresenceStatus`](../enums/BasePresenceStatus.md)
 
 
-
 ---
 
+### canUserSet
 
+• **canUserSet**: `boolean`
+
+
+---
 ### presenceColor
 
 • **presenceColor**: `string`

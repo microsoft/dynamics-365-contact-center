@@ -13,7 +13,7 @@ import Microsoft , {
     INotesAddedEvent,
     INotification,
     INotificationOptions,
-    IPresenceObject,
+    IPresence,
     ISentimentObject,
     ITranscriptMessage
 } from "@ccaas/CCaaSEmbedSDK";
@@ -46,7 +46,7 @@ type EmbedSDK = typeof Microsoft.CCaaS.EmbedSDK;
 
 export function embedSDKSampleUsage(): void {
     const embedSDK: EmbedSDK = (window as any).Microsoft.CCaaS.EmbedSDK;
-    
+
     if (embedSDK) {
 
         embedSDK.conversation.onNotesAdded((noteText: INotesAddedEvent) => {
@@ -69,7 +69,7 @@ export function embedSDKSampleUsage(): void {
             if (conversationData.statusCode === OCLiveWorkItemStatus.Closed) {
                 getTranscript(embedSDK, conversationData.liveWorkItemId);
             }
-            
+
         });
 
         embedSDK.conversation.onNewMessage((messageData: IMessageEventData) => {
@@ -109,7 +109,7 @@ export function embedSDKSampleUsage(): void {
             console.log("Embed SDK New Notification", notificationData);
         });
 
-        embedSDK.presence.onPresenceChange((presenceData: IPresenceObject) => {
+        embedSDK.presence.onPresenceChange((presenceData: IPresence) => {
             console.log("Embed SDK Agent Presence Changed", presenceData);
         });
 
@@ -137,13 +137,13 @@ export function embedSDKSampleUsage(): void {
 
 
 const presenceAPIs = (embedSDK: EmbedSDK) => {
-    embedSDK.presence.getPresence().then((presenceInfo: IPresenceObject) => {
+    embedSDK.presence.getPresence().then((presenceInfo: IPresence) => {
         console.log("Embed SDK Agent's Current Presence:", presenceInfo);
     }).catch((error) => {
         console.error("Embed SDK Failed to retrieve agent's presence status:", error);
     });
 
-    embedSDK.presence.getPresenceOptions().then((presenceOptions: IPresenceObject[]) => {
+    embedSDK.presence.getPresenceOptions().then((presenceOptions: IPresence[]) => {
         console.log("Embed SDK Available Presence Options:", presenceOptions);
 
         const busyDNDOption = presenceOptions.find((option) => option.basePresenceStatus === BasePresenceStatus.BUSY_DO_NOT_DISTURB);
