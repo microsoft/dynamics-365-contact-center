@@ -189,6 +189,14 @@ Microsoft.CCaaS.EmbedSDK.conversation
 	});
 ```
 
+**`Note`**
+Currently **getFocusedConversationId**() is not supported in **StandaloneSDK**. You can use the following snippet to acquire the focused conversation id.
+```ts
+const sessionContext = await Microsoft.Apm.getFocusedSession().getContext();
+const tab = sessionContext.getTabContext("tab-id-1");
+const conversationID = tab.data.ocContext.config.sessionParams.LiveWorkItemId;
+```
+
 ### getTranscript
 **`Description`**
 
