@@ -12,6 +12,9 @@ With **CCaaS SDK APIs**, applications can interact with CCaaS, listen to real-ti
 
 Whether used as an embedded solution within a 3rd-party CRM or as a standalone integration within Dynamics, CCaaS SDK APIs provide a scalable and flexible approach to modernizing contact center capabilities.
 
+Both SDKs offer event-driven capabilities enabling developers to create highly customizable and scalable solutions.
+For detailed API documentation and usage examples, refer to the full API reference in the [SDK API Guide](./API-Reference.md).
+
 ## Embed SDK vs. Standalone SDK
 
 ### Embed SDK
@@ -32,7 +35,3 @@ Standalone SDK provides the same powerful CCaaS integration capabilities but ope
 - Perform actions to retrieve specific data such as `getPresenceOptions` or `getTranscipt`
 
 You can refer to the [private preview guide](../Standalone%20SDK%20API%20docs/Dynamics%20365%20Contact%20Center%20SDK%20preview.pdf) and [sample implementation utilizing Standalone SDK](../../samples/StandaloneSDKExample/formOnloadScript.ts).
-
-
-Both SDKs offer event-driven capabilities enabling developers to create highly customizable and scalable solutions.
-For detailed API documentation and usage examples, refer to the full API reference in the [SDK API Guide](./API-Reference.md).
