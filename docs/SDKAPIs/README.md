@@ -22,14 +22,17 @@ Embed SDK is designed for applications that run within an embedded environment, 
 - Seamless integration between CRM and CCaaS Widget.
 - Accessing and managing data from Dataverse, ensuring agents have relevant customer records and historical interactions.
 
+You can refer to [sample implementation of CTIDriver utilizing Embed SDK](../../samples/GenericExampleCTIDriver/src/GenericExampleCTIDriver.ts).
+
 ### Standalone SDK
 
 Standalone SDK provides the same powerful CCaaS integration capabilities but operates within the dynamics environment. It is useful for:
 
-Executing custom logic on supported events such as onCustomerSentimentChange
+- Executing custom logic on supported events such as `onCustomerSentimentChange`
+- Perform actions to retrieve specific data such as `getPresenceOptions` or `getTranscipt`
 
-Perform actions to retrieve specific data such as getPresenceOptions or getTranscipt
+You can refer to the [private preview guide](../Standalone%20SDK%20API%20docs/Dynamics%20365%20Contact%20Center%20SDK%20preview.pdf) and [sample implementation utilizing Standalone SDK](../../samples/StandaloneSDKExample/formOnloadScript.ts).
+
 
 Both SDKs offer event-driven capabilities enabling developers to create highly customizable and scalable solutions.
-
 For detailed API documentation and usage examples, refer to the full API reference in the [SDK API Guide](./API-Reference.md).
