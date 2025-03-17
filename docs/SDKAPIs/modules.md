@@ -1,7 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](README.md) / Exports
-
-# @embedccaas/embed-ccaas-sdk
-
 ## Table of contents
 
 ### Enumerations

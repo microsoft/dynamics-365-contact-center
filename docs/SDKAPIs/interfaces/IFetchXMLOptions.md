@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / IFetchXMLOptions
-
 # Interface: IFetchXMLOptions
 
 ## Table of contents

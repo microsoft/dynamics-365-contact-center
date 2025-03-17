@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / INotesAddedEvent
-
 # Interface: INotesAddedEvent
 
 ## Table of contents

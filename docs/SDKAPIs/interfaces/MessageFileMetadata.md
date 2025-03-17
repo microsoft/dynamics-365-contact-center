@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / MessageFileMetadata
-
 # Interface: MessageFileMetadata
 
 ## Table of contents

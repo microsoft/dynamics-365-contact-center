@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / ContentType
-
 # Enumeration: ContentType
 
 ## Table of contents

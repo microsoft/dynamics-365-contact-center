@@ -1,6 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / VoiceOrVideoCallingModule
-
-
 # VoiceOrVideoCalling Module
 | Method | Availability |
 | ------ | ------------ |
@@ -29,7 +26,7 @@ This event is triggered whenever the agent changes the hold state of a call.
 `void`
 
 
-**`Example`**
+**`Example for Embed SDK`**
 
 ```ts
 Microsoft.CCaaS.EmbedSDK.voiceOrVideoCalling.onHoldChange((holdChangeData) => {
@@ -42,6 +39,20 @@ Microsoft.CCaaS.EmbedSDK.voiceOrVideoCalling.onHoldChange((holdChangeData) => {
 });
 ```
 
+
+
+**`Example for Standalone SDK`**
+
+```ts
+Microsoft.CCaaS.StandaloneSDK.voiceVideoCalling.onHoldChange((holdChangeData) => {
+	console.log("Hold state changed for the call:", holdChangeData);
+	if (holdChangeData.isAgentOnHold) {
+		console.log("Agent has put the call on hold.");
+	} else {
+		console.log("Agent has resumed the call.");
+	}
+});
+```
 
 ---
 
@@ -63,10 +74,23 @@ This event is triggered whenever the agent mutes or unmutes the call.
 `void`
 
 
-**`Example`**
+**`Example for Embed SDK`**
 
 ```ts
 Microsoft.CCaaS.EmbedSDK.voiceOrVideoCalling.onMuteChange((muteChangeData) => {
+	console.log("Mute state changed for the call:", muteChangeData);
+	if (muteChangeData.isAgentMuted) {
+		console.log("The agent has muted the call.");
+	} else {
+		console.log("The agent has unmuted the call.");
+	}
+});
+```
+
+**`Example for Standalone SDK`**
+
+```ts
+Microsoft.CCaaS.StandaloneSDK.voiceVideoCalling.onMuteChange((muteChangeData) => {
 	console.log("Mute state changed for the call:", muteChangeData);
 	if (muteChangeData.isAgentMuted) {
 		console.log("The agent has muted the call.");

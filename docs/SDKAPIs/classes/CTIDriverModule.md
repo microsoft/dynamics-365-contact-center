@@ -1,6 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / CTIDriverModule
-
-
 # CTIDriver Module
 | Method | Availability |
 | ------ | ------------ |

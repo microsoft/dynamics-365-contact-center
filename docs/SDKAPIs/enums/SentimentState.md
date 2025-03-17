@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / SentimentState
-
 # Enumeration: SentimentState
 
 ## Table of contents

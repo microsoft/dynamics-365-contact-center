@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / IConversationData
-
 # Interface: IConversationData
 
 ## Table of contents

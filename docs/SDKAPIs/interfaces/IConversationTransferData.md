@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / IConversationTransferData
-
 # Interface: IConversationTransferData
 
 ## Table of contents

@@ -1,7 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / DataverseModule
-
-
-
 # Dataverse Module
 | Method | Availability |
 | ------ | ------------ |

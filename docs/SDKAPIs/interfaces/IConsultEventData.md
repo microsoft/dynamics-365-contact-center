@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / IConsultEventData
-
 # Interface: IConsultEventData
 
 ## Table of contents

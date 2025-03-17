@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / OCLiveWorkItemStatus
-
 # Enumeration: OCLiveWorkItemStatus
 
 ## Table of contents

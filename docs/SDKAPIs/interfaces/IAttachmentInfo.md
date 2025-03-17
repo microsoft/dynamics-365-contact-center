@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / IAttachmentInfo
-
 # Interface: IAttachmentInfo
 
 ## Table of contents

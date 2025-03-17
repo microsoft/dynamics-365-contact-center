@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / NotificationLevels
-
 # Enumeration: NotificationLevels
 
 ## Table of contents

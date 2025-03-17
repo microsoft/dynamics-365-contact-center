@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / INotification
-
 # Interface: INotification
 
 ## Table of contents

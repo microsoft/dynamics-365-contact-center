@@ -1,5 +1,3 @@
-[@embedccaas/embed-ccaas-sdk](../README.md) / [Exports](../modules.md) / MessageSender
-
 # Interface: MessageSender
 
 ## Table of contents
