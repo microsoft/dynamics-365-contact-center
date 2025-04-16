@@ -2,21 +2,21 @@
 
 | Method | Availability |
 | ------ | ------------ |
-| [getAssignedConversationsList](ConversationModule.md#getassignedconversationslist) | Embed |
-| [getConversationDataUsingFetchXML](ConversationModule.md#getconversationdatausingfetchxml) | Embed |
-| [getFocusedConversationId](ConversationModule.md#getfocusedconversationid) | Embed |
-| [getConversationData](ConversationModule.md#getconversationdata) | Embed |
-| [getTranscript](ConversationModule.md#gettranscript) | Embed, Standalone |
-| [onAccept](ConversationModule.md#onaccept) | Embed |
-| [onConsultEnd](ConversationModule.md#onconsultend) | Embed, Standalone |
-| [onConsultStart](ConversationModule.md#onconsultstart) | Embed, Standalone |
-| [onConversationLoaded](ConversationModule.md#onconversationloaded) | Embed, Standalone |
-| [onCustomerSentimentChange](ConversationModule.md#oncustomersentimentchange) | Embed, Standalone|
-| [onNewMessage](ConversationModule.md#onnewmessage) | Embed, Standalone |
-| [onNotesAdded](ConversationModule.md#onnotesadded) | Embed |
-| [onReject](ConversationModule.md#onreject) | Embed |
-| [onStatusChange](ConversationModule.md#onstatuschange) | Embed |
-| [onTransfer](ConversationModule.md#ontransfer) | Embed |
+| [getAssignedConversationsList](ConversationModule.md#getassignedconversationslist) | Embed (Public Preview) |
+| [getConversationDataUsingFetchXML](ConversationModule.md#getconversationdatausingfetchxml) | Embed (Public Preview) |
+| [getFocusedConversationId](ConversationModule.md#getfocusedconversationid) | Embed (Public Preview) |
+| [getConversationData](ConversationModule.md#getconversationdata) | Embed (Public Preview) |
+| [getTranscript](ConversationModule.md#gettranscript) | Embed (Public Preview), Standalone (To be Released) |
+| [onAccept](ConversationModule.md#onaccept) | Embed (Public Preview) |
+| [onConsultEnd](ConversationModule.md#onconsultend) | Embed (Public Preview), Standalone (To be Released) |
+| [onConsultStart](ConversationModule.md#onconsultstart) | Embed (Public Preview), Standalone (To be Released) |
+| [onConversationLoaded](ConversationModule.md#onconversationloaded) | Embed (Public Preview), Standalone (To be Released) |
+| [onCustomerSentimentChange](ConversationModule.md#oncustomersentimentchange) | Embed (Public Preview), Standalone|
+| [onNewMessage](ConversationModule.md#onnewmessage) | Embed (Public Preview), Standalone (To be Released) |
+| [onNotesAdded](ConversationModule.md#onnotesadded) | Embed (Public Preview) |
+| [onReject](ConversationModule.md#onreject) | Embed (Public Preview) |
+| [onStatusChange](ConversationModule.md#onstatuschange) | Embed (Public Preview) |
+| [onTransfer](ConversationModule.md#ontransfer) | Embed (Public Preview) |
 
 
 

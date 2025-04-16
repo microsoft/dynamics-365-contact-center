@@ -1,10 +1,10 @@
 # CTIDriver Module
 | Method | Availability |
 | ------ | ------------ |
-| [clickToDial](CTIDriverModule.md#clicktodial) | Embed |
-| [onSoftPhonePanelHeightChange](CTIDriverModule.md#onsoftphonepanelheightchange) | Embed |
-| [onSoftPhonePanelVisibilityChange](CTIDriverModule.md#onsoftphonepanelvisibilitychange) | Embed |
-| [onSoftPhonePanelWidthChange](CTIDriverModule.md#onsoftphonepanelwidthchange) | Embed|
+| [clickToDial](CTIDriverModule.md#clicktodial) | Embed (Public Preview) |
+| [onSoftPhonePanelHeightChange](CTIDriverModule.md#onsoftphonepanelheightchange) | Embed (Public Preview) |
+| [onSoftPhonePanelVisibilityChange](CTIDriverModule.md#onsoftphonepanelvisibilitychange) | Embed (Public Preview) |
+| [onSoftPhonePanelWidthChange](CTIDriverModule.md#onsoftphonepanelwidthchange) | Embed (Public Preview)|
 
 
 ## Methods

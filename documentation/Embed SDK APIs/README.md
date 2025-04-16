@@ -34,4 +34,4 @@ Standalone SDK provides the same powerful CCaaS integration capabilities but ope
 - Executing custom logic on supported events such as `onCustomerSentimentChange`
 - Perform actions to retrieve specific data such as `getPresenceOptions` or `getTranscipt`
 
-You can refer to the [Standalone SDK setup guide](../Standalone%20SDK%20API%20docs/Standalone%20SDK%20setup%20guide.pdf) and [sample implementation utilizing Standalone SDK](../../samples/StandaloneSDKExample/formOnloadScript.ts).
+You can refer to the [sample implementation utilizing Standalone SDK](../../samples/StandaloneSDKExample/formOnloadScript.ts).

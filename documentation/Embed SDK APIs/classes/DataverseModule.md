@@ -1,8 +1,8 @@
 # Dataverse Module
 | Method | Availability |
 | ------ | ------------ |
-| [retrieveMultipleRecords](DataverseModule.md#retrievemultiplerecords) | Embed |
-| [retrieveRecord](DataverseModule.md#retrieverecord) | Embed |
+| [retrieveMultipleRecords](DataverseModule.md#retrievemultiplerecords) | Embed (Public Preview) |
+| [retrieveRecord](DataverseModule.md#retrieverecord) | Embed (Public Preview) |
 
 
 ## Methods

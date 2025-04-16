@@ -1,6 +1,6 @@
-/// <reference path="../../typings/StandaloneSDK.d.ts" />
+/// <reference path="typings/StandaloneSDK.d.ts" />
 
-import Microsoft, { ISentimentObject } from "../../typings/StandaloneSDK";
+import Microsoft, { ISentimentObject } from "typings/StandaloneSDK.d.ts";
 
 declare const window: any;
 function sentimentChange() {

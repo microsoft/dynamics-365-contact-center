@@ -1,9 +1,9 @@
 # Notification Module
 | Method | Availability |
 | ------ | ------------ |
-| [addNewNotification](NotificationModule.md#addnewnotification) | Embed |
-| [onNewConversationNotification](NotificationModule.md#onnewconversationnotification) | Embed |
-| [onNewNotification](NotificationModule.md#onnewnotification) | Embed |
+| [addNewNotification](NotificationModule.md#addnewnotification) | Embed (Public Preview) |
+| [onNewConversationNotification](NotificationModule.md#onnewconversationnotification) | Embed (Public Preview) |
+| [onNewNotification](NotificationModule.md#onnewnotification) | Embed (Public Preview) |
 
 ## Methods
 

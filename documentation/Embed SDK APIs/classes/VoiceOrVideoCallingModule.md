@@ -1,8 +1,8 @@
 # VoiceOrVideoCalling Module
 | Method | Availability |
 | ------ | ------------ |
-| [onHoldChange](VoiceOrVideoCallingModule.md#onholdchange) | Embed, Standalone |
-| [onMuteChange](VoiceOrVideoCallingModule.md#onmutechange) | Embed, Standalone |
+| [onHoldChange](VoiceOrVideoCallingModule.md#onholdchange) | Embed (Public Preview), Standalone (To be Released) |
+| [onMuteChange](VoiceOrVideoCallingModule.md#onmutechange) | Embed (Public Preview), Standalone (To be Released) |
 
 
 
