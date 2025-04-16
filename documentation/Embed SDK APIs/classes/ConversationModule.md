@@ -11,7 +11,7 @@
 | [onConsultEnd](ConversationModule.md#onconsultend) | Embed (Public Preview), Standalone (To be Released) |
 | [onConsultStart](ConversationModule.md#onconsultstart) | Embed (Public Preview), Standalone (To be Released) |
 | [onConversationLoaded](ConversationModule.md#onconversationloaded) | Embed (Public Preview), Standalone (To be Released) |
-| [onCustomerSentimentChange](ConversationModule.md#oncustomersentimentchange) | Embed (Public Preview), Standalone|
+| [onCustomerSentimentChange](ConversationModule.md#oncustomersentimentchange) | Embed (Public Preview), Standalone (To be Released) |
 | [onNewMessage](ConversationModule.md#onnewmessage) | Embed (Public Preview), Standalone (To be Released) |
 | [onNotesAdded](ConversationModule.md#onnotesadded) | Embed (Public Preview) |
 | [onReject](ConversationModule.md#onreject) | Embed (Public Preview) |
