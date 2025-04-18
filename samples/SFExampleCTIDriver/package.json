@@ -5,6 +5,10 @@
   "scripts": {
     "build": "webpack --config webpack.config.js"
   },
+  "dependencies": {
+    "@ccaas/CCaaSEmbedSDK": "file:../ICCaaSEmbedSDK/typings",
+    "@ccaas/ictiinterface": "file:../ICTIInterface/typings"
+  },
   "devDependencies": {
     "ts-loader": "^9.5.1",
     "typescript": "^5.4.3",

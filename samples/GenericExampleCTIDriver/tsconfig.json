@@ -2,15 +2,24 @@
   Copyright (c) Microsoft Corporation.
   Licensed under the MIT License.
 */
-
 {
   "compileOnSave": false,
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs",
     "outDir": "./dist",
-    "declaration": false,
-    "declarationMap": false,
-    "experimentalDecorators": true
+    "declaration": true,
+    "declarationMap": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "isolatedModules": true
   }
 }

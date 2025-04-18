@@ -7,8 +7,19 @@
   "compilerOptions": {
     "target": "es6",
     "outDir": "./dist",
-    "declaration": false,
-    "declarationMap": false,
-    "experimentalDecorators": true
+    "declaration": true,
+    "declarationMap": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "resolveJsonModule": true,
+    "isolatedModules": true
   }
 }

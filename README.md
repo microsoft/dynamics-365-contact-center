@@ -109,4 +109,6 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
 
 7. Incorporate this URL into the phone/softphone settings of your CRM.
 
+# CCaaS SDK APIs
 
+Refer to the <a href="./documentation/Embed%20SDK%20APIs/README.md">CCaaS SDK README</a> for details on available APIs and how to integrate them.
