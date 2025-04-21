@@ -39,6 +39,8 @@ enum OCLiveWorkItemStatus {
 	Closed = 4
 }
 
+const SERVICE_NOW_DOMAIN = "service-now.com";
+
 type EmbedSDK = typeof Microsoft.CCaaS.EmbedSDK;
 
 export function embedSDKSampleUsage(): void {
@@ -82,7 +84,7 @@ export function embedSDKSampleUsage(): void {
                         if (
                             contactDetails.msdyn_source_crm_id &&
                             contactDetails.msdyn_source_crm_url &&
-                            contactDetails.msdyn_source_crm_url.includes("service-now.com")
+                            contactDetails.msdyn_source_crm_url.includes(SERVICE_NOW_DOMAIN)
                         ) {
                             (window as any).openFrameAPI.openServiceNowForm({
                                 entity: "customer_contact",
@@ -106,7 +108,7 @@ export function embedSDKSampleUsage(): void {
                         if (
                             accountDetails.msdyn_source_crm_id &&
                             accountDetails.msdyn_source_crm_url &&
-                            accountDetails.msdyn_source_crm_url.includes("service-now.com")
+                            accountDetails.msdyn_source_crm_url.includes(SERVICE_NOW_DOMAIN)
                         ) {
                             (window as any).openFrameAPI.openServiceNowForm({
                                 entity: "customer_contact",
