@@ -39,6 +39,8 @@ enum OCLiveWorkItemStatus {
 	Closed = 4
 }
 
+const SERVICE_NOW_DOMAIN = "service-now.com";
+
 type EmbedSDK = typeof Microsoft.CCaaS.EmbedSDK;
 
 export function embedSDKSampleUsage(): void {
@@ -50,10 +52,74 @@ export function embedSDKSampleUsage(): void {
             console.log("Embed SDK New Note Created", noteText);
         });
 
-        embedSDK.conversation.onConversationLoaded((conversationData: IConversationLoadedEventData) => {
+        embedSDK.conversation.onConversationLoaded(async (conversationData: IConversationLoadedEventData) => {
             console.log("Embed SDK Conversation Loaded", conversationData);
             presenceAPIs(embedSDK);
             getFocusedConversationId(embedSDK);
+
+            //fetches conversation data, if an account/contact is found then it shows screen pop with customer information
+            const conversationDetails = await getConversationDataUsingFetchXML(embedSDK, conversationData.liveWorkItemId);
+
+            try {
+                if (conversationDetails) {
+                    if (Object.prototype.hasOwnProperty.call(conversationDetails, "contact_id")) {
+                        handleContact(conversationDetails);
+                    }
+                    else if (Object.prototype.hasOwnProperty.call(conversationDetails, "account_id")) {
+                        handleAccount(conversationDetails);
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+            }
+
+            function handleContact(conversationDetails: any) {
+                embedSDK.dataverse
+                    .retrieveRecord(
+                        "contacts",
+                        conversationDetails.contact_id,
+                        "?$select=msdyn_source_crm_id,msdyn_source_crm_url"
+                    )
+                    .then((contactDetails: any) => {
+                        if (
+                            contactDetails.msdyn_source_crm_id &&
+                            contactDetails.msdyn_source_crm_url &&
+                            contactDetails.msdyn_source_crm_url.includes(SERVICE_NOW_DOMAIN)
+                        ) {
+                            (window as any).openFrameAPI.openServiceNowForm({
+                                entity: "customer_contact",
+                                query: `sys_id=${contactDetails.msdyn_source_crm_id}`
+                            });
+                        }
+                    })
+                    .catch((error: any) => {
+                        console.error("Error fetching contacts data:", error);
+                    });
+            }
+
+            function handleAccount(conversationDetails: any) {
+                embedSDK.dataverse
+                    .retrieveRecord(
+                        "accounts",
+                        conversationDetails.account_id,
+                        "?$select=msdyn_source_crm_id,msdyn_source_crm_url"
+                    )
+                    .then((accountDetails: any) => {
+                        if (
+                            accountDetails.msdyn_source_crm_id &&
+                            accountDetails.msdyn_source_crm_url &&
+                            accountDetails.msdyn_source_crm_url.includes(SERVICE_NOW_DOMAIN)
+                        ) {
+                            (window as any).openFrameAPI.openServiceNowForm({
+                                entity: "customer_contact",
+                                query: `sys_id=${accountDetails.msdyn_source_crm_id}`
+                            });
+                        }
+                    })
+                    .catch((error: any) => {
+                        console.error("Error fetching accounts data:", error);
+                    });
+            }
         });
 
         embedSDK.conversation.onTransfer((conversationTransferData: IConversationTransferData) => {
@@ -126,7 +192,7 @@ export function embedSDKSampleUsage(): void {
         });
 
         embedSDK.ctiDriver.onSoftPhonePanelVisibilityChange((visibility: boolean) => {
-           setSoftPhonePanelVisibility(visibility);
+            setSoftPhonePanelVisibility(visibility);
         });
     }
 }
@@ -235,4 +301,27 @@ const setSoftPhonePanelVisibility = (visible: boolean) => {
       } else {
         (window as any).openFrameAPI.hide();
       }
+}
+
+const getConversationDataUsingFetchXML = (embedSDK: EmbedSDK, liveWorkItemId: string) => {
+    const fetchXmlQuery = `
+    <fetch mapping="logical" distinct="true">
+        <entity name="msdyn_ocliveworkitem">
+            <attribute name="msdyn_isoutbound" />
+ 	        <attribute name="msdyn_channel" />
+            <attribute name="subject" />
+        <filter type="and">
+            <condition attribute="activityid" operator="eq" uitype="msdyn_ocliveworkitem" value="${liveWorkItemId}"/>
+        </filter>
+        <link-entity name="contact" from="contactid" to="msdyn_customer" visible="false" link-type="outer">
+            <attribute name="fullname" alias="contactname" />
+            <attribute name="contactid" alias="contact_id" />
+        </link-entity>
+        <link-entity name="account" from="accountid" to="msdyn_customer" visible="false" link-type="outer">
+                <attribute name="name" alias="accountname" />
+                <attribute name="accountid" alias="account_id" />
+        </link-entity>
+        </entity>
+     </fetch>`;
+    return embedSDK.conversation.getConversationDataUsingFetchXML({ name: "msdyn_ocliveworkitems", fetchXml: fetchXmlQuery });
 }
