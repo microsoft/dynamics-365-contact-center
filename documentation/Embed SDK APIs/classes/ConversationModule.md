@@ -6,7 +6,7 @@
 | [getConversationDataUsingFetchXML](ConversationModule.md#getconversationdatausingfetchxml) | Embed (Public Preview) |
 | [getFocusedConversationId](ConversationModule.md#getfocusedconversationid) | Embed (Public Preview) |
 | [getConversationData](ConversationModule.md#getconversationdata) | Embed (Public Preview) |
-| [getTranscript](ConversationModule.md#gettranscript) | Embed (Public Preview), Standalone (To be Released) |
+| [getTranscript](ConversationModule.md#gettranscript) | Embed (Public Preview) |
 | [onAccept](ConversationModule.md#onaccept) | Embed (Public Preview) |
 | [onConsultEnd](ConversationModule.md#onconsultend) | Embed (Public Preview), Standalone (To be Released) |
 | [onConsultStart](ConversationModule.md#onconsultstart) | Embed (Public Preview), Standalone (To be Released) |
@@ -16,7 +16,7 @@
 | [onNotesAdded](ConversationModule.md#onnotesadded) | Embed (Public Preview) |
 | [onReject](ConversationModule.md#onreject) | Embed (Public Preview) |
 | [onStatusChange](ConversationModule.md#onstatuschange) | Embed (Public Preview) |
-| [onTransfer](ConversationModule.md#ontransfer) | Embed (Public Preview) |
+| [onTransfer](ConversationModule.md#ontransfer) | Embed (Public Preview), Standalone (To be Released) |
 
 
 

@@ -17,7 +17,7 @@ Provides APIs and events related to conversations between the agent and the cust
 | [getConversationDataUsingFetchXML](classes/ConversationModule.md#getconversationdatausingfetchxml) | Embed (Public Preview)           |
 | [getFocusedConversationId](classes/ConversationModule.md#getfocusedconversationid) | Embed (Public Preview)           |
 | [getConversationData](classes/ConversationModule.md#getconversationdata) | Embed (Public Preview)           |
-| [getTranscript](classes/ConversationModule.md#gettranscript) | Embed (Public Preview), Standalone (To be Released) |
+| [getTranscript](classes/ConversationModule.md#gettranscript) | Embed (Public Preview) |
 | [onAccept](classes/ConversationModule.md#onaccept) | Embed (Public Preview)           |
 | [onConsultEnd](classes/ConversationModule.md#onconsultend) | Embed (Public Preview), Standalone (To be Released) |
 | [onConsultStart](classes/ConversationModule.md#onconsultstart) | Embed (Public Preview), Standalone (To be Released) |
@@ -27,7 +27,7 @@ Provides APIs and events related to conversations between the agent and the cust
 | [onNotesAdded](classes/ConversationModule.md#onnotesadded) | Embed (Public Preview)           |
 | [onReject](classes/ConversationModule.md#onreject) | Embed (Public Preview)           |
 | [onStatusChange](classes/ConversationModule.md#onstatuschange) | Embed (Public Preview)           |
-| [onTransfer](classes/ConversationModule.md#ontransfer) | Embed (Public Preview)           |
+| [onTransfer](classes/ConversationModule.md#ontransfer) | Embed (Public Preview), Standalone (To be Released) |
 
 #### 2. [Presence Module](classes/PresenceModule.md)
 Offers APIs and events related to agent presence within the CCaaS environment.
