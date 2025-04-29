@@ -20,7 +20,6 @@
 
 
 Starts recording the ongoing call.
-This method allows to  initiate call recording for compliance, quality assurance, or other purposes.
 
 ▸ **startRecording**(`payload`: `IToggleRecording`): `Promise`<`void`\>
 
