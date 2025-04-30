@@ -19,7 +19,7 @@
 **`Description`**
 
 
-Starts recording the ongoing call.
+Starts the recording of the current voice call. This includes transcription. Please ensure that you have recording enabled.
 
 ▸ **startRecording**(`payload`: `IToggleRecording`): `Promise`<`void`\>
 
@@ -27,15 +27,20 @@ Starts recording the ongoing call.
 
 | Name      | Type                | Description                                                                 |
 | :-------- | :------------------ | :-------------------------------------------------------------------------- |
-| `payload` | `IToggleRecording`  | An object containing details required to start the recording, such as call ID. |
+| `payload` | [`IToggleRecording`](../interfaces/IToggleRecording.md) | An object containing details required to start the recording, such as liveWorkItemId. |
 
 #### Returns
 
-`Promise`<`void`\>
-A promise that resolves when the recording has successfully started.
+`void`
 
 **`Throws`**
-Throws an error if the payload is invalid or if the recording cannot be started.
+1. Throws an error if recording is not enabled.
+
+2. Throws an error if you already started transcribing the current voice call
+
+**`Note`**
+
+If you already started transcribing, do not use startRecording. This is by design because recording includes transcription. Use startTranscription instead.
 
 **`Example`**
 
@@ -52,8 +57,7 @@ console.log("CCaaSSdk Standalone: startRecording", e)
 ### pauseRecording
 **`Description`**
 
-Pauses the ongoing call recording.
-This method allows to temporarily halt call recording.
+Pauses the recording of the current voice call. This includes transcription. Please ensure that you have recording enabled.
 
 **pauseRecording**(`payload`: `IToggleRecording`): `Promise`<`void`\>
 
@@ -61,15 +65,16 @@ This method allows to temporarily halt call recording.
 
 | Name      | Type                | Description                                                                 |
 | :-------- | :------------------ | :-------------------------------------------------------------------------- |
-| `payload` | `IToggleRecording`  | An object containing details required to pause the recording, such as call ID. |
+| `payload` | [`IToggleRecording`](../interfaces/IToggleRecording.md) | An object containing details required to start the recording, such as liveWorkItemId. |
 
-### Returns
+#### Returns
 
-`Promise`<`void`\>
-A promise that resolves when the recording has successfully paused.
+`void`
 
 **`Throws`**
-Throws an error if the payload is invalid or if the recording cannot be paused.
+1. Throws an error if recording is not enabled.
+
+2. Throws an error if you already started transcribing the current voice call
 
 **`Example`**
 
@@ -85,8 +90,7 @@ console.log("CCaaSSdk Standalone: pause Recording", e)
 ## startTranscription
 **`Description`**
 
-Starts transcription of the ongoing call.
-This method allows to enable real-time transcription.
+Starts the transcription of the current voice call. Please ensure that you have transcription enabled.
 
 **startTranscription**(`payload`: `IToggleTranscription`): `Promise`<`void`\>
 
@@ -94,15 +98,16 @@ This method allows to enable real-time transcription.
 
 | Name      | Type                   | Description                                                                     |
 | :-------- | :--------------------- | :------------------------------------------------------------------------------ |
-| `payload` | `IToggleTranscription` | An object containing details required to start transcription, such as liveWorkItemId. |
+| `payload` | [`IToggleTranscription`](../interfaces/IToggleTranscription.md) | An object containing details required to start transcription, such as liveWorkItemId. |
 
-### Returns
+#### Returns
 
-`Promise`<`void`\>
-A promise that resolves when the transcription has successfully started.
+`void`
 
 **`Throws`**
-Throws an error if the payload is invalid or if the transcription cannot be started.
+1. Throws an error if transcription is not enabled.
+
+2. Throws an error if you are already recording the current voice call
 
 **`Example`**
 
@@ -118,8 +123,7 @@ console.log("CCaaSSdk Standalone: start Transcription", e)
 ## pauseTranscription
 **`Description`**
 
-Pauses the ongoing call transcription.
-This method allows to temporarily halt transcription.
+Pauses the transcription of the current voice call. 
 
 **pauseTranscription**(`payload`: `IToggleTranscription`): `Promise`<`void`\>
 
@@ -127,15 +131,21 @@ This method allows to temporarily halt transcription.
 
 | Name      | Type                   | Description                                                                     |
 | :-------- | :--------------------- | :------------------------------------------------------------------------------ |
-| `payload` | `IToggleTranscription` | An object containing details required to pause transcription, such as call ID. |
+| `payload` | [`IToggleTranscription`](../interfaces/IToggleTranscription.md) | An object containing details required to start transcription, such as liveWorkItemId. |
 
-### Returns
+#### Returns
 
-`Promise`<`void`\>
-A promise that resolves when the transcription has successfully paused.
+`void`
 
 **`Throws`**
-Throws an error if the payload is invalid or if the transcription cannot be paused.
+1. Throws an error if transcription is not enabled.
+
+2. Throws an error if you are already recording the current voice call
+
+
+**`Note`**
+
+If you already started recording, do not use pauseTranscription. This is by design because recording includes transcription. Use pausingRecording instead.
 
 **`Example`**
 
@@ -149,10 +159,10 @@ console.log("CCaaSSdk Standalone: pause Transcription", e)
 
 ---
 ## onTranscriptionOperationCompleted
+
 **`Description`**
 
-Subscribes to transcription operation completion events.
-This method allows to listen for events indicating that a transcription operation (start or pause) has completed.
+Calls the callback with ITranscriptionOperationCompletedEventData after transcription action has been invoked
 
 **onTranscriptionOperationCompleted**(`callback`: `(data: ITranscriptionOperationCompletedEventData) => void`): `string`
 
