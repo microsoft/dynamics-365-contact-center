@@ -170,7 +170,7 @@ Calls the callback with ITranscriptionOperationCompletedEventData after transcri
 
 | Name       | Type                                                    | Description                                                                 |
 | :--------- | :------------------------------------------------------ | :-------------------------------------------------------------------------- |
-| `callback` | `(data: ITranscriptionOperationCompletedEventData) => void` | A callback function invoked with event data when the transcription operation completes. |
+| `callback` | (`data`: [`ITranscriptionOperationCompletedEventData`](../interfaces/ITranscriptionOperationCompletedEventData.md)) => `void` | A callback function invoked with event data when the transcription operation completes. |
 
 ### Returns
 
@@ -204,7 +204,7 @@ This method allows to listen for events indicating that a recording operation (s
 
 | Name       | Type                                                  | Description                                                               |
 | :--------- | :---------------------------------------------------- | :------------------------------------------------------------------------ |
-| `callback` | `(data: IRecordingOperationCompletedEventData) => void` | A callback function invoked with event data when the recording operation completes. |
+| `callback` | (`data`: [`ITranscriptionOperationCompletedEventData`](../interfaces/IRecordingOperationCompletedEventData.md)) => `void` | A callback function invoked with event data when the recording operation completes. |
 
 ### Returns
 
