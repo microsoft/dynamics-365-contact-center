@@ -86,3 +86,14 @@ Provides utility function for the SDK.
 | Method                                        | Availability     |
 |-----------------------------------------------|-----------------|
 | [removeEventHandlerById](classes/UtilityModule.md#removeeventhandlerbyid) | Standalone (To be Released) |
+
+#### 2. [Voice Module](classes/VoiceModule.md)
+Provides voice api's for the SDK.
+| Method                                        | Availability     |
+|-----------------------------------------------|-----------------|
+| [startRecording](classes/VoiceModule.md#startRecording) | Standalone |
+| [pauseRecording](classes/VoiceModule.md#pauseRecording) | Standalone |
+| [startTranscription](classes/VoiceModule.md#startTranscription) | Standalone |
+| [pauseTranscription](classes/VoiceModule.md#pauseTranscription) | Standalone |
+| [onTranscriptionOperationCompleted](classes/VoiceModule.md#onTranscriptionOperationCompleted) | Standalone |
+| [onRecordingOperationCompleted](classes/VoiceModule.md#onRecordingOperationCompleted) | Standalone |
