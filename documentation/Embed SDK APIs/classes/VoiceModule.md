@@ -40,14 +40,13 @@ Starts the recording of the current voice call. This includes transcription. Ple
 
 **`Note`**
 
-If you already started transcribing, do not use startRecording. This is by design because recording includes transcription. Use startTranscription instead.
+If you already started transcribing, do not use startRecording. This is by design because recording includes transcription. Use [startTranscription](VoiceModule.md#startTranscription)   instead.
 
 **`Example`**
 
 ```ts
-Microsoft.CCaaS.StandaloneSDK.voice.startRecording((e: IToggleRecording) =>
-console.log("CCaaSSdk Standalone: startRecording", e)
-);
+await Microsoft.CCaaS.StandaloneSDK.voice.startRecording({ liveWorkItemId: 'f523f628-c07a-e811-8162-000d3aa11f50' });
+console.log("CCaaSSdk Standalone: startRecording successful");
 ```
 
 
@@ -79,9 +78,8 @@ Pauses the recording of the current voice call. This includes transcription. Ple
 **`Example`**
 
 ```ts
-Microsoft.CCaaS.StandaloneSDK.voice.pauseRecording((e: IToggleRecording) =>
-console.log("CCaaSSdk Standalone: pause Recording", e)
-);
+Microsoft.CCaaS.StandaloneSDK.voice.pauseRecording({ liveWorkItemId: 'f523f628-c07a-e811-8162-000d3aa11f50' });
+console.log("CCaaSSdk Standalone: pause Recording successful");
 ```
 
 
@@ -112,9 +110,8 @@ Starts the transcription of the current voice call. Please ensure that you have 
 **`Example`**
 
 ```ts
-Microsoft.CCaaS.StandaloneSDK.voice.startTranscription((e: IToggleRecording) =>
-console.log("CCaaSSdk Standalone: start Transcription", e)
-);
+Microsoft.CCaaS.StandaloneSDK.voice.startTranscription({ liveWorkItemId: 'f523f628-c07a-e811-8162-000d3aa11f50' });
+console.log("CCaaSSdk Standalone: start Transcription successful");
 ```
 
 
@@ -150,9 +147,8 @@ If you already started recording, do not use pauseTranscription. This is by desi
 **`Example`**
 
 ```ts
-Microsoft.CCaaS.StandaloneSDK.voice.pauseTranscription((e: IToggleRecording) =>
-console.log("CCaaSSdk Standalone: pause Transcription", e)
-);
+Microsoft.CCaaS.StandaloneSDK.voice.pauseTranscription({ liveWorkItemId: 'f523f628-c07a-e811-8162-000d3aa11f50' });
+console.log("CCaaSSdk Standalone: pause Transcription successful");
 ```
 
 
@@ -183,7 +179,7 @@ Throws an error if the callback is invalid or if the subscription fails.
 **`Example`**
 
 ```ts
-Microsoft.CCaaS.StandaloneSDK.voice.onTranscriptionOperationCompleted((e: IToggleRecording) =>
+Microsoft.CCaaS.StandaloneSDK.voice.onTranscriptionOperationCompleted((e: ITranscriptionOperationCompletedEventData) =>
 console.log("CCaaSSdk Standalone: onTranscriptionOperationCompleted", e)
 );
 ```
@@ -204,7 +200,7 @@ This method allows to listen for events indicating that a recording operation (s
 
 | Name       | Type                                                  | Description                                                               |
 | :--------- | :---------------------------------------------------- | :------------------------------------------------------------------------ |
-| `callback` | (`data`: [`ITranscriptionOperationCompletedEventData`](../interfaces/IRecordingOperationCompletedEventData.md)) => `void` | A callback function invoked with event data when the recording operation completes. |
+| `callback` | (`data`: [`IRecordingOperationCompletedEventData`](../interfaces/IRecordingOperationCompletedEventData.md)) => `void` | A callback function invoked with event data when the recording operation completes. |
 
 ### Returns
 
@@ -217,7 +213,7 @@ Throws an error if the callback is invalid or if the subscription fails.
 **`Example`**
 
 ```ts
-Microsoft.CCaaS.StandaloneSDK.voice.onRecordingOperationCompleted((e: IToggleRecording) =>
+Microsoft.CCaaS.StandaloneSDK.voice.onRecordingOperationCompleted((e: IRecordingOperationCompletedEventData) =>
 console.log("CCaaSSdk Standalone: onRecordingOperationCompleted", e)
 );
 ```
