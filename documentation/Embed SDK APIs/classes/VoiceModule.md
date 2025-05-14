@@ -21,7 +21,7 @@
 
 Starts the recording of the current voice call. This includes transcription. Please ensure that you have recording enabled.
 
-▸ **startRecording**(`payload`: `IToggleRecording`): `Promise`<`void`\>
+**startRecording**(`payload`: `IToggleRecording`): `Promise`<`void`\>
 
 #### Parameters
 
@@ -78,7 +78,7 @@ Pauses the recording of the current voice call. This includes transcription. Ple
 **`Example`**
 
 ```ts
-Microsoft.CCaaS.StandaloneSDK.voice.pauseRecording({ liveWorkItemId: 'f523f628-c07a-e811-8162-000d3aa11f50' });
+await Microsoft.CCaaS.StandaloneSDK.voice.pauseRecording({ liveWorkItemId: 'f523f628-c07a-e811-8162-000d3aa11f50' });
 console.log("CCaaSSdk Standalone: pause Recording successful");
 ```
 
@@ -110,7 +110,7 @@ Starts the transcription of the current voice call. Please ensure that you have 
 **`Example`**
 
 ```ts
-Microsoft.CCaaS.StandaloneSDK.voice.startTranscription({ liveWorkItemId: 'f523f628-c07a-e811-8162-000d3aa11f50' });
+await Microsoft.CCaaS.StandaloneSDK.voice.startTranscription({ liveWorkItemId: 'f523f628-c07a-e811-8162-000d3aa11f50' });
 console.log("CCaaSSdk Standalone: start Transcription successful");
 ```
 
@@ -147,7 +147,7 @@ If you already started recording, do not use pauseTranscription. This is by desi
 **`Example`**
 
 ```ts
-Microsoft.CCaaS.StandaloneSDK.voice.pauseTranscription({ liveWorkItemId: 'f523f628-c07a-e811-8162-000d3aa11f50' });
+await Microsoft.CCaaS.StandaloneSDK.voice.pauseTranscription({ liveWorkItemId: 'f523f628-c07a-e811-8162-000d3aa11f50' });
 console.log("CCaaSSdk Standalone: pause Transcription successful");
 ```
 

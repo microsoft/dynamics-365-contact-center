@@ -4,18 +4,17 @@
 
 ### Properties
 
-- [Interface: IRecordingOperationCompletedEventData](#interface-irecordingoperationcompletedeventdata)
-  - [Table of contents](#table-of-contents)
-    - [Properties](#properties)
-  - [Properties](#properties-1)
-    - [liveWorkItemId](#liveworkitemid)
-    - [transactionId](#transactionid)
-    - [result](#result)
-    - [currentState](#currentstate)
-    - [desiredState](#desiredstate)
+- [liveWorkItemId](IRecordingOperationCompletedEventData.md#liveworkitemid)
+- [transactionId](IRecordingOperationCompletedEventData.md#transactionid)
+- [result](IRecordingOperationCompletedEventData.md#result)
+- [currentState](IRecordingOperationCompletedEventData.md#currentstate)
+- [desiredState](IRecordingOperationCompletedEventData.md#desiredstate)
 
 ---
 
+### Types
+
+-   [RecordingStateValues](IRecordingOperationCompletedEventData.md#RecordingStateValues)
 ## Properties
 
 ### liveWorkItemId
@@ -41,12 +40,20 @@
 
 ### currentState
 
-• **currentState**: `"in-progress"` | `"not-started"` | `"paused"` | `"unknown"`
-
+• **currentState**: [`RecordingStateValues`](IRecordingOperationCompletedEventData.md#RecordingStateValues)
 
 ---
 
 ### desiredState
 
-• **desiredState**: `"in-progress"` | `"not-started"` | `"paused"` | `"unknown"`
-.
+• **desiredState**:[`RecordingStateValues`](IRecordingOperationCompletedEventData.md#RecordingStateValues)
+
+---
+
+## Types
+
+### RecordingStateValues
+
+`RecordingStateValues` = `"in-progress"` | `"not-started"` | `"paused"` | `"unknown"`
+
+---
