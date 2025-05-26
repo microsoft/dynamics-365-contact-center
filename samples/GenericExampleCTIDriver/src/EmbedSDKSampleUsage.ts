@@ -55,6 +55,7 @@ export function embedSDKSampleUsage(): void {
 
         embedSDK.conversation.onConversationLoaded((conversationData: IConversationLoadedEventData) => {
             console.log("Embed SDK Conversation Loaded", conversationData);
+            window.parent.postMessage(conversationData, "*");
             presenceAPIs(embedSDK);
             getFocusedConversationId(embedSDK);
         });
@@ -132,6 +133,8 @@ export function embedSDKSampleUsage(): void {
         embedSDK.ctiDriver.onSoftPhonePanelVisibilityChange((visibility: boolean) => {
            setSoftPhonePanelVisibility(visibility);
         });
+
+        clickToDial(embedSDK.ctiDriver.clickToDial);
     }
 }
 
@@ -223,6 +226,20 @@ const retrieveMultipleRecords = (embedSDK: EmbedSDK, liveWorkItemId: string) => 
     embedSDK.dataverse.retrieveMultipleRecords("msdyn_ocliveworkitems", `?fetchXml=${fetchXml}`)
         .then((data) => console.log("Embed SDK  Retrieve multiple records Response:", data))
         .catch((error) => console.error("Embed SDK Failed to retrieve multiple records:", error));
+}
+
+// @ts-ignore
+const clickToDial = (callbackFunction): void => {
+    window.addEventListener("message", (event) => {
+        const {messageType, messageData} = JSON.parse(event.data);
+        if (messageType && messageType === "clickToDial") {
+            const clickDialPayload = {
+                number: messageData.number
+            };
+
+            callbackFunction(clickDialPayload);
+        }
+    })
 }
 
  const setSoftPhonePanelWidth = (width: number) => {
