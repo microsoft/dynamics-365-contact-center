@@ -89,6 +89,8 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
 
 ## CTIDriver Implementation for Generic CRM 
 
+### Configuration
+
 1. Navigate to `samples/GenericExampleCTIDriver`.
 
 2. Run `npm install` to install the project dependencies.
@@ -108,6 +110,36 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
    **example-ccaas-domain**: `https://ccaas-embed-prod.azureedge.net` 
 
 7. Incorporate this URL into the phone/softphone settings of your CRM.
+
+### Communication between Generic CRM and CTIDriver
+
+1. Use `window.postMessage` to communicate from CTIDriver to Generic CRM.
+```typescript
+embedSDK.conversation.onConversationLoaded((conversationData: IConversationLoadedEventData) => {
+    console.log("Embed SDK Conversation Loaded", conversationData);
+    window.parent.postMessage(conversationData, "*");
+    presenceAPIs(embedSDK);
+    getFocusedConversationId(embedSDK);
+});
+```
+
+2. Use `document.getElementById("iframeId").contentWindow.postMessage` to communicate from Generic CRM to CTIDriver.
+```typescript
+// code required to send message on Generic CRM side
+document.getElementById("iframeId").contentWindow.postMessage(JSON.stringify({messageType:"clickToDial", messageData: {number: 8208654321}}),"*");
+
+// code required to listen for message event on CTIDriver side
+window.addEventListener("message", (event) => {
+    const {messageType, messageData} = JSON.parse(event.data);
+    if (messageType && messageType === "clickToDial") {
+        const clickDialPayload = {
+            number: messageData.number
+        };
+
+        callbackFunction(clickDialPayload);
+    }
+})
+```
 
 # CCaaS SDK APIs
 
