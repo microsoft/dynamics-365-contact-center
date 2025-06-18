@@ -19,33 +19,33 @@ Provides APIs and events related to conversations between the agent and the cust
 | [getConversationData](classes/ConversationModule.md#getconversationdata) | Embed (Public Preview)           |
 | [getTranscript](classes/ConversationModule.md#gettranscript) | Embed (Public Preview) |
 | [onAccept](classes/ConversationModule.md#onaccept) | Embed (Public Preview)           |
-| [onConsultEnd](classes/ConversationModule.md#onconsultend) | Embed (Public Preview), Standalone (To be Released) |
-| [onConsultStart](classes/ConversationModule.md#onconsultstart) | Embed (Public Preview), Standalone (To be Released) |
-| [onConversationLoaded](classes/ConversationModule.md#onconversationloaded) | Embed (Public Preview), Standalone (To be Released) |
-| [onCustomerSentimentChange](classes/ConversationModule.md#oncustomersentimentchange) | Embed (Public Preview), Standalone (To be Released) |
-| [onNewMessage](classes/ConversationModule.md#onnewmessage) | Embed (Public Preview), Standalone (To be Released) |
+| [onConsultEnd](classes/ConversationModule.md#onconsultend) | Embed (Public Preview), Standalone (Public Preview) |
+| [onConsultStart](classes/ConversationModule.md#onconsultstart) | Embed (Public Preview), Standalone (Public Preview) |
+| [onConversationLoaded](classes/ConversationModule.md#onconversationloaded) | Embed (Public Preview), Standalone (Public Preview) |
+| [onCustomerSentimentChange](classes/ConversationModule.md#oncustomersentimentchange) | Embed (Public Preview), Standalone (Public Preview) |
+| [onNewMessage](classes/ConversationModule.md#onnewmessage) | Embed (Public Preview) |
 | [onNotesAdded](classes/ConversationModule.md#onnotesadded) | Embed (Public Preview)           |
 | [onReject](classes/ConversationModule.md#onreject) | Embed (Public Preview)           |
 | [onStatusChange](classes/ConversationModule.md#onstatuschange) | Embed (Public Preview)           |
-| [onTransfer](classes/ConversationModule.md#ontransfer) | Embed (Public Preview), Standalone (To be Released) |
+| [onTransfer](classes/ConversationModule.md#ontransfer) | Embed (Public Preview), Standalone (Public Preview) |
 
 #### 2. [Presence Module](classes/PresenceModule.md)
 Offers APIs and events related to agent presence within the CCaaS environment.
 
 | Method                                        | Availability     |
 |-----------------------------------------------|-----------------|
-| [getPresence](classes/PresenceModule.md#getpresence) | Embed (Public Preview), Standalone (To be Released) |
-| [getPresenceOptions](classes/PresenceModule.md#getpresenceoptions) | Embed (Public Preview), Standalone (To be Released) |
+| [getPresence](classes/PresenceModule.md#getpresence) | Embed (Public Preview), Standalone (Public Preview) |
+| [getPresenceOptions](classes/PresenceModule.md#getpresenceoptions) | Embed (Public Preview), Standalone (Public Preview) |
 | [onPresenceChange](classes/PresenceModule.md#onpresencechange) | Embed (Public Preview)           |
-| [setPresence](classes/PresenceModule.md#setpresence) | Embed (Public Preview), Standalone (To be Released) |
+| [setPresence](classes/PresenceModule.md#setpresence) | Embed (Public Preview), Standalone (Public Preview) |
 
 #### 3. [VoiceOrVideoCalling Module](classes/VoiceOrVideoCallingModule.md)
 Enables voice and video calling capabilities within the embedded application.
 
 | Method                                        | Availability     |
 |-----------------------------------------------|-----------------|
-| [onHoldChange](classes/VoiceOrVideoCallingModule.md#onholdchange) | Embed (Public Preview), Standalone (To be Released) |
-| [onMuteChange](classes/VoiceOrVideoCallingModule.md#onmutechange) | Embed (Public Preview), Standalone (To be Released) |
+| [onHoldChange](classes/VoiceOrVideoCallingModule.md#onholdchange) | Embed (Public Preview), Standalone (Public Preview) |
+| [onMuteChange](classes/VoiceOrVideoCallingModule.md#onmutechange) | Embed (Public Preview), Standalone (Public Preview) |
 
 ---
 
@@ -85,7 +85,7 @@ Provides APIs and events for handling notifications within the CCaaS environment
 Provides utility function for the SDK.
 | Method                                        | Availability     |
 |-----------------------------------------------|-----------------|
-| [removeEventHandlerById](classes/UtilityModule.md#removeeventhandlerbyid) | Standalone (To be Released) |
+| [removeEventHandlerById](classes/UtilityModule.md#removeeventhandlerbyid) | Embed (Public Preview), Standalone |
 
 #### 2. [Voice Module](classes/VoiceModule.md)
 Provides voice api's for the SDK.
