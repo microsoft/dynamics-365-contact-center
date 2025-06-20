@@ -1,10 +1,10 @@
 # Presence Module
 | Method | Availability |
 | ------ | ------------ |
-| [getPresence](PresenceModule.md#getpresence) | Embed (Public Preview), Standalone (To be Released) |
-| [getPresenceOptions](PresenceModule.md#getpresenceoptions) | Embed (Public Preview), Standalone (To be Released) |
+| [getPresence](PresenceModule.md#getpresence) | Embed (Public Preview), Standalone (Public Preview) |
+| [getPresenceOptions](PresenceModule.md#getpresenceoptions) | Embed (Public Preview), Standalone (Public Preview) |
 | [onPresenceChange](PresenceModule.md#onpresencechange) | Embed (Public Preview) |
-| [setPresence](PresenceModule.md#setpresence) | Embed (Public Preview), Standalone (To be Released) |
+| [setPresence](PresenceModule.md#setpresence) | Embed (Public Preview), Standalone (Public Preview) |
 
 
 ## Methods
