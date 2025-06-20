@@ -8,15 +8,16 @@
 | [getConversationData](ConversationModule.md#getconversationdata) | Embed (Public Preview) |
 | [getTranscript](ConversationModule.md#gettranscript) | Embed (Public Preview) |
 | [onAccept](ConversationModule.md#onaccept) | Embed (Public Preview) |
-| [onConsultEnd](ConversationModule.md#onconsultend) | Embed (Public Preview), Standalone (To be Released) |
-| [onConsultStart](ConversationModule.md#onconsultstart) | Embed (Public Preview), Standalone (To be Released) |
-| [onConversationLoaded](ConversationModule.md#onconversationloaded) | Embed (Public Preview), Standalone (To be Released) |
-| [onCustomerSentimentChange](ConversationModule.md#oncustomersentimentchange) | Embed (Public Preview), Standalone (To be Released) |
-| [onNewMessage](ConversationModule.md#onnewmessage) | Embed (Public Preview), Standalone (To be Released) |
+| [onConsultEnd](ConversationModule.md#onconsultend) | Embed (Public Preview), Standalone (Public Preview) |
+| [onConsultStart](ConversationModule.md#onconsultstart) | Embed (Public Preview), Standalone (Public Preview) |
+| [onConversationLoaded](ConversationModule.md#onconversationloaded) | Embed (Public Preview), Standalone (Public Preview) |
+| [onCustomerSentimentChange](ConversationModule.md#oncustomersentimentchange) | Embed (Public Preview), Standalone (Public Preview) |
+| [onNewMessage](ConversationModule.md#onnewmessage) | Embed (Public Preview), Standalone (Public Preview) |
 | [onNotesAdded](ConversationModule.md#onnotesadded) | Embed (Public Preview) |
 | [onReject](ConversationModule.md#onreject) | Embed (Public Preview) |
 | [onStatusChange](ConversationModule.md#onstatuschange) | Embed (Public Preview) |
-| [onTransfer](ConversationModule.md#ontransfer) | Embed (Public Preview), Standalone (To be Released) |
+| [onTransfer](ConversationModule.md#ontransfer) | Embed (Public Preview), Standalone (Public Preview) |
+| [getCopilotSummary](ConversationModule.md#getcopilotsummary) | Embed (Public Preview), Standalone (Public Preview) |
 
 
 
@@ -523,3 +524,31 @@ Microsoft.CCaaS.EmbedSDK.conversation.onTransfer((eventData) => {
 	console.log(`Conversation transferred with ID: ${eventData.liveWorkItemId}`);
 });
 ```
+
+---
+### getCopilotSummary
+**`Description`**
+Retrieves the Copilot summary for a specified conversation.
+**getCopilotSummary**(`liveWorkItemId`): `Promise`<[`ICopilotSummary`](../interfaces/ICopilotSummary.md)\>
+#### Parameters
+| Name             | Type     | Description                                                     |
+| :--------------- | :------- | :-------------------------------------------------------------- |
+| `liveWorkItemId` | `string` | The conversationId for which the Copilot summary is to be retrieved. |
+#### Returns
+
+A promise that resolves to an `ICopilotSummary` object containing the summary details for the specified conversation.
+**`Throws`**
+
+- `Error`: If the conversation ID is invalid or if there is an issue retrieving the summary. Or if the Copilot summary is not available for the specified conversation.
+**`Example`**
+
+```ts
+Microsoft.CCaaS.EmbedSDK.conversation.getCopilotSummary("your-live-work-item-id")
+	.then((summary) => {
+		console.log("Copilot Summary:", summary);
+	})
+	.catch((error) => {
+		console.error("Error retrieving Copilot Summary:", error);
+	});
+```
+---
