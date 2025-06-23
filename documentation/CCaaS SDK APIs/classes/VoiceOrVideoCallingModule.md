@@ -1,8 +1,8 @@
 # VoiceOrVideoCalling Module
 | Method | Availability |
 | ------ | ------------ |
-| [onHoldChange](VoiceOrVideoCallingModule.md#onholdchange) | Embed (Public Preview), Standalone (To be Released) |
-| [onMuteChange](VoiceOrVideoCallingModule.md#onmutechange) | Embed (Public Preview), Standalone (To be Released) |
+| [onHoldChange](VoiceOrVideoCallingModule.md#onholdchange) | Embed (Public Preview), Standalone (Public Preview) |
+| [onMuteChange](VoiceOrVideoCallingModule.md#onmutechange) | Embed (Public Preview), Standalone (Public Preview) |
 
 
 
@@ -90,7 +90,7 @@ Microsoft.CCaaS.EmbedSDK.voiceOrVideoCalling.onMuteChange((muteChangeData) => {
 **`Example for Standalone SDK`**
 
 ```ts
-Microsoft.CCaaS.StandaloneSDK.voiceVideoCalling.onMuteChange((muteChangeData) => {
+Microsoft.CCaaS.StandaloneSDK.voice.onMuteChange((muteChangeData) => {
 	console.log("Mute state changed for the call:", muteChangeData);
 	if (muteChangeData.isAgentMuted) {
 		console.log("The agent has muted the call.");

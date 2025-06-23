@@ -2,7 +2,7 @@
 
 | Method | Availability |
 | ------ | ------------ |
-| [removeEventHandlerById](UtilityModule.md#removeeventhandlerbyid) | Standalone (To be Released) |
+| [removeEventHandlerById](UtilityModule.md#removeeventhandlerbyid) | Standalone (Public Preview) |
 
 
 
