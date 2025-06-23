@@ -143,4 +143,4 @@ window.addEventListener("message", (event) => {
 
 # CCaaS SDK APIs
 
-Refer to the <a href="./documentation/Embed%20SDK%20APIs/README.md">CCaaS SDK README</a> for details on available APIs and how to integrate them.
+Refer to the <a href="./documentation/CCaaS%20SDK%20APIs/README.md">CCaaS SDK README</a> for details on available APIs and how to integrate them.
