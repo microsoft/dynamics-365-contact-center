@@ -536,10 +536,16 @@ Retrieves the Copilot summary for a specified conversation.
 | `liveWorkItemId` | `string` | The conversationId for which the Copilot summary is to be retrieved. |
 #### Returns
 
+`Promise`<[`ICopilotSummary`](../interfaces/ICopilotSummary.md)\>
+
 A promise that resolves to an `ICopilotSummary` object containing the summary details for the specified conversation.
+
 **`Throws`**
 
-- `Error`: If the conversation ID is invalid or if there is an issue retrieving the summary. Or if the Copilot summary is not available for the specified conversation.
+- `Error`: If the `liveWorkItemId` is invalid, empty, or null
+- `Error`: If the conversation is not in Active or wrap-up status
+- `Error`: If the Copilot service is unavailable or returns an error
+
 **`Example`**
 
 ```ts

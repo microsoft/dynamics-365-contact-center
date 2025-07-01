@@ -28,6 +28,7 @@ Provides APIs and events related to conversations between the agent and the cust
 | [onReject](classes/ConversationModule.md#onreject) | Embed (Public Preview)           |
 | [onStatusChange](classes/ConversationModule.md#onstatuschange) | Embed (Public Preview)           |
 | [onTransfer](classes/ConversationModule.md#ontransfer) | Embed (Public Preview), Standalone (Public Preview) |
+| [getCopilotSummary](classes/ConversationModule.md#getcopilotsummary) | Embed (Public Preview), Standalone (Public Preview) |
 
 #### 2. [Presence Module](classes/PresenceModule.md)
 Offers APIs and events related to agent presence within the CCaaS environment.
