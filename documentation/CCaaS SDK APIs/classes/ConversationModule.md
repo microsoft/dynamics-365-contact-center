@@ -541,6 +541,7 @@ A promise that resolves to an `ICopilotSummary` object containing the summary de
 
 - `Error`: If the conversation ID is empty or invalid
 - `Error`: If there aren't enough messages in the conversation for a summary
+- `Error`: If conversation is not in Wrapped-Up or Active status, refer to [`OCLiveWorkItemStatus`](../enums/OCLiveWorkItemStatus.md) for valid conversation states
 
 **`Example`**
 
