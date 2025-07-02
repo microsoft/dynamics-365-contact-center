@@ -539,7 +539,10 @@ Retrieves the Copilot summary for a specified conversation.
 A promise that resolves to an `ICopilotSummary` object containing the summary details for the specified conversation.
 **`Throws`**
 
-- `Error`: If the conversation ID is invalid or if there is an issue retrieving the summary. Or if the Copilot summary is not available for the specified conversation.
+- `Error`: If the conversation ID is empty or invalid
+- `Error`: If there aren't enough messages in the conversation for a summary
+- `Error`: If conversation is not in Wrapped-Up or Active status, refer to [`OCLiveWorkItemStatus`](../enums/OCLiveWorkItemStatus.md) for valid conversation states
+
 **`Example`**
 
 ```ts
