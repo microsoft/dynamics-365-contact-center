@@ -135,6 +135,8 @@ export function embedSDKSampleUsage(): void {
         });
 
         clickToDial(embedSDK.ctiDriver.clickToDial);
+
+        setupCopilotSummaryOnStatusChange(embedSDK);
     }
 }
 
@@ -253,3 +255,32 @@ const clickToDial = (callbackFunction): void => {
 const setSoftPhonePanelVisibility = (visible: boolean) => {
     throw new Error('Method not implemented.');
 }
+
+const setupCopilotSummaryOnStatusChange = (embedSDK: EmbedSDK) => {
+    embedSDK.conversation.onStatusChange(async (e: IConversationStatusChangeData) => {
+        console.log("external sdk status change:", e);
+        
+        // WrapUp (5) state
+        if (e.statusCode === OCLiveWorkItemStatus.WrapUp) {
+            try {
+                const focusedConversationId = await embedSDK.conversation.getFocusedConversationId();
+                
+                if (focusedConversationId) {
+                    try {
+                        const copilotSummary = await embedSDK.conversation.getCopilotSummary(focusedConversationId);
+                        // send conversation summary
+                        console.log(`Copilot summary for conversation ${focusedConversationId} (Status: ${e.statusCode === OCLiveWorkItemStatus.Active ? 'Active' : 'WrapUp'}):`, copilotSummary);
+                    } catch (error) {
+                        console.error("Error getting copilot summary:", error);
+                    }
+                } else {
+                    console.log("No focused conversation ID available");
+                }
+            } catch (error) {
+                console.error("Error getting focused conversation ID:", error);
+            }
+        } else {
+            console.log(`Conversation status ${e.statusCode} - not fetching copilot summary (only fetched for Active/WrapUp states)`);
+        }
+    });
+};
