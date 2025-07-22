@@ -17,83 +17,101 @@ Built upon the Microsoft Azure, Power Platform, and core Dynamics 365 infrastruc
 The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and Salesforce CRM, allowing for the integration of telephony features into the CRM environment.
 
 
-## CTIDriver Extention for Salesforce and ServiceNow
+## CTIDriver Extension for Salesforce and ServiceNow
+
+### Common CTI Driver Configuration
+
+Before proceeding with platform-specific setup, understand the three approaches available for configuring custom CTI drivers using the `useCustomCTI` flag:
+
+#### **Approach 1: Web Resource (Recommended for Security)**
+
+a. **Configure App Setting in Dynamics 365:**
+
+   - Navigate to **Setting definitions** under Default solutions in Dynamics 365
+   - Search for: `msdyn_enableCustomCTIFromWebresource`
+   - Display name: "Custom CTI Driver Web Resource"
+   - Click on `msdyn_enableCustomCTIFromWebresource`
+   - Go to **Setting environment value**
+   - Override the default value by setting **"Yes"** for your environment
+
+b. **Upload Custom CTI Driver to Web Resource:**
+
+   - Search for **web resource** under Default solutions in Dynamics 365
+   - Search for: `msdyn_CustomCTIDriver.js`
+   - Display name: "CustomCTIDriver.js"
+   - Click on `msdyn_CustomCTIDriver.js` to modify the JS file
+   - Replace the content with your compiled CTI driver file content (e.g., `dist/SFExampleCTIDriver.js` or `dist/SNExampleCTIDriver.js`)
+
+c. **Use the CCaaS URL with Web Resource:**
+
+   ```
+   https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&useCustomCTI=1&msdynembedmode=3
+   ```
+
+**Note:** To verify web resource loading, check browser console for the element:
+
+```javascript
+document.getElementById("InlineCustomCTIDriver")
+```
+
+#### **Approach 2: External URL (Legacy Method)**
+
+a. **Configure App Setting in Dynamics 365:**
+
+   - Set `msdyn_enableCustomCTIFromWebresource` to **"No"** in Setting definitions
+
+b. **Host the compiled file externally:**
+
+   - Host your compiled CTI driver file on a CDN or any publicly accessible URL
+   - Use the CCaaS URL with external CTI driver:
+
+   ```
+   https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&useCustomCTI=1&ctiDriverUrl=<CDN-url>&msdynembedmode=3
+   ```
+
+#### **Approach 3: Default CTI Driver**
+
+Use the built-in default CTI driver without any custom implementation:
+
+a. **Configuration Steps:**
+
+   1. Set `useCustomCTI=0` in the query parameter (regardless of app setting)
+   2. Use the following URL format:
+
+      ```
+      https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0&msdynembedmode=3
+      ```
+
+   3. The system will automatically load the default CTI driver based on the environment
+
+**Note:** Default CTI driver ignores any `ctiDriverUrl` parameter when `useCustomCTI=0`
+
+#### **CTI Driver Configuration Matrix:**
+
+| useCustomCTI | App Setting (msdyn_enableCustomCTIFromWebresource) | Expected Output | Example URL |
+|--------------|---------------------------------------------------|-----------------|-------------|
+| 1 | TRUE | Gets script from web resource | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&msdynembedmode=3` |
+| 1 | FALSE | Gets script from ctiDriverUrl parameter | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&ctiDriverUrl=https://your-cdn-url.com/js/YourCTIDriver.js&msdynembedmode=3` |
+| 0 | N/A | Uses default CTI driver (ignores ctiDriverUrl) | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0&msdynembedmode=3` |
+
+**example-ccaas-domain**: `https://ccaas-embed-prod.azureedge.net`
+
+---
 
 ### Salesforce Extension
 
-1. Navigate to /samples/SFExampleCTIDriver
+1. Navigate to `/samples/SFExampleCTIDriver`
 
 2. Run command `npm install`
 
-3. Open the file /samples/SFExampleCTIDriver/src/SFExampleCTIDriver.ts
+3. Open the file `/samples/SFExampleCTIDriver/src/SFExampleCTIDriver.ts`
 
 4. Implement your desired functionality within any of the methods provided by the ICTIDriver interface.
     Refer to the [Salesforce OpenCTI Methods Documentation](https://developer.salesforce.com/docs/atlas.en-us.api_cti.meta/api_cti/sforce_api_cti_methods_intro_lightning.htm) for available methods and their usage.
 
 5. Run command `npm run build`, dist/SFExampleCTIDriver.js file will get generated inside /SFExampleCTIDriver folder
 
-6. **Configure Custom CTI Driver - Two Approaches Available:**
-
-   To enhance security, we now support two approaches for configuring custom CTI drivers using the `useCustomCTI` flag:
-
-   ### **Approach 1: Web Resource (Recommended for Security)**
-
-   a. **Configure App Setting in Dynamics 365:**
-      - Navigate to **Setting definitions** under Default solutions in Dynamics 365
-      - Search for: `msdyn_enableCustomCTIFromWebresource`
-      - Display name: "Custom CTI Driver Web Resource"
-      - Click on `msdyn_enableCustomCTIFromWebresource`
-      - Go to **Setting environment value**
-      - Override the default value by setting **"Yes"** for your environment
-
-   b. **Upload Custom CTI Driver to Web Resource:**
-      - Search for **web resource** under Default solutions in Dynamics 365
-      - Search for: `msdyn_CustomCTIDriver.js`
-      - Display name: "CustomCTIDriver.js"
-      - Click on `msdyn_CustomCTIDriver.js` to modify the JS file
-      - Replace the content with your compiled `dist/SFExampleCTIDriver.js` file content
-
-   c. **Use the CCaaS URL with Web Resource:**
-      ```
-      https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&useCustomCTI=1&msdynembedmode=3
-      ```
-
-   ### **Approach 2: External URL (Legacy Method)**
-
-   a. **Configure App Setting in Dynamics 365:**
-      - Set `msdyn_enableCustomCTIFromWebresource` to **"No"** in Setting definitions
-
-   b. **Host the compiled file externally:**
-      - Host `dist/SFExampleCTIDriver.js` on a CDN or any publicly accessible URL
-      - Use the CCaaS URL with external CTI driver:
-      ```
-
-      https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&useCustomCTI=1&ctiDriverUrl=<CDN-url>&msdynembedmode=3
-      ```
-
-   ### **Approach 3: Default CTI Driver**
-
-    Use the built-in default CTI driver without any custom implementation:
-    Replace `<CDN-url>` with the actual URL of the hosted compiled file on the CDN.
-   a. **Configuration Steps:**
-      1. Set `useCustomCTI=0` in the query parameter (regardless of app setting)
-      2. Use the following URL format:
-         ```
-         https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0&msdynembedmode=3
-         ```
-      3. The system will automatically load the default CTI driver based on the environment
-
-   - Default CTI driver ignores any `ctiDriverUrl` parameter when `useCustomCTI=0`
-
-   ### **CTI Driver Configuration Matrix:**
-
-   | useCustomCTI | App Setting (msdyn_enableCustomCTIFromWebresource) | Expected Output | Example URL |
-   |--------------|---------------------------------------------------|-----------------|-------------|
-   | 1 | TRUE | Gets script from web resource | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&msdynembedmode=3` |
-   | 1 | FALSE | Gets script from ctiDriverUrl parameter | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&ctiDriverUrl=https://your-cdn-url.com/js/SFExampleCTIDriver.js&msdynembedmode=3` |
-   | 0 | N/A | Uses default CTI driver (ignores ctiDriverUrl) | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0&msdynembedmode=3` |
-
-
+6. **Configure Custom CTI Driver:** Follow one of the three approaches described in the [Common CTI Driver Configuration](#common-cti-driver-configuration) section above. When uploading to web resource or hosting externally, use the `dist/SFExampleCTIDriver.js` file.
 
 7. Update the Salesforce Call center definition file (imported in prerequisite) by replacing the URL with the one generated in Step 6 based on your chosen approach.
 
@@ -103,85 +121,18 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
 
 ### ServiceNow Extension
 
-1. Navigate to /samples/SNExampleCTIDriver
+1. Navigate to `/samples/SNExampleCTIDriver`
 
 2. Run command `npm install`
 
-3. Open the file /samples/SNExampleCTIDriver/src/SNExampleCTIDriver.ts
+3. Open the file `/samples/SNExampleCTIDriver/src/SNExampleCTIDriver.ts`
 
 4. Implement your desired functionality within any of the methods provided by the ICTIDriver interface.
     Refer to the [ServiceNow OpenFrame Methods Documentation](https://developer.servicenow.com/dev.do#!/reference/api/washingtondc/client/c_openFrameAPI) for available methods and their usage.
 
 5. Run command `npm run build`, dist/SNExampleCTIDriver.js file will get generated inside /SNExampleCTIDriver folder
 
-6. **Configure Custom CTI Driver - Three Approaches Available:**
-
-   To enhance security, we now support three approaches for configuring custom CTI drivers using the `useCustomCTI` flag:
-
-   ### **Approach 1: Web Resource (Recommended for Security)**
-
-   a. **Configure App Setting in Dynamics 365:**
-      - Navigate to **Setting definitions** in Dynamics 365
-      - Search for: `msdyn_enableCustomCTIFromWebresource`
-      - Display name: "Custom CTI Driver Web Resource"
-      - Click on `msdyn_enableCustomCTIFromWebresource`
-      - Go to **Setting environment value**
-      - Override the default value by setting **"Yes"** for your environment
-
-   b. **Upload Custom CTI Driver to Web Resource:**
-      - Search for **web resource** in Dynamics 365
-      - Search for: `msdyn_CustomCTIDriver.js`
-      - Display name: "CustomCTIDriver.js"
-      - Click on `msdyn_CustomCTIDriver.js` to modify the JS file
-      - Replace the content with your compiled `dist/SNExampleCTIDriver.js` file content
-
-   c. **Use the CCaaS URL with Web Resource:**
-      ```
-      https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&useCustomCTI=1&msdynembedmode=3
-      ```
-   **Notes:**
-   - To verify web resource loading (for Approach 1), check browser console for the element:
-     ```javascript
-     document.getElementById("InlineCustomCTIDriver")
-     ```
-
-   ### **Approach 2: External URL (Legacy Method)**
-
-   a. **Configure App Setting in Dynamics 365:**
-      - Set `msdyn_enableCustomCTIFromWebresource` to **"No"** in Setting definitions
-
-   b. **Host the compiled file externally:**
-      - Host `dist/SNExampleCTIDriver.js` on a CDN or any publicly accessible URL
-      - Use the CCaaS URL with external CTI driver:
-      ```
-      https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&useCustomCTI=1&ctiDriverUrl=<CDN-url>&msdynembedmode=3
-      ```
-
-   ### **Approach 3: Default CTI Driver**
-
-   Use the built-in default CTI driver without any custom implementation:
-
-   a. **Configuration Steps:**
-      1. Set `useCustomCTI=0` in the query parameter (regardless of app setting)
-      2. Use the following URL format:
-         ```
-         https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0&msdynembedmode=3
-         ```
-      3. The system will automatically load the default CTI driver based on the environment
-    **Notes:**
-       - Default CTI driver ignores any `ctiDriverUrl` parameter when `useCustomCTI=0`
-
-   ### **CTI Driver Configuration Matrix:**
-
-   | useCustomCTI | App Setting (msdyn_enableCustomCTIFromWebresource) | Expected Output | Example URL |
-   |--------------|---------------------------------------------------|-----------------|-------------|
-   | 1 | TRUE | Gets script from web resource | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&msdynembedmode=3` |
-   | 1 | FALSE | Gets script from ctiDriverUrl parameter | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&ctiDriverUrl=https://your-cdn-url.com/js/SNExampleCTIDriver.js&msdynembedmode=3` |
-   | 0 | N/A | Uses default CTI driver (ignores ctiDriverUrl) | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0&msdynembedmode=3` |
-
-   **example-ccaas-domain**: `https://ccaas-embed-prod.azureedge.net`
-
-
+6. **Configure Custom CTI Driver:** Follow one of the three approaches described in the [Common CTI Driver Configuration](#common-cti-driver-configuration) section above. When uploading to web resource or hosting externally, use the `dist/SNExampleCTIDriver.js` file.
 
 7. Add the URL generated in Step 6 (based on your chosen approach) to the respective OpenFrame Configuration as shown in the screenshot below:
 
