@@ -138,7 +138,7 @@ a. **Configuration Steps:**
 
    **Url to the list of OpenFrame Configuration:** `https://<ServiceNow-domain>/now/nav/ui/classic/params/target/sn_openframe_configuration_list.do`
 
-   ![image](https://github.com/user-attachments/assets/b15100c2-8765-4f2c-bbcd-ea1af7a21bcf)
+   ![ServiceNow Example](ServiceNowExample.png)
 
 8. Your ServiceNow Extension integration is now complete and ready to use.
 
