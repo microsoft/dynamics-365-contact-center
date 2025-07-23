@@ -31,8 +31,13 @@ a. **Configure App Setting in Dynamics 365:**
    - Search for: `msdyn_enableCustomCTIFromWebresource`
    - Display name: "Custom CTI Driver Web Resource"
    - Click on `msdyn_enableCustomCTIFromWebresource`
+
+   ![Setting Definition](settingDefinition.png)
+
    - Go to **Setting environment value**
    - Override the default value by setting **"Yes"** for your environment
+
+   ![Setting Environment Value](settingEnvironmentValue.png)
 
 b. **Upload Custom CTI Driver to Web Resource:**
 
@@ -41,6 +46,10 @@ b. **Upload Custom CTI Driver to Web Resource:**
    - Display name: "CustomCTIDriver.js"
    - Click on `msdyn_CustomCTIDriver.js` to modify the JS file
    - Replace the content with your compiled CTI driver file content (e.g., `dist/SFExampleCTIDriver.js` or `dist/SNExampleCTIDriver.js`)
+
+   ![Web Resource](webResource.png)
+
+   ![Edit Web Resource](editWebresource.png)
 
 c. **Use the CCaaS URL with Web Resource:**
 
