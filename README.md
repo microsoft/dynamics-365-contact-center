@@ -21,7 +21,7 @@ The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and S
 
 ### Common CTI Driver Configuration
 
-**⚠️ IMPORTANT NOTICE:** The external URL method for loading CTI drivers (Approach 2) is deprecated and will be removed on September 19, 2025. Please use the Web Resource approach (Approach 1) for all new implementations and migrate existing implementations immediately.
+**IMPORTANT NOTICE:** The external URL method for loading CTI drivers (Approach 2) is deprecated and will be removed on September 19, 2025. Please use the Web Resource approach (Approach 1) for all new implementations and migrate existing implementations immediately.
 
 Before proceeding with platform-specific setup, understand the approaches available for configuring custom CTI drivers using the `useCustomCTI` flag:
 
@@ -53,7 +53,7 @@ b. **Use the CCaaS URL with Web Resource:**
 document.getElementById("InlineCustomCTIDriver")
 ```
 
-#### **Approach 2: External URL (⚠️ DEPRECATED - Will be removed September 19, 2025)**
+#### **Approach 2: External URL (DEPRECATED - Will be removed September 19, 2025)**
 
 **This method is deprecated and will be removed in the 8.3 train release. Please migrate to the Web Resource approach (Approach 1) immediately.**
 
@@ -83,7 +83,7 @@ Use the built-in default CTI driver without any custom implementation:
 
 #### **Important Behavior Notes:**
 
-**🔑 Key Point:** To use ANY custom CTI driver (either web resource or external URL), you MUST include `useCustomCTI=1` in the URL.
+** Key Point:** To use ANY custom CTI driver (either web resource or external URL), you MUST include `useCustomCTI=1` in the URL.
 **When `useCustomCTI` parameter is missing from URL:**
 
 - The system defaults to `useCustomCTI=0` behavior
