@@ -57,7 +57,10 @@ document.getElementById("InlineCustomCTIDriver")
 
 **This method is deprecated and will be removed in the 8.3 train release. Please migrate to the Web Resource approach (Approach 1) immediately.**
 
-a. **Host the compiled file externally:**
+a. **Configure App Setting in Dynamics 365:**
+      - Set `msdyn_enableCustomCTIFromWebresource` to **"No"** in Setting definitions
+
+b. **Host the compiled file externally:**
 
 - Host your compiled CTI driver file on a CDN or any publicly accessible URL
 - Use the CCaaS URL with external CTI driver:
@@ -97,7 +100,6 @@ Use the built-in default CTI driver without any custom implementation:
 | `useCustomCTI=1` | TRUE | Gets script from web resource (recommended) | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&msdynembedmode=3` |
 | `useCustomCTI=1` (deprecated) | FALSE | Gets script from ctiDriverUrl parameter | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&ctiDriverUrl=https://your-cdn-url.com/js/YourCTIDriver.js&msdynembedmode=3` |
 | `useCustomCTI=0` | Ignored | Uses default CTI driver (ignores ctiDriverUrl and web resource) | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0&msdynembedmode=3` |
-| **Parameter missing** | Ignored | **Defaults to useCustomCTI=0 behavior** (ignores ctiDriverUrl and web resource) | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&msdynembedmode=3` |
 
 **example-ccaas-domain**: `https://ccaas-embed-prod.azureedge.net`
 
