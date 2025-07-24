@@ -44,7 +44,7 @@ a. **Upload Custom CTI Driver to Web Resource:**
 b. **Use the CCaaS URL with Web Resource:**
 
    ```url
-   https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&useCustomCTI=1&msdynembedmode=3
+   https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://<dynamics-environment>.crm.dynamics.com&useCustomCTI=1&msdynembedmode=3
    ```
 
 **Note:** To verify web resource loading, check browser console for the element:
@@ -63,7 +63,7 @@ a. **Host the compiled file externally:**
 - Use the CCaaS URL with external CTI driver:
 
    ```url
-   https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&useCustomCTI=1&ctiDriverUrl=<CDN-url>&msdynembedmode=3
+   https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://<dynamics-environment>.crm.dynamics.com&useCustomCTI=1&ctiDriverUrl=<CDN-url>&msdynembedmode=3
    ```
 
 #### **Approach 3: Default CTI Driver**
@@ -167,7 +167,7 @@ Use the built-in default CTI driver without any custom implementation:
 6. **Configure Custom CTI Driver:**
    - **Recommended:** Follow the web resource approach (Approach 1) described in the [Common CTI Driver Configuration](#common-cti-driver-configuration) section above. Upload the compiled `dist/GenericExampleCTIDriver.js` file to the web resource.
    - **Legacy (Deprecated):** Host the compiled file on a CDN and include the CDN URL as a query parameter in the CCaaS URL:
-     `https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://msdynccaasdev.crm.dynamics.com&ctiDriverUrl=<CDN-url>`
+     `https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://<dynamics-environment>.crm.dynamics.com&ctiDriverUrl=<CDN-url>`
 
      Note: This method will be removed on September 19, 2025. Please migrate to the web resource approach.
 
