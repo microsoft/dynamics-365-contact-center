@@ -35,7 +35,7 @@ a. **Upload Custom CTI Driver to Web Resource:**
 - Search for: `msdyn_CustomCTIDriver.js`
 - Display name: "CustomCTIDriver.js"
 - Click on `msdyn_CustomCTIDriver.js` to modify the JS file
-- Replace the content with your compiled CTI driver file content (e.g., `dist/SFExampleCTIDriver.js` or `dist/SNExampleCTIDriver.js`)
+- Replace the content with your compiled CTI driver file content (e.g., `dist/SFExampleCTIDriver.js` or `dist/SNExampleCTIDriver.js`) and **save and publish**.
 
    ![Web Resource](webResource.png)
 
