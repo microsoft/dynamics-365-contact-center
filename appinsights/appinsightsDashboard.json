@@ -7,6 +7,56 @@
         "version": "KqlParameterItem/1.0",
         "parameters": [
           {
+            "id": "d42dfee0-8331-480d-ac57-ad7498b5850d",
+            "version": "KqlParameterItem/1.0",
+            "name": "jsonObject",
+            "type": 1,
+            "isGlobal": true,
+            "isHiddenWhenLocked": true
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      },
+      "name": "parameters - 9",
+      "styleSettings": {
+        "margin": "0 0 0 0"
+      }
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "a4a7f1c0-9aec-4d00-9a6a-40be5c9813fb",
+            "version": "KqlParameterItem/1.0",
+            "name": "recordtypejsonraw",
+            "type": 1,
+            "isGlobal": true,
+            "query": "let rawObject = dynamic({jsonObject});\r\nlet inputRecordId = iff(isnull(rawObject.recordId), \"\", tostring(rawObject.recordId));\r\n\r\nlet actualResult = traces\r\n    | extend customDim = parse_json(customDimensions)\r\n    | extend \r\n        subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n        recordId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n        additionalInfo = parse_json(tostring(customDim[\"omnichannel.additional_info\"]))\r\n    | where recordId == inputRecordId\r\n    | where subscenario == \"Intake\"\r\n    | extend entityLogicalName = tostring(additionalInfo[\"entitylogicalname\"])\r\n    | where isnotempty(entityLogicalName)   \r\n    | extend result = pack(\"entityLogicalName\", entityLogicalName), source = 1\r\n    | project result, source\r\n    | take 1;\r\n\r\nlet fallback = datatable(result: dynamic, source: long) [dynamic({\"entityLogicalName\": \"\"}),0];\r\n\r\nunion actualResult, fallback\r\n| sort by source desc\r\n| take 1\r\n| project result;",
+            "queryType": 0,
+            "resourceType": "microsoft.insights/components",
+            "value": null
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      },
+      "conditionalVisibility": {
+        "parameterName": "screen",
+        "comparison": "isNotEqualTo"
+      },
+      "name": "parameters - 15"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
             "id": "69fc12dd-8c41-4d46-96f7-465ad4356a6b",
             "version": "KqlParameterItem/1.0",
             "name": "screen",
@@ -17,7 +67,7 @@
               "additionalResourceOptions": [],
               "showDefault": false
             },
-            "jsonData": "[\"assignmentevents\", \"conversationdetails\", \"csrdetails\", \"assignmenteventdetails\",\"allconversationevents\"]",
+            "jsonData": "[\"assignmentevents\", \"conversationdetails\", \"csrdetails\", \"assignmenteventdetails\",\"allconversationevents\", \"recorddetails\", \"allrecordevents\"]",
             "timeContext": {
               "durationMs": 86400000
             },
@@ -140,7 +190,7 @@
                     "durationMs": 86400000
                   },
                   "value": {
-                    "durationMs": 604800000
+                    "durationMs": 2592000000
                   }
                 },
                 {
@@ -177,7 +227,7 @@
                   "multiSelect": true,
                   "quote": "'",
                   "delimiter": ",",
-                  "query": "let orgIdFromDropDown = dynamic([{orgDropdown}]);\r\ntraces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    workitemdetails = tostring(customDim[\"omnichannel.work_item.details\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| where orgId in (orgIdFromDropDown)\r\n| extend channelJSON = parse_json(workitemdetails)\r\n| extend channel = tostring(channelJSON[\"StreamSource\"])\r\n| where channel != \"Record\"\r\n| where subscenario == \"CSRAssignment\"\r\n| distinct channel",
+                  "query": "let orgIdFromDropDown = dynamic([{orgDropdown}]);\r\ntraces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| extend  channel = tostring(customDim[\"omnichannel.channel.type\"])  \r\n| where orgId in (orgIdFromDropDown)\r\n| where subscenario == \"ConversationCreated\"\r\n| where channel != \"\"\r\n| distinct  channel;",
                   "typeSettings": {
                     "additionalResourceOptions": [
                       "value::all"
@@ -273,6 +323,17 @@
                   "value": {
                     "durationMs": 2592000000
                   }
+                },
+                {
+                  "id": "307aec4c-4480-482d-88ff-c42154c9a018",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "isRecordSelected",
+                  "type": 1,
+                  "isGlobal": true,
+                  "query": "let channelFilter = dynamic([{channelDropdown}]);\r\nlet recordParam = iff(array_index_of(channelFilter, \"Record\") != -1, \"Record\", \"\");\r\nprint recordParam;",
+                  "isHiddenWhenLocked": true,
+                  "queryType": 0,
+                  "resourceType": "microsoft.insights/components"
                 }
               ],
               "style": "pills",
@@ -315,7 +376,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "let _screen = \"{screen}\";\r\nlet orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); // Can be a parameter\r\nlet queueFilter = dynamic([{queueNameDropdown}]); // Can be a parameter\r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n  | where orgId in (orgIdFromDropDown)\r\n  | extend  channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"\r\n    ),\r\n    queueId =  case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\n\r\nlet filteredConversations = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| where channel in (channelFilter) and queueId in (queueFilter)\r\n| distinct conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\nlet assignmentSubscenarios = dynamic([\"CSRAssignment\", \"CSRAssignment\", \"CSRAssignment\", \"ManualAssignment\", \"TransferAssignment\"]);\r\n\r\nlet tracesParsed = filteredTraces\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions)\r\n| project timestamp, conversationId, subscenario, customDim=parse_json(customDimensions)\r\n;\r\n\r\nlet ConversationCreateds = tracesParsed\r\n| where subscenario == \"ConversationCreated\"\r\n| summarize ConversationCreatedTime = min(timestamp) by conversationId;\r\n\r\nlet botEscalationToHuman = tracesParsed\r\n| where subscenario == \"CopilotAgentEscalationToCSR\"\r\n| summarize botEscalateToHumanTime = min(timestamp) by conversationId;\r\n\r\nlet firstCSRAccepted = tracesParsed\r\n| where subscenario == \"CSRAccepted\"\r\n| where tostring(customDim[\"omnichannel.description\"]) contains \"request completed\"\r\n| summarize firstCSRAcceptedTime = min(timestamp) by conversationId;\r\n\r\nlet queues = tracesParsed\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\", \"TransferToQueue\")\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| extend rawDescription = tostring(customDim[\"omnichannel.description\"])\r\n| extend rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend resultJson = parse_json(rawResult)\r\n| extend queueId = case(\r\n    subscenario == \"TransferToQueue\", extract(@\"QueueId: ([0-9a-fA-F-]{36})\", 1, rawDescription),\r\n    subscenario in (\"RTQ\", \"RouteToQueue\"), tostring(resultJson.Id),\r\n    \"\"\r\n)\r\n| extend queueName = case(\r\n    subscenario == \"TransferToQueue\", extract(@\"Target Queue: (.+?) with QueueId\", 1, rawDescription),\r\n    subscenario in (\"RTQ\", \"RouteToQueue\"), tostring(resultJson.DisplayName),\r\n    \"\"\r\n)\r\n| summarize by queueId, queueName, conversationId;\r\n\r\nlet recentQueueIdForConversation = tracesParsed\r\n| where subscenario in (\"CSRAssignment\", \"CSRAssignment\", \"CSRAssignment\")\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId;\r\n\r\nlet assignmentStats = tracesParsed\r\n| where subscenario in (assignmentSubscenarios)\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend wokstreamId = tostring(parsedWorkItemDetails.WorkStreamId)\r\n| summarize assignmentCount = count(), initiated = min(timestamp), wokstreamId = any(wokstreamId) by conversationId;\r\n\r\n\r\nlet conversationState = tracesParsed\r\n| extend type = customDim[\"type\"]\r\n| extend currentState = customDim[\"omnichannel.new_state\"]\r\n| extend previousState = customDim[\"omnichannel.previous_state\"]\r\n| where type == \"C1ActionsDiagnosticsEvent\"\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| project conversationId, currentState, previousState;\r\n\r\nlet conversationStatus = ConversationCreateds\r\n| join kind = leftouter (botEscalationToHuman) on conversationId\r\n| join kind = leftouter (firstCSRAccepted) on conversationId\r\n| join kind = leftouter (queues) on conversationId\r\n| extend assignmentDurationStart = iff(isnotempty(botEscalateToHumanTime), botEscalateToHumanTime, ConversationCreatedTime)\r\n| project conversationId, queueId, ConversationCreatedTime, botEscalateToHumanTime, assignmentDurationStart, firstCSRAcceptedTime\r\n| join kind=leftouter (assignmentStats) on conversationId\r\n| join kind=leftouter (recentQueueIdForConversation) on conversationId\r\n| extend finalQueueId = iff(isnotempty(queueIdTracesParsed), queueIdTracesParsed, queueId)\r\n| join kind = leftouter (queues) on $left.finalQueueId == $right.queueId and $left.conversationId == $right.conversationId\r\n| extend duration = tolong((firstCSRAcceptedTime - assignmentDurationStart ) / 1s)\r\n| join kind = leftouter (conversationState) on conversationId\r\n| extend jsonObject = pack(\"conversationId\", conversationId, \"queue\", queueName, \"previousScreen\", _screen, \"assignmentDuration\" , duration, \"currentState\", currentState)\r\n| sort by initiated desc\r\n| project \r\n        [\"ConversationID\"] = conversationId,\r\n        [\"Conversation Status\"] = iff(isnotempty(currentState), currentState, \"Open\"),\r\n        [\"Initiated\"] = ConversationCreatedTime;\r\n\r\nlet makeCumsum = (status: string) {\r\n    conversationStatus\r\n    | where [\"Conversation Status\"] == status\r\n    | sort by [\"Initiated\"] asc\r\n    | summarize conversationCount = count() by binTime = bin([\"Initiated\"], 1h), [\"Conversation Status\"]\r\n    | sort by binTime asc\r\n    | serialize\r\n    | extend CumulativeCount = row_cumsum(conversationCount)\r\n    | project conversationCount, [\"Conversation Status\"], binTime, CumulativeCount\r\n};\r\n\r\nlet cumsumOpenStatus = makeCumsum(\"Open\");\r\nlet cumsumActiveStatus = makeCumsum(\"Active\");\r\nlet cumsumWrapupStatus = makeCumsum(\"WrapUp\");\r\nlet cumsumClosedStatus = makeCumsum(\"Closed\");\r\nlet cumsumWaitingStatus = makeCumsum(\"Waiting\");\r\n\r\nunion cumsumOpenStatus, cumsumActiveStatus, cumsumWrapupStatus, cumsumClosedStatus, cumsumWaitingStatus\r\n| where binTime {chartTimeRange};",
+                          "query": "let _screen = \"{screen}\";\r\nlet orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); \r\nlet queueFilter = dynamic([{queueNameDropdown}]); \r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| where orgId in (orgIdFromDropDown)\r\n| extend  \r\n    channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"),\r\n    queueId = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\n// Step 2: Extract channel from ConversationCreated traces\r\nlet conversationCreatedChannels = parsedTracesTable\r\n| where subscenario == \"ConversationCreated\"\r\n| extend createdChannel = tostring(customDim[\"omnichannel.channel.type\"])\r\n| where createdChannel in (channelFilter)\r\n| project conversationId;\r\n\r\n// Step 3: Get queueId from latest CSRAssignment\r\nlet csrAssignmentQueue = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId\r\n| project conversationId, queueId = queueIdTracesParsed;\r\n\r\n// Step 4: Get queueId from latest RouteToQueue or RTQ (exclude TransferToQueue)\r\nlet routeToQueueEvents = parsedTracesTable\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\")\r\n| extend \r\n    rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend\r\n     resultJson = parse_json(rawResult)\r\n | extend   queueIdRTQ = tostring(resultJson.Id)\r\n| summarize arg_max(timestamp, queueIdRTQ) by conversationId\r\n| project conversationId, queueId = queueIdRTQ;\r\n\r\n// Step 5: Combine queueId sources, preferring CSRAssignment\r\nlet finalQueueIds = csrAssignmentQueue\r\n| union (routeToQueueEvents\r\n         | where conversationId !in (csrAssignmentQueue));\r\n// Step 6: Filter conversations based on channel and queue filters\r\nlet filteredConversations = finalQueueIds\r\n| where conversationId in (conversationCreatedChannels)\r\n| where queueId in (queueFilter)\r\n| project conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\nlet assignmentSubscenarios = dynamic([\"CSRAssignment\", \"ManualAssignment\", \"TransferAssignment\"]);\r\n\r\n\r\nlet tracesParsed = filteredTraces\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions)\r\n| project timestamp, conversationId, subscenario, customDim = parse_json(customDimensions);\r\n\r\n// --- New: Closed conversations\r\nlet closedConversations = tracesParsed\r\n| where subscenario == \"ConversationClosed\"\r\n| summarize by conversationId;\r\n\r\nlet ConversationCreateds = tracesParsed\r\n| where subscenario == \"ConversationCreated\"\r\n| summarize ConversationCreatedTime = min(timestamp) by conversationId;\r\n\r\nlet botEscalationToHuman = tracesParsed\r\n| where subscenario == \"CopilotAgentEscalationToCSR\"\r\n| summarize botEscalateToHumanTime = min(timestamp) by conversationId;\r\n\r\nlet firstCSRAccepted = tracesParsed\r\n| where subscenario == \"CSRAccepted\"\r\n| where tostring(customDim[\"omnichannel.description\"]) contains \"request completed\"\r\n| summarize firstCSRAcceptedTime = min(timestamp) by conversationId;\r\n\r\n// --- Get queueName from routing events\r\nlet queues = tracesParsed\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\", \"TransferToQueue\")\r\n| extend rawDescription = tostring(customDim[\"omnichannel.description\"])\r\n| extend rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend resultJson = parse_json(rawResult)\r\n| extend queueId = case(\r\n    subscenario == \"TransferToQueue\", extract(@\"QueueId: ([0-9a-fA-F-]{36})\", 1, rawDescription),\r\n    subscenario in (\"RTQ\", \"RouteToQueue\"), tostring(resultJson.Id),\r\n    \"\")\r\n| extend queueName = case(\r\n    subscenario == \"TransferToQueue\", extract(@\"Target Queue: (.+?) with QueueId\", 1, rawDescription),\r\n    subscenario in (\"RTQ\", \"RouteToQueue\"), tostring(resultJson.DisplayName),\r\n    \"\")\r\n| summarize arg_max(timestamp, queueName) by queueId;\r\n\r\n// --- Get most recent queueId from CSRAssignment\r\nlet csrAssignmentQueue1  = tracesParsed\r\n| where subscenario == \"CSRAssignment\"\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId;\r\n\r\n// Step 4: Get queueId from latest RouteToQueue or RTQ (exclude TransferToQueue)\r\nlet routeToQueueEvents1 = parsedTracesTable\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\")\r\n| extend \r\n    rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend\r\n     resultJson = parse_json(rawResult)\r\n | extend   queueIdRTQ = tostring(resultJson.Id)\r\n| summarize arg_max(timestamp, queueIdRTQ) by conversationId\r\n| project conversationId, queueIdTracesParsed = queueIdRTQ;\r\n\r\n// Step 5: Combine queueId sources, preferring CSRAssignment\r\nlet recentQueueIdForConversation = csrAssignmentQueue1\r\n| union (routeToQueueEvents1\r\n         | where conversationId !in (csrAssignmentQueue1));\r\n         \r\n\r\nlet assignmentStats = tracesParsed\r\n| where subscenario in (assignmentSubscenarios)\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend wokstreamId = tostring(parsedWorkItemDetails.WorkStreamId)\r\n| summarize assignmentCount = count(), initiated = min(timestamp), wokstreamId = any(wokstreamId) by conversationId;\r\n\r\n// Updated conversationState with Closed override\r\nlet conversationStateRaw  = tracesParsed\r\n| extend type = customDim[\"type\"]\r\n| extend currentState = customDim[\"omnichannel.new_state\"]\r\n| extend previousState = customDim[\"omnichannel.previous_state\"]\r\n| where type == \"C1ActionsDiagnosticsEvent\"\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| project conversationId, currentState, previousState;\r\n\r\nlet conversationState = conversationStateRaw\r\n| extend currentState = iff(conversationId in (closedConversations), \"Closed\", currentState);\r\n\r\n\r\nlet conversationStatus = ConversationCreateds\r\n| join kind = leftouter (botEscalationToHuman) on conversationId\r\n| join kind = leftouter (firstCSRAccepted) on conversationId\r\n| extend assignmentDurationStart = iff(isnotempty(botEscalateToHumanTime), botEscalateToHumanTime, ConversationCreatedTime)\r\n| project conversationId, ConversationCreatedTime, botEscalateToHumanTime, assignmentDurationStart, firstCSRAcceptedTime\r\n| join kind=leftouter (assignmentStats) on conversationId\r\n| join kind=leftouter (recentQueueIdForConversation) on conversationId\r\n| extend finalQueueId = queueIdTracesParsed\r\n| join kind = leftouter (queues) on $left.finalQueueId == $right.queueId\r\n| extend duration = tolong((firstCSRAcceptedTime - assignmentDurationStart ) / 1s)\r\n| join kind = leftouter (conversationState) on conversationId\r\n| extend jsonObject = pack(\"conversationId\", conversationId, \"queue\", queueName, \"previousScreen\", _screen, \"assignmentDuration\", duration, \"currentState\", currentState)\r\n| sort by initiated desc\r\n| project \r\n    [\"ConversationID\"] = conversationId,\r\n    [\"Conversation Status\"] = iff(isnotempty(currentState), currentState, \"Open\"),\r\n    [\"Initiated\"] = ConversationCreatedTime;\r\n\r\n// Cumulative Logic\r\nlet makeCumsum = (status: string) {\r\n    conversationStatus\r\n    | where [\"Conversation Status\"] == status\r\n    | sort by [\"Initiated\"] asc\r\n    | summarize conversationCount = count() by binTime = bin([\"Initiated\"], 1h), [\"Conversation Status\"]\r\n    | sort by binTime asc\r\n    | serialize\r\n    | extend CumulativeCount = row_cumsum(conversationCount)\r\n    | project conversationCount, [\"Conversation Status\"], binTime, CumulativeCount\r\n};\r\n\r\nlet cumsumOpenStatus = makeCumsum(\"Open\");\r\nlet cumsumActiveStatus = makeCumsum(\"Active\");\r\nlet cumsumWrapupStatus = makeCumsum(\"WrapUp\");\r\nlet cumsumClosedStatus = makeCumsum(\"Closed\");\r\nlet cumsumWaitingStatus = makeCumsum(\"Waiting\");\r\n\r\nunion cumsumOpenStatus, cumsumActiveStatus, cumsumWrapupStatus, cumsumClosedStatus, cumsumWaitingStatus\r\n| where binTime {chartTimeRange};\r\n",
                           "size": 0,
                           "aggregation": 5,
                           "timeContextFromParameter": "TimeRange",
@@ -375,7 +436,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); // Can be a parameter\r\nlet queueFilter = dynamic([{queueNameDropdown}]); // Can be a parameter\r\n\r\nlet assignmentEvents = dynamic([\r\n    \"CSRAssignment\",\r\n    \"CSRAssignment\",\r\n    \"ManualAssignment\",\r\n    \"TransferAssignment\",\r\n    \"CSRAssignment\"\r\n]);\r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n  | where orgId in (orgIdFromDropDown)\r\n  | extend  channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"\r\n    ),\r\n    queueId =  case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\n// Step 2: Filter conversations that are \"ConversationCreated\" for given orgId\r\nlet createdConversations = parsedTracesTable\r\n| where subscenario == \"ConversationCreated\" and orgId in (orgIdFromDropDown)\r\n| distinct conversationId;\r\n\r\n// Step 3: From created conversations, find ones with \"CSRAssignment\" and channel = LiveChat\r\nlet liveChatConversations = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| where conversationId in (createdConversations) and channel in (channelFilter) and queueId in (queueFilter)\r\n| distinct conversationId;\r\n\r\n// Step 4: Filter parsed table for only LiveChat conversations\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (liveChatConversations);\r\n\r\n// Step 5: Continue with durations\r\n\r\n// Bot-involved durations\r\nlet botDurations = filteredTraces\r\n    | where subscenario == \"CopilotAgentEscalationToCSR\"\r\n    | summarize botTime = min(timestamp) by conversationId\r\n    | join kind=inner (\r\n        filteredTraces\r\n        | where subscenario == \"CSRAccepted\"\r\n        | summarize CSRAcceptedTime = min(timestamp) by conversationId\r\n    ) on conversationId\r\n    | where CSRAcceptedTime > botTime\r\n    | project conversationId, duration = datetime_diff(\"second\", CSRAcceptedTime, botTime);\r\n\r\n// Non-bot durations\r\nlet nonBotDurations = filteredTraces\r\n    | summarize hasBot = any(subscenario == \"CopilotAgentEscalationToCSR\") by conversationId\r\n    | where hasBot == false\r\n    | join kind=inner (\r\n        filteredTraces\r\n        | where subscenario == \"ConversationCreated\"\r\n        | summarize createTime = min(timestamp) by conversationId\r\n    ) on conversationId\r\n    | join kind=inner (\r\n        filteredTraces\r\n        | where subscenario == \"CSRAccepted\"\r\n        | summarize CSRAcceptedTime = min(timestamp) by conversationId\r\n    ) on conversationId\r\n    | where CSRAcceptedTime > createTime\r\n    | project conversationId, duration = datetime_diff(\"second\", CSRAcceptedTime, createTime);\r\n\r\n// Combine durations and compute 95th percentile\r\nlet combinedDurations = union botDurations, nonBotDurations\r\n    | project duration;\r\n\r\nlet duration = combinedDurations\r\n| summarize value = iif(count() > 0, percentile(duration, 95), 0)\r\n| extend label = \"Assignment time\", suffix = \"sec\", subtitle = \"(P95)\";\r\n\r\n// Total processed conversations with assignments\r\nlet totalProcessedConv = filteredTraces\r\n    | where subscenario in (assignmentEvents)\r\n    | summarize label = \"Total processed conversation\", value = dcount(conversationId), subtitle = \"(Assigned atleast once)\";\r\n\r\n// Final output\r\nunion duration, totalProcessedConv\r\n",
+                    "query": "let orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); // Can be a parameter\r\nlet queueFilter = dynamic([{queueNameDropdown}]); // Can be a parameter\r\n\r\nlet assignmentEvents = dynamic([\r\n    \"CSRAssignment\",\r\n    \"CSRAssignment\",\r\n    \"ManualAssignment\",\r\n    \"TransferAssignment\",\r\n    \"CSRAssignment\"\r\n]);\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| where orgId in (orgIdFromDropDown)\r\n| extend  \r\n    channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"),\r\n    queueId = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\n// Step 2: Extract channel from ConversationCreated traces\r\nlet conversationCreatedChannels = parsedTracesTable\r\n| where subscenario == \"ConversationCreated\"\r\n| extend createdChannel = tostring(customDim[\"omnichannel.channel.type\"])\r\n| where createdChannel in (channelFilter)\r\n| project conversationId;\r\n\r\n// Step 3: Get queueId from latest CSRAssignment\r\nlet csrAssignmentQueue = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId\r\n| project conversationId, queueId = queueIdTracesParsed;\r\n\r\n// Step 4: Get queueId from latest RouteToQueue or RTQ (exclude TransferToQueue)\r\nlet routeToQueueEvents = parsedTracesTable\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\")\r\n| extend \r\n    rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend\r\n     resultJson = parse_json(rawResult)\r\n | extend   queueIdRTQ = tostring(resultJson.Id)\r\n| summarize arg_max(timestamp, queueIdRTQ) by conversationId\r\n| project conversationId, queueId = queueIdRTQ;\r\n\r\n// Step 5: Combine queueId sources, preferring CSRAssignment\r\nlet finalQueueIds = csrAssignmentQueue\r\n| union (routeToQueueEvents\r\n         | where conversationId !in (csrAssignmentQueue));\r\n         \r\n// Step 6: Filter conversations based on channel and queue filters\r\nlet filteredConversations = finalQueueIds\r\n| where conversationId in (conversationCreatedChannels)\r\n| where queueId in (queueFilter)\r\n| project conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\n\r\n// Step 7: Continue with durations\r\n\r\n// Bot-involved durations\r\nlet botDurations = filteredTraces\r\n    | where subscenario == \"CopilotAgentEscalationToCSR\"\r\n    | summarize botTime = min(timestamp) by conversationId\r\n    | join kind=inner (\r\n        filteredTraces\r\n        | where subscenario == \"CSRAccepted\"\r\n        | summarize CSRAcceptedTime = min(timestamp) by conversationId\r\n    ) on conversationId\r\n    | where CSRAcceptedTime > botTime\r\n    | project conversationId, duration = datetime_diff(\"second\", CSRAcceptedTime, botTime);\r\n\r\n// Non-bot durations\r\nlet nonBotDurations = filteredTraces\r\n    | summarize hasBot = any(subscenario == \"CopilotAgentEscalationToCSR\") by conversationId\r\n    | where hasBot == false\r\n    | join kind=inner (\r\n        filteredTraces\r\n        | where subscenario == \"ConversationCreated\"\r\n        | summarize createTime = min(timestamp) by conversationId\r\n    ) on conversationId\r\n    | join kind=inner (\r\n        filteredTraces\r\n        | where subscenario == \"CSRAccepted\"\r\n        | summarize CSRAcceptedTime = min(timestamp) by conversationId\r\n    ) on conversationId\r\n    | where CSRAcceptedTime > createTime\r\n    | project conversationId, duration = datetime_diff(\"second\", CSRAcceptedTime, createTime);\r\n\r\n// Combine durations and compute 95th percentile\r\nlet combinedDurations = union botDurations, nonBotDurations\r\n    | project duration;\r\n\r\nlet duration = combinedDurations\r\n| summarize value = iif(count() > 0, percentile(duration, 95), 0)\r\n| extend label = \"Assignment time\", suffix = \"sec\", subtitle = \"(P95)\";\r\n\r\n// Total processed conversations with assignments\r\nlet totalProcessedConv = filteredTraces\r\n    | where subscenario in (assignmentEvents)\r\n    | summarize label = \"Total processed conversation\", value = dcount(conversationId), subtitle = \"(Assigned atleast once)\";\r\n\r\n// Final output\r\nunion duration, totalProcessedConv\r\n",
                     "size": 4,
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
@@ -491,7 +552,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "let orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); // Can be a parameter\r\nlet queueFilter = dynamic([{queueNameDropdown}]); // Can be a parameter\r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| where orgId in (orgIdFromDropDown)\r\n| extend  \r\n    channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"),\r\n    queueId = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\n// Filter conversations assigned to CSR\r\nlet filteredConversations = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| where channel in (channelFilter) and queueId in (queueFilter)\r\n| distinct conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\nlet tracesParsed = filteredTraces\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions)\r\n| project timestamp, conversationId, subscenario, customDim = parse_json(customDimensions);\r\n\r\n// Step 2: Get ConversationCreated timestamp\r\nlet ConversationCreateds = tracesParsed\r\n| where subscenario == \"ConversationCreated\"\r\n| summarize ConversationCreatedTime = min(timestamp) by conversationId;\r\n\r\n// Step 3: Get bot escalation timestamp\r\nlet botEscalationToHuman = tracesParsed\r\n| where subscenario == \"CopilotAgentEscalationToCSR\"\r\n| summarize botEscalateToHumanTime = min(timestamp) by conversationId;\r\n\r\n// Step 4: Get first CSRAccepted with \"request completed\"\r\nlet firstCSRAccepted = tracesParsed\r\n| where subscenario == \"CSRAccepted\"\r\n| where tostring(customDim[\"omnichannel.description\"]) contains \"request completed\"\r\n| summarize firstCSRAcceptedTime = min(timestamp) by conversationId;\r\n\r\n// Step 5: Join all and calculate duration\r\nlet durations = ConversationCreateds\r\n| join kind = leftouter (botEscalationToHuman) on conversationId\r\n| join kind = inner (firstCSRAccepted) on conversationId\r\n| extend assignmentDurationStart = iff(isnotempty(botEscalateToHumanTime), botEscalateToHumanTime, ConversationCreatedTime)\r\n| where firstCSRAcceptedTime > assignmentDurationStart\r\n| extend durationSeconds = tolong((firstCSRAcceptedTime - assignmentDurationStart) / 1s)\r\n| extend durationMinutes = durationSeconds / 60.0\r\n| extend durationBucket = case(\r\n    durationMinutes < 5, \"< 5 mins\",\r\n    durationMinutes >= 5 and durationMinutes <= 10, \"5–10 mins\",\r\n    durationMinutes > 10, \"> 10 mins\",\r\n    \"other\"\r\n);\r\n\r\n// Step 6: Aggregate\r\nlet total = durations\r\n| summarize total = count()\r\n| extend key = 1;\r\n\r\ndurations\r\n| summarize count = count() by durationBucket\r\n| extend key = 1\r\n| join kind=inner total on key\r\n| extend percentage = round(100.0 * count / total, 2)\r\n| project durationBucket, count, percentage\r\n| order by durationBucket\r\n",
+                          "query": "let orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); // Can be a parameter\r\nlet queueFilter = dynamic([{queueNameDropdown}]); // Can be a parameter\r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| where orgId in (orgIdFromDropDown)\r\n| extend  \r\n    channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"),\r\n    queueId = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\n// Step 2: Extract channel from ConversationCreated traces\r\nlet conversationCreatedChannels = parsedTracesTable\r\n| where subscenario == \"ConversationCreated\"\r\n| extend createdChannel = tostring(customDim[\"omnichannel.channel.type\"])\r\n| where createdChannel in (channelFilter)\r\n| project conversationId;\r\n// Step 3: Get queueId from latest CSRAssignment\r\nlet csrAssignmentQueue = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId\r\n| project conversationId, queueId = queueIdTracesParsed;\r\n// Step 4: Get queueId from latest RouteToQueue or RTQ (exclude TransferToQueue)\r\nlet routeToQueueEvents = parsedTracesTable\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\")\r\n| extend \r\n    rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend\r\n     resultJson = parse_json(rawResult)\r\n | extend   queueIdRTQ = tostring(resultJson.Id)\r\n| summarize arg_max(timestamp, queueIdRTQ) by conversationId\r\n| project conversationId, queueId = queueIdRTQ;\r\n// Step 5: Combine queueId sources, preferring CSRAssignment\r\nlet finalQueueIds = csrAssignmentQueue\r\n| union (routeToQueueEvents\r\n         | where conversationId !in (csrAssignmentQueue));\r\n// Step 6: Filter conversations based on channel and queue filters\r\nlet filteredConversations = finalQueueIds\r\n| where conversationId in (conversationCreatedChannels)\r\n| where queueId in (queueFilter)\r\n| project conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\nlet tracesParsed = filteredTraces\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions)\r\n| project timestamp, conversationId, subscenario, customDim = parse_json(customDimensions);\r\n\r\n// Step 2: Get ConversationCreated timestamp\r\nlet ConversationCreateds = tracesParsed\r\n| where subscenario == \"ConversationCreated\"\r\n| summarize ConversationCreatedTime = min(timestamp) by conversationId;\r\n\r\n// Step 3: Get bot escalation timestamp\r\nlet botEscalationToHuman = tracesParsed\r\n| where subscenario == \"CopilotAgentEscalationToCSR\"\r\n| summarize botEscalateToHumanTime = min(timestamp) by conversationId;\r\n\r\n// Step 4: Get first CSRAccepted with \"request completed\"\r\nlet firstCSRAccepted = tracesParsed\r\n| where subscenario == \"CSRAccepted\"\r\n| where tostring(customDim[\"omnichannel.description\"]) contains \"request completed\"\r\n| summarize firstCSRAcceptedTime = min(timestamp) by conversationId;\r\n\r\n// Step 5: Join all and calculate duration\r\nlet durations = ConversationCreateds\r\n| join kind = leftouter (botEscalationToHuman) on conversationId\r\n| join kind = inner (firstCSRAccepted) on conversationId\r\n| extend assignmentDurationStart = iff(isnotempty(botEscalateToHumanTime), botEscalateToHumanTime, ConversationCreatedTime)\r\n| where firstCSRAcceptedTime > assignmentDurationStart\r\n| extend durationSeconds = tolong((firstCSRAcceptedTime - assignmentDurationStart) / 1s)\r\n| extend durationMinutes = durationSeconds / 60.0\r\n| extend durationBucket = case(\r\n    durationMinutes < 5, \"< 5 mins\",\r\n    durationMinutes >= 5 and durationMinutes <= 10, \"5–10 mins\",\r\n    durationMinutes > 10, \"> 10 mins\",\r\n    \"other\"\r\n);\r\n\r\n// Step 6: Aggregate\r\nlet total = durations\r\n| summarize total = count()\r\n| extend key = 1;\r\n\r\ndurations\r\n| summarize count = count() by durationBucket\r\n| extend key = 1\r\n| join kind=inner total on key\r\n| extend percentage = round(100.0 * count / total, 2)\r\n| project durationBucket, count, percentage\r\n| order by durationBucket\r\n",
                           "size": 0,
                           "timeContextFromParameter": "TimeRange",
                           "queryType": 0,
@@ -535,7 +596,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "let orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); // Can be a parameter\r\nlet queueFilter = dynamic([{queueNameDropdown}]); // Can be a parameter\r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n  | where orgId in (orgIdFromDropDown)\r\n  | extend  channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"\r\n    ),\r\n    queueId =  case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\n\r\nlet filteredConversations = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| where channel in (channelFilter) and queueId in (queueFilter)\r\n| distinct conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\nlet assignmentSubscenarios = dynamic([\r\n    \"CSRAssignment\", \r\n    \"CSRAssignment\", \r\n    \"ManualAssignment\", \r\n    \"TransferAssignment\", \r\n    \"CSRAssignment\"\r\n]);\r\n\r\n// Step 1: Parse and count Time to assign per conversation\r\nlet attempts = filteredTraces\r\n| where  subscenario in (assignmentSubscenarios)\r\n| summarize attemptCount = count() by conversationId\r\n| extend attemptCategory = case(\r\n    attemptCount < 5, \"Took <5 for the conversation\",\r\n    attemptCount >= 5 and attemptCount <= 10, \"Took between 5-10 for the conversation\",\r\n    \"Took >10 for the conversation\"\r\n);\r\n\r\n// Step 2: Get total count\r\nlet total = attempts\r\n| summarize total = count()\r\n| extend key = 1;\r\n\r\n// Step 3: Get count per bucket and join with total to calculate %\r\nattempts\r\n| summarize conversations = count() by attemptCategory\r\n| extend key = 1\r\n| join kind=inner total on key\r\n| extend percentage = round(100.0 * conversations / total, 2)\r\n| project attemptCategory, conversations, percentage\r\n| order by attemptCategory\r\n| render piechart\r\n",
+                          "query": "let orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); // Can be a parameter\r\nlet queueFilter = dynamic([{queueNameDropdown}]); // Can be a parameter\r\n\r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| where orgId in (orgIdFromDropDown)\r\n| extend  \r\n    channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"),\r\n    queueId = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\n// Step 2: Extract channel from ConversationCreated traces\r\nlet conversationCreatedChannels = parsedTracesTable\r\n| where subscenario == \"ConversationCreated\"\r\n| extend createdChannel = tostring(customDim[\"omnichannel.channel.type\"])\r\n| where createdChannel in (channelFilter)\r\n| project conversationId;\r\n// Step 3: Get queueId from latest CSRAssignment\r\nlet csrAssignmentQueue = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId\r\n| project conversationId, queueId = queueIdTracesParsed;\r\n// Step 4: Get queueId from latest RouteToQueue or RTQ (exclude TransferToQueue)\r\nlet routeToQueueEvents = parsedTracesTable\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\")\r\n| extend \r\n    rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend\r\n     resultJson = parse_json(rawResult)\r\n | extend   queueIdRTQ = tostring(resultJson.Id)\r\n| summarize arg_max(timestamp, queueIdRTQ) by conversationId\r\n| project conversationId, queueId = queueIdRTQ;\r\n// Step 5: Combine queueId sources, preferring CSRAssignment\r\nlet finalQueueIds = csrAssignmentQueue\r\n| union (routeToQueueEvents\r\n         | where conversationId !in (csrAssignmentQueue));\r\n// Step 6: Filter conversations based on channel and queue filters\r\nlet filteredConversations = finalQueueIds\r\n| where conversationId in (conversationCreatedChannels)\r\n| where queueId in (queueFilter)\r\n| project conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\nlet assignmentSubscenarios = dynamic([\r\n    \"CSRAssignment\", \r\n    \"CSRAssignment\", \r\n    \"ManualAssignment\", \r\n    \"TransferAssignment\", \r\n    \"CSRAssignment\"\r\n]);\r\n\r\n// Step 1: Parse and count Time to assign per conversation\r\nlet attempts = filteredTraces\r\n| where  subscenario in (assignmentSubscenarios)\r\n| summarize attemptCount = count() by conversationId\r\n| extend attemptCategory = case(\r\n    attemptCount < 5, \"Took <5 for the conversation\",\r\n    attemptCount >= 5 and attemptCount <= 10, \"Took between 5-10 for the conversation\",\r\n    \"Took >10 for the conversation\"\r\n);\r\n\r\n// Step 2: Get total count\r\nlet total = attempts\r\n| summarize total = count()\r\n| extend key = 1;\r\n\r\n// Step 3: Get count per bucket and join with total to calculate %\r\nattempts\r\n| summarize conversations = count() by attemptCategory\r\n| extend key = 1\r\n| join kind=inner total on key\r\n| extend percentage = round(100.0 * conversations / total, 2)\r\n| project attemptCategory, conversations, percentage\r\n| order by attemptCategory\r\n| render piechart\r\n",
                           "size": 0,
                           "timeContextFromParameter": "TimeRange",
                           "queryType": 0,
@@ -598,7 +659,7 @@
                         "type": 3,
                         "content": {
                           "version": "KqlItem/1.0",
-                          "query": "let orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); // Can be a parameter\r\nlet queueFilter = dynamic([{queueNameDropdown}]); // Can be a parameter\r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"])),\r\n    statusRaw = tostring(customDim[\"omnichannel.assignment.status\"])\r\n  | where orgId in (orgIdFromDropDown)\r\n  | extend  channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"\r\n    ),\r\n    queueId =  case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\n\r\nlet filteredConversations = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| where channel in (channelFilter) and queueId in (queueFilter)\r\n| distinct conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\nlet assignmentSubscenarios = dynamic([ \r\n    \"CSRAssignment\", \r\n    \"CSRAssignment\", \r\n    \"ManualAssignment\", \r\n    \"TransferAssignment\", \r\n    \"CSRAssignment\" \r\n]);\r\n\r\n\r\n// Total distinct conversations with any assignment subscenario\r\nlet totalConvs = toscalar(\r\n    filteredTraces\r\n    | where subscenario in (assignmentSubscenarios)\r\n    | distinct conversationId\r\n    | summarize count()\r\n);\r\n\r\n// Conversations with at least one assignment failure (IsAgentAssigned == false)\r\nlet noEligible = toscalar(\r\n    filteredTraces\r\n    | where subscenario in (\"CSRAssignment\", \"CSRAssignment\", \"CSRAssignment\")\r\n    | where isnotempty(statusRaw)\r\n    | extend status = parse_json(statusRaw)\r\n    | extend IsAgentAssigned = tobool(status[\"IsAgentAssigned\"])\r\n    | where IsAgentAssigned == false\r\n    | distinct conversationId\r\n    | summarize count()\r\n);\r\n\r\n// Timeout conversations\r\nlet timeouts = toscalar(\r\n    filteredTraces\r\n    | where subscenario == \"CSRNotificationTimeout\"\r\n    | distinct conversationId\r\n    | summarize count()\r\n);\r\n\r\n// Agent rejected conversations\r\nlet rejects = toscalar(\r\n    filteredTraces\r\n    | where subscenario == \"CSRRejected\"\r\n    | distinct conversationId\r\n    | summarize count()\r\n);\r\n\r\n// Combine results and calculate percentages\r\nunion\r\n(\r\n    print Label = \"No eligible agents found\", Count = noEligible\r\n),\r\n(\r\n    print Label = \"Timeouts\", Count = timeouts\r\n),\r\n(\r\n    print Label = \"Agent rejected\", Count = rejects\r\n)\r\n| extend Total = totalConvs\r\n| extend Percentage = round(100.0 * Count / Total, 2)\r\n| project Label, Percentage\r\n\r\n",
+                          "query": "let orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); // Can be a parameter\r\nlet queueFilter = dynamic([{queueNameDropdown}]); // Can be a parameter\r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"])),\r\n    statusRaw = tostring(customDim[\"omnichannel.assignment.status\"])\r\n  | where orgId in (orgIdFromDropDown)\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n// Step 2: Extract channel from ConversationCreated traces\r\nlet conversationCreatedChannels = parsedTracesTable\r\n| where subscenario == \"ConversationCreated\"\r\n| extend createdChannel = tostring(customDim[\"omnichannel.channel.type\"])\r\n| where createdChannel in (channelFilter)\r\n| project conversationId;\r\n// Step 3: Get queueId from latest CSRAssignment\r\nlet csrAssignmentQueue = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId\r\n| project conversationId, queueId = queueIdTracesParsed;\r\n// Step 4: Get queueId from latest RouteToQueue or RTQ (exclude TransferToQueue)\r\nlet routeToQueueEvents = parsedTracesTable\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\")\r\n| extend \r\n    rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend\r\n     resultJson = parse_json(rawResult)\r\n | extend   queueIdRTQ = tostring(resultJson.Id)\r\n| summarize arg_max(timestamp, queueIdRTQ) by conversationId\r\n| project conversationId, queueId = queueIdRTQ;\r\n// Step 5: Combine queueId sources, preferring CSRAssignment\r\nlet finalQueueIds = csrAssignmentQueue\r\n| union (routeToQueueEvents\r\n         | where conversationId !in (csrAssignmentQueue));\r\n// Step 6: Filter conversations based on channel and queue filters\r\nlet filteredConversations = finalQueueIds\r\n| where conversationId in (conversationCreatedChannels)\r\n| where queueId in (queueFilter)\r\n| project conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\n\r\nlet assignmentSubscenarios = dynamic([ \r\n    \"CSRAssignment\", \r\n    \"CSRAssignment\", \r\n    \"ManualAssignment\", \r\n    \"TransferAssignment\", \r\n    \"CSRAssignment\" \r\n]);\r\n\r\n\r\n// Total distinct conversations with any assignment subscenario\r\nlet totalConvs = toscalar(\r\n    filteredTraces\r\n    | where subscenario in (assignmentSubscenarios)\r\n    | distinct conversationId\r\n    | summarize count()\r\n);\r\n\r\n// Conversations with at least one assignment failure (IsAgentAssigned == false)\r\nlet noEligible = toscalar(\r\n    filteredTraces\r\n    | where subscenario in (\"CSRAssignment\", \"CSRAssignment\", \"CSRAssignment\")\r\n    | where isnotempty(statusRaw)\r\n    | extend status = parse_json(statusRaw)\r\n    | extend IsAgentAssigned = tobool(status[\"IsAgentAssigned\"])\r\n    | where IsAgentAssigned == false\r\n    | distinct conversationId\r\n    | summarize count()\r\n);\r\n\r\n// Timeout conversations\r\nlet timeouts = toscalar(\r\n    filteredTraces\r\n    | where subscenario == \"CSRNotificationTimeout\"\r\n    | distinct conversationId\r\n    | summarize count()\r\n);\r\n\r\n// Agent rejected conversations\r\nlet rejects = toscalar(\r\n    filteredTraces\r\n    | where subscenario == \"CSRRejected\"\r\n    | distinct conversationId\r\n    | summarize count()\r\n);\r\n\r\n// Combine results and calculate percentages\r\nunion\r\n(\r\n    print Label = \"No eligible agents found\", Count = noEligible\r\n),\r\n(\r\n    print Label = \"Timeouts\", Count = timeouts\r\n),\r\n(\r\n    print Label = \"Agent rejected\", Count = rejects\r\n)\r\n| extend Total = totalConvs\r\n| extend Percentage = round(100.0 * Count / Total, 2)\r\n| project Label, Percentage\r\n\r\n",
                           "size": 0,
                           "timeContextFromParameter": "TimeRange",
                           "queryType": 0,
@@ -676,11 +737,14 @@
                           ],
                           "showDefault": false
                         },
-                        "jsonData": "[\r\n  { \"text\": \"1\", \"value\": 1 },\r\n  { \"text\": \"2\", \"value\": 2 },\r\n  { \"text\": \"3\", \"value\": 3 },\r\n  { \"text\": \"4\", \"value\": 4 },\r\n  { \"text\": \"5\", \"value\": 5 },\r\n  { \"text\": \"> 5\", \"value\": \"more than 5\" }\r\n]",
+                        "jsonData": "[\r\n  { \"text\": \"0\", \"value\": \"0\" },\r\n  { \"text\": \"1\", \"value\": 1 },\r\n  { \"text\": \"2\", \"value\": 2 },\r\n  { \"text\": \"3\", \"value\": 3 },\r\n  { \"text\": \"4\", \"value\": 4 },\r\n  { \"text\": \"5\", \"value\": 5 },\r\n  { \"text\": \"> 5\", \"value\": \"more than 5\" }\r\n]",
                         "timeContext": {
                           "durationMs": 86400000
                         },
-                        "defaultValue": "value::all"
+                        "defaultValue": "value::all",
+                        "value": [
+                          "value::all"
+                        ]
                       },
                       {
                         "id": "0fe1ee5d-bdb6-4f15-af25-76f2b752a38f",
@@ -736,7 +800,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let _screen = \"{screen}\";\r\nlet orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); // Can be a parameter\r\nlet queueFilter = dynamic([{queueNameDropdown}]); // Can be a parameter\r\nlet assignmentEventsFilter = dynamic([{assignmentEvents}]);\r\nlet conversationStateFilter = dynamic([{conversationState}]);\r\nlet timeToAssignFilter = dynamic([{timeToAssign}]);\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n  | where orgId in (orgIdFromDropDown)\r\n  | extend  channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"\r\n    ),\r\n    queueId =  case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\nlet filteredConversations = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| where channel in (channelFilter) and queueId in (queueFilter)\r\n| distinct conversationId;\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\nlet assignmentSubscenarios = dynamic([\"CSRAssignment\", \"CSRAssignment\", \"CSRAssignment\", \"ManualAssignment\", \"TransferAssignment\"]);\r\nlet tracesParsed = filteredTraces\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions), orgId\r\n| project timestamp, conversationId, subscenario, customDim=parse_json(customDimensions), orgId\r\n;\r\nlet ConversationCreateds = tracesParsed\r\n| where subscenario == \"ConversationCreated\"\r\n| summarize ConversationCreatedTime = min(timestamp) by conversationId, orgId;\r\nlet botEscalationToHuman = tracesParsed\r\n| where subscenario == \"CopilotAgentEscalationToCSR\"\r\n| summarize botEscalateToHumanTime = min(timestamp) by conversationId;\r\nlet firstCSRAccepted = tracesParsed\r\n| where subscenario == \"CSRAccepted\"\r\n| where tostring(customDim[\"omnichannel.description\"]) contains \"request completed\"\r\n| summarize firstCSRAcceptedTime = min(timestamp) by conversationId;\r\nlet queues = tracesParsed\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\", \"TransferToQueue\")\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| extend rawDescription = tostring(customDim[\"omnichannel.description\"])\r\n| extend rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend resultJson = parse_json(rawResult)\r\n| extend queueId = case(\r\n    subscenario == \"TransferToQueue\", extract(@\"QueueId: ([0-9a-fA-F-]{36})\", 1, rawDescription),\r\n    subscenario in (\"RTQ\", \"RouteToQueue\"), tostring(resultJson.Id),\r\n    \"\"\r\n)\r\n| extend queueName = case(\r\n    subscenario == \"TransferToQueue\", extract(@\"Target Queue: (.+?) with QueueId\", 1, rawDescription),\r\n    subscenario in (\"RTQ\", \"RouteToQueue\"), tostring(resultJson.DisplayName),\r\n    \"\"\r\n)\r\n| summarize by queueId, queueName, conversationId;\r\nlet recentQueueIdForConversation = tracesParsed\r\n| where subscenario in (\"CSRAssignment\", \"CSRAssignment\", \"CSRAssignment\")\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId;\r\nlet assignmentStats = tracesParsed\r\n| where subscenario in (assignmentSubscenarios)\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend wokstreamId = tostring(parsedWorkItemDetails.WorkStreamId)\r\n| summarize assignmentCount = count(), initiated = min(timestamp), wokstreamId = any(wokstreamId) by conversationId;\r\n\r\nlet conversationState = tracesParsed\r\n| extend type = customDim[\"type\"]\r\n| extend currentState = customDim[\"omnichannel.new_state\"]\r\n| extend previousState = customDim[\"omnichannel.previous_state\"]\r\n| where type == \"C1ActionsDiagnosticsEvent\"\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| project conversationId, currentState, previousState;\r\nConversationCreateds\r\n| join kind = leftouter (botEscalationToHuman) on conversationId\r\n| join kind = leftouter (firstCSRAccepted) on conversationId\r\n| join kind = leftouter (queues) on conversationId\r\n| extend assignmentDurationStart = iff(isnotempty(botEscalateToHumanTime), botEscalateToHumanTime, ConversationCreatedTime)\r\n| project conversationId, queueId, ConversationCreatedTime, botEscalateToHumanTime, assignmentDurationStart, firstCSRAcceptedTime, orgId\r\n| join kind=leftouter (assignmentStats) on conversationId\r\n| join kind=leftouter (recentQueueIdForConversation) on conversationId\r\n| extend finalQueueId = iff(isnotempty(queueIdTracesParsed), queueIdTracesParsed, queueId)\r\n| join kind = leftouter (queues) on $left.finalQueueId == $right.queueId and $left.conversationId == $right.conversationId\r\n| extend duration = tolong((firstCSRAcceptedTime - assignmentDurationStart ) / 1s)\r\n| join kind = leftouter (conversationState) on conversationId\r\n| extend currentState = iff(isnotempty(currentState), currentState, \"Open\")\r\n| extend jsonObject = pack(\"conversationId\", conversationId, \"queue\", queueName, \"previousScreen\", _screen, \"assignmentDuration\" , duration, \"currentState\", currentState, \"orgIdFromDropDown\", orgId)\r\n| extend modifiedAssignmentCount = iff(assignmentCount > 5, \"more than 5\", tostring(assignmentCount))\r\n| extend modifiedDuration = case(duration < 5*60, \"< 5 mins\", duration >= 5*60 and duration <= 10*60, \"5–10 mins\", duration > 10*60, \"> 10 mins\", \"Never got assigned\")\r\n| where modifiedAssignmentCount in (assignmentEventsFilter)\r\n| where currentState in (conversationStateFilter)\r\n| where modifiedDuration in (timeToAssignFilter)\r\n| project \r\nConversation = conversationId,\r\nstate = currentState,\r\n[\"Time to assign\"] = duration,\r\n[\"Assignment events\"] = assignmentCount,\r\n[\"Initiated (UTC)\"] = initiated,\r\nQueue = iff(isnotempty(queueName), queueName, finalQueueId),\r\nWorkstream = wokstreamId,\r\njsonObjectString = tostring(jsonObject)\r\n| sort by [\"Initiated (UTC)\"] desc",
+                    "query": "let _screen = \"{screen}\";\r\nlet orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); \r\nlet queueFilter = dynamic([{queueNameDropdown}]); \r\nlet assignmentEventsFilter = dynamic([{assignmentEvents}]);\r\nlet conversationStateFilter = dynamic([{conversationState}]);\r\nlet timeToAssignFilter = dynamic([{timeToAssign}]);\r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| where orgId in (orgIdFromDropDown)\r\n| extend  \r\n    channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"),\r\n    queueId = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\nlet filteredConversations = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| where channel in (channelFilter) and queueId in (queueFilter)\r\n| distinct conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\nlet assignmentSubscenarios = dynamic([\"CSRAssignment\", \"ManualAssignment\", \"TransferAssignment\"]);\r\n\r\nlet tracesParsed = filteredTraces\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions), orgId\r\n| project timestamp, conversationId, subscenario, customDim=parse_json(customDimensions), orgId;\r\n\r\n// --- New: Get all conversations with ConversationClosed\r\nlet closedConversations = tracesParsed\r\n| where subscenario == \"ConversationClosed\"\r\n| summarize by conversationId;\r\n\r\nlet ConversationCreateds = tracesParsed\r\n| where subscenario == \"ConversationCreated\"\r\n| summarize ConversationCreatedTime = min(timestamp) by conversationId, orgId;\r\n\r\nlet botEscalationToHuman = tracesParsed\r\n| where subscenario == \"CopilotAgentEscalationToCSR\"\r\n| summarize botEscalateToHumanTime = min(timestamp) by conversationId;\r\n\r\nlet firstCSRAccepted = tracesParsed\r\n| where subscenario == \"CSRAccepted\"\r\n| where tostring(customDim[\"omnichannel.description\"]) contains \"request completed\"\r\n| summarize firstCSRAcceptedTime = min(timestamp) by conversationId;\r\n\r\nlet queues = tracesParsed\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\", \"TransferToQueue\")\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| extend rawDescription = tostring(customDim[\"omnichannel.description\"])\r\n| extend rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend resultJson = parse_json(rawResult)\r\n| extend queueId = case(\r\n    subscenario == \"TransferToQueue\", extract(@\"QueueId: ([0-9a-fA-F-]{36})\", 1, rawDescription),\r\n    subscenario in (\"RTQ\", \"RouteToQueue\"), tostring(resultJson.Id),\r\n    \"\"),\r\n    queueName = case(\r\n    subscenario == \"TransferToQueue\", extract(@\"Target Queue: (.+?) with QueueId\", 1, rawDescription),\r\n    subscenario in (\"RTQ\", \"RouteToQueue\"), tostring(resultJson.DisplayName),\r\n    \"\")\r\n| summarize by queueId, queueName, conversationId;\r\n\r\nlet recentQueueIdForConversation = tracesParsed\r\n| where subscenario in (\"CSRAssignment\")\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId;\r\n\r\nlet assignmentStats = tracesParsed\r\n| where subscenario in (assignmentSubscenarios)\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend wokstreamId = tostring(parsedWorkItemDetails.WorkStreamId)\r\n| summarize assignmentCount = count(), initiated = min(timestamp), wokstreamId = any(wokstreamId) by conversationId;\r\n\r\n// --- Updated conversation state block\r\nlet conversationStateRaw = tracesParsed\r\n| extend type = customDim[\"type\"]\r\n| extend currentState = customDim[\"omnichannel.new_state\"]\r\n| extend previousState = customDim[\"omnichannel.previous_state\"]\r\n| where type == \"C1ActionsDiagnosticsEvent\"\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| project conversationId, currentState, previousState;\r\n\r\nlet conversationState = conversationStateRaw\r\n| extend currentState = iff(conversationId in (closedConversations), \"Closed\", currentState);\r\n\r\nConversationCreateds\r\n| join kind = leftouter (botEscalationToHuman) on conversationId\r\n| join kind = leftouter (firstCSRAccepted) on conversationId\r\n| join kind = leftouter (queues) on conversationId\r\n| extend assignmentDurationStart = iff(isnotempty(botEscalateToHumanTime), botEscalateToHumanTime, ConversationCreatedTime)\r\n| project conversationId, queueId, ConversationCreatedTime, botEscalateToHumanTime, assignmentDurationStart, firstCSRAcceptedTime, orgId\r\n| join kind=leftouter (assignmentStats) on conversationId\r\n| join kind=leftouter (recentQueueIdForConversation) on conversationId\r\n| extend finalQueueId = iff(isnotempty(queueIdTracesParsed), queueIdTracesParsed, queueId)\r\n| join kind = leftouter (queues) on $left.finalQueueId == $right.queueId and $left.conversationId == $right.conversationId\r\n| extend duration = tolong((firstCSRAcceptedTime - assignmentDurationStart ) / 1s)\r\n| join kind = leftouter (conversationState) on conversationId\r\n| extend currentState = iff(isnotempty(currentState), currentState, \"Open\")\r\n| extend jsonObject = pack(\"conversationId\", conversationId, \"queue\", queueName, \"previousScreen\", _screen, \"assignmentDuration\", duration, \"currentState\", currentState, \"orgIdFromDropDown\", orgId, \"queueId\", finalQueueId)\r\n| extend modifiedAssignmentCount = iff(assignmentCount > 5, \"more than 5\", tostring(assignmentCount))\r\n| extend modifiedDuration = case(\r\n        duration < 5*60, \"< 5 mins\",\r\n        duration >= 5*60 and duration <= 10*60, \"5–10 mins\",\r\n        duration > 10*60, \"> 10 mins\",\r\n        \"Never got assigned\"\r\n    )\r\n| where modifiedAssignmentCount in (assignmentEventsFilter)\r\n| where currentState in (conversationStateFilter)\r\n| where modifiedDuration in (timeToAssignFilter)\r\n| project \r\n    Conversation = conversationId,\r\n    state = currentState,\r\n    [\"Time to assign\"] = duration,\r\n    [\"Assignment events\"] = assignmentCount,\r\n    [\"Initiated (UTC)\"] = initiated,\r\n    Queue = iff(isnotempty(queueName), queueName, finalQueueId),\r\n    Workstream = wokstreamId,\r\n    jsonObjectString = tostring(jsonObject)\r\n| sort by [\"Initiated (UTC)\"] desc;\r\n",
                     "size": 0,
                     "timeContextFromParameter": "TimeRange",
                     "queryType": 0,
@@ -913,11 +977,203 @@
                       }
                     ]
                   },
-                  "conditionalVisibility": {
-                    "parameterName": "screen",
-                    "comparison": "isEqualTo"
-                  },
+                  "conditionalVisibilities": [
+                    {
+                      "parameterName": "screen",
+                      "comparison": "isEqualTo"
+                    },
+                    {
+                      "parameterName": "isRecordSelected",
+                      "comparison": "isNotEqualTo",
+                      "value": "Record"
+                    }
+                  ],
                   "name": "query - 3"
+                },
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "\r\nlet _screen = \"{screen}\";\r\nlet orgIdFromDropDown = dynamic([{orgDropdown}]);\r\nlet channelFilter = dynamic([{channelDropdown}]); \r\nlet queueFilter = dynamic([{queueNameDropdown}]); \r\nlet assignmentEventsFilter = dynamic([{assignmentEvents}]);\r\nlet conversationStateFilter = dynamic([{conversationState}]);\r\nlet timeToAssignFilter = dynamic([{timeToAssign}]);\r\n\r\n// Step 1: Parse traces once\r\nlet parsedTracesTable = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| where orgId in (orgIdFromDropDown)\r\n| extend  \r\n    channel = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n        isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n        \"\"),\r\n    queueId = case(\r\n        isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n        \"\")\r\n| where isnotempty(conversationId) and isnotnull(orgId);\r\n\r\n// Step 2: Extract channel from ConversationCreated traces\r\nlet conversationCreatedChannels = parsedTracesTable\r\n| where subscenario == \"ConversationCreated\"\r\n| extend createdChannel = tostring(customDim[\"omnichannel.channel.type\"])\r\n| where createdChannel in (channelFilter)\r\n| project conversationId;\r\n// Step 3: Get queueId from latest CSRAssignment\r\nlet csrAssignmentQueue = parsedTracesTable\r\n| where subscenario == \"CSRAssignment\"\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId\r\n| project conversationId, queueId = queueIdTracesParsed;\r\n// Step 4: Get queueId from latest RouteToQueue or RTQ (exclude TransferToQueue)\r\nlet routeToQueueEvents = parsedTracesTable\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\")\r\n| extend \r\n    rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend\r\n     resultJson = parse_json(rawResult)\r\n | extend   queueIdRTQ = tostring(resultJson.Id)\r\n| summarize arg_max(timestamp, queueIdRTQ) by conversationId\r\n| project conversationId, queueId = queueIdRTQ;\r\n// Step 5: Combine queueId sources, preferring CSRAssignment\r\nlet finalQueueIds = csrAssignmentQueue\r\n| union (routeToQueueEvents\r\n         | where conversationId !in (csrAssignmentQueue));\r\n// Step 6: Filter conversations based on channel and queue filters\r\nlet filteredConversations = finalQueueIds\r\n| where conversationId in (conversationCreatedChannels)\r\n| where queueId in (queueFilter)\r\n| project conversationId;\r\n\r\nlet filteredTraces = parsedTracesTable\r\n| where conversationId in (filteredConversations);\r\n\r\nlet assignmentSubscenarios = dynamic([\"CSRAssignment\", \"ManualAssignment\", \"TransferAssignment\"]);\r\n\r\nlet tracesParsed = filteredTraces\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions), orgId\r\n| project timestamp, conversationId, subscenario, customDim=parse_json(customDimensions), orgId;\r\n\r\n// --- Get all conversations with ConversationClosed\r\nlet closedConversations = tracesParsed\r\n| where subscenario == \"ConversationClosed\"\r\n| summarize by conversationId;\r\nlet ConversationCreateds = tracesParsed\r\n| where subscenario == \"ConversationCreated\"\r\n| extend recordId = tostring(customDim[\"omnichannel.record.id\"])\r\n| summarize ConversationCreatedTime = min(timestamp)  by conversationId, recordId, orgId;\r\nlet botEscalationToHuman = tracesParsed\r\n| where subscenario == \"CopilotAgentEscalationToCSR\"\r\n| summarize botEscalateToHumanTime = min(timestamp) by conversationId;\r\nlet firstCSRAccepted = tracesParsed\r\n| where subscenario == \"CSRAccepted\"\r\n| where tostring(customDim[\"omnichannel.description\"]) contains \"request completed\"\r\n| summarize firstCSRAcceptedTime = min(timestamp) by conversationId;\r\n\r\n// --- Get queueName from routing events\r\nlet queues = tracesParsed\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\", \"TransferToQueue\")\r\n| extend rawDescription = tostring(customDim[\"omnichannel.description\"])\r\n| extend rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend resultJson = parse_json(rawResult)\r\n| extend queueId = case(\r\n    subscenario == \"TransferToQueue\", extract(@\"QueueId: ([0-9a-fA-F-]{36})\", 1, rawDescription),\r\n    subscenario in (\"RTQ\", \"RouteToQueue\"), tostring(resultJson.Id),\r\n    \"\")\r\n| extend queueName = case(\r\n    subscenario == \"TransferToQueue\", extract(@\"Target Queue: (.+?) with QueueId\", 1, rawDescription),\r\n    subscenario in (\"RTQ\", \"RouteToQueue\"), tostring(resultJson.DisplayName),\r\n    \"\")\r\n| summarize arg_max(timestamp, queueName) by queueId;\r\n\r\n// --- Get most recent queueId from CSRAssignment\r\nlet csrAssignmentQueue1  = tracesParsed\r\n| where subscenario == \"CSRAssignment\"\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueIdTracesParsed = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueIdTracesParsed) by conversationId;\r\n\r\n// Step 4: Get queueId from latest RouteToQueue or RTQ (exclude TransferToQueue)\r\nlet routeToQueueEvents1 = parsedTracesTable\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\")\r\n| extend \r\n    rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend\r\n     resultJson = parse_json(rawResult)\r\n | extend   queueIdRTQ = tostring(resultJson.Id)\r\n| summarize arg_max(timestamp, queueIdRTQ) by conversationId\r\n| project conversationId, queueIdTracesParsed = queueIdRTQ;\r\n// Step 5: Combine queueId sources, preferring CSRAssignment\r\nlet recentQueueIdForConversation = csrAssignmentQueue1\r\n| union (routeToQueueEvents1\r\n         | where conversationId !in (csrAssignmentQueue1));\r\n         \r\n// --- Assignment stats\r\nlet assignmentStats = tracesParsed\r\n| where subscenario in (assignmentSubscenarios)\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend wokstreamId = tostring(parsedWorkItemDetails.WorkStreamId)\r\n| summarize assignmentCount = count(), initiated = min(timestamp), wokstreamId = any(wokstreamId) by conversationId;\r\n// --- Conversation state\r\nlet conversationStateRaw = tracesParsed\r\n| extend type = customDim[\"type\"]\r\n| extend currentState = customDim[\"omnichannel.new_state\"]\r\n| extend previousState = customDim[\"omnichannel.previous_state\"]\r\n| where type == \"C1ActionsDiagnosticsEvent\"\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| project conversationId, currentState, previousState;\r\nlet conversationState = conversationStateRaw\r\n| extend currentState = iff(conversationId in (closedConversations), \"Closed\", currentState);\r\n// --- Final output\r\nConversationCreateds\r\n| join kind = leftouter (botEscalationToHuman) on conversationId\r\n| join kind = leftouter (firstCSRAccepted) on conversationId\r\n| extend assignmentDurationStart = iff(isnotempty(botEscalateToHumanTime), botEscalateToHumanTime, ConversationCreatedTime)\r\n| project conversationId, ConversationCreatedTime, botEscalateToHumanTime, assignmentDurationStart, firstCSRAcceptedTime, orgId, recordId\r\n| join kind=leftouter (assignmentStats) on conversationId\r\n| join kind=leftouter (recentQueueIdForConversation) on conversationId\r\n| extend finalQueueId = queueIdTracesParsed\r\n| join kind = leftouter (queues) on $left.finalQueueId == $right.queueId\r\n| extend duration = tolong((firstCSRAcceptedTime - assignmentDurationStart ) / 1s)\r\n| join kind = leftouter (conversationState) on conversationId\r\n| extend currentState = iff(isnotempty(currentState), currentState, \"Open\")\r\n| extend jsonObject = pack(\"conversationId\", conversationId, \"queue\", coalesce(queueName, finalQueueId), \"previousScreen\", _screen, \"assignmentDuration\", duration, \"currentState\", currentState, \"orgIdFromDropDown\", orgId, \"recordId\", recordId)\r\n| extend modifiedAssignmentCount = iff(isnull(assignmentCount), \"0\", iff(assignmentCount > 5, \"more than 5\", tostring(assignmentCount)))\r\n| extend modifiedDuration = case(\r\n        duration < 5*60, \"< 5 mins\",\r\n        duration >= 5*60 and duration <= 10*60, \"5–10 mins\",\r\n        duration > 10*60, \"> 10 mins\",\r\n        \"Never got assigned\"\r\n    )\r\n| where modifiedAssignmentCount in (assignmentEventsFilter)\r\n| where currentState in (conversationStateFilter)\r\n| where modifiedDuration in (timeToAssignFilter)\r\n| project \r\n    Conversation = conversationId,\r\n    Record = recordId,\r\n    state = currentState,\r\n    [\"Time to assign\"] = duration,\r\n    [\"Assignment events\"] = assignmentCount,\r\n    [\"Initiated (UTC)\"] = coalesce(tostring(initiated), \"N/A\"),\r\n    Queue = coalesce(queueName, finalQueueId),\r\n    Workstream = wokstreamId,\r\n    jsonObjectString = tostring(jsonObject) \r\n| sort by [\"Initiated (UTC)\"] desc;\r\n",
+                    "size": 0,
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.insights/components",
+                    "visualization": "table",
+                    "gridSettings": {
+                      "formatters": [
+                        {
+                          "columnMatch": "Conversation",
+                          "formatter": 7,
+                          "formatOptions": {
+                            "linkTarget": "WorkbookTemplate",
+                            "linkIsContextBlade": true,
+                            "workbookContext": {
+                              "componentIdSource": "workbook",
+                              "resourceIdsSource": "workbook",
+                              "templateIdSource": "parameter",
+                              "templateId": "templateId",
+                              "typeSource": "workbook",
+                              "gallerySource": "workbook",
+                              "locationSource": "default",
+                              "passSpecificParams": true,
+                              "templateParameters": [
+                                {
+                                  "name": "screen",
+                                  "source": "static",
+                                  "value": "conversationdetails"
+                                },
+                                {
+                                  "name": "jsonObject",
+                                  "source": "column",
+                                  "value": "jsonObjectString"
+                                }
+                              ],
+                              "viewerMode": true
+                            }
+                          }
+                        },
+                        {
+                          "columnMatch": "Record",
+                          "formatter": 7,
+                          "formatOptions": {
+                            "linkTarget": "WorkbookTemplate",
+                            "linkIsContextBlade": true,
+                            "workbookContext": {
+                              "componentIdSource": "workbook",
+                              "resourceIdsSource": "workbook",
+                              "templateIdSource": "parameter",
+                              "templateId": "templateId",
+                              "typeSource": "workbook",
+                              "gallerySource": "workbook",
+                              "locationSource": "default",
+                              "passSpecificParams": true,
+                              "templateParameters": [
+                                {
+                                  "name": "screen",
+                                  "source": "static",
+                                  "value": "recorddetails"
+                                },
+                                {
+                                  "name": "jsonObject",
+                                  "source": "column",
+                                  "value": "jsonObjectString"
+                                }
+                              ],
+                              "viewerMode": true
+                            }
+                          },
+                          "numberFormat": {
+                            "unit": 0,
+                            "options": {
+                              "style": "decimal"
+                            },
+                            "emptyValCustomText": "N/A"
+                          }
+                        },
+                        {
+                          "columnMatch": "Time to assign",
+                          "formatter": 0,
+                          "numberFormat": {
+                            "unit": 24,
+                            "options": {
+                              "style": "decimal"
+                            },
+                            "emptyValCustomText": "N/A"
+                          },
+                          "tooltipFormat": {
+                            "tooltip": "Accepted by CSR after {0}"
+                          }
+                        },
+                        {
+                          "columnMatch": "Assignment events",
+                          "formatter": 7,
+                          "formatOptions": {
+                            "linkTarget": "WorkbookTemplate",
+                            "linkIsContextBlade": true,
+                            "workbookContext": {
+                              "componentIdSource": "workbook",
+                              "resourceIdsSource": "workbook",
+                              "templateIdSource": "parameter",
+                              "templateId": "templateId",
+                              "typeSource": "workbook",
+                              "gallerySource": "workbook",
+                              "locationSource": "default",
+                              "passSpecificParams": true,
+                              "templateParameters": [
+                                {
+                                  "name": "screen",
+                                  "source": "static",
+                                  "value": "assignmentevents"
+                                },
+                                {
+                                  "name": "conversationIds",
+                                  "source": "column",
+                                  "value": "Conversation"
+                                },
+                                {
+                                  "name": "jsonObject",
+                                  "source": "column",
+                                  "value": "jsonObjectString"
+                                }
+                              ],
+                              "viewerMode": true
+                            }
+                          },
+                          "numberFormat": {
+                            "unit": 0,
+                            "options": {
+                              "style": "decimal"
+                            },
+                            "emptyValCustomText": "0"
+                          }
+                        },
+                        {
+                          "columnMatch": "Initiated (UTC)",
+                          "formatter": 6,
+                          "dateFormat": {
+                            "showUtcTime": true,
+                            "formatName": "shortDateTimePattern"
+                          }
+                        },
+                        {
+                          "columnMatch": "Workstream",
+                          "formatter": 0,
+                          "numberFormat": {
+                            "unit": 0,
+                            "options": {
+                              "style": "decimal"
+                            },
+                            "emptyValCustomText": "N/A"
+                          }
+                        },
+                        {
+                          "columnMatch": "jsonObjectString",
+                          "formatter": 5
+                        }
+                      ],
+                      "rowLimit": 10000,
+                      "filter": true,
+                      "sortBy": [
+                        {
+                          "itemKey": "$gen_link_Conversation_0",
+                          "sortOrder": 1
+                        }
+                      ]
+                    },
+                    "sortBy": [
+                      {
+                        "itemKey": "$gen_link_Conversation_0",
+                        "sortOrder": 1
+                      }
+                    ]
+                  },
+                  "conditionalVisibility": {
+                    "parameterName": "isRecordSelected",
+                    "comparison": "isEqualTo",
+                    "value": "Record"
+                  },
+                  "name": "record table"
                 }
               ]
             },
@@ -935,34 +1191,6 @@
       "name": "L1",
       "styleSettings": {
         "margin": "-28px 0 0 0"
-      }
-    },
-    {
-      "type": 9,
-      "content": {
-        "version": "KqlParameterItem/1.0",
-        "parameters": [
-          {
-            "id": "d42dfee0-8331-480d-ac57-ad7498b5850d",
-            "version": "KqlParameterItem/1.0",
-            "name": "jsonObject",
-            "type": 1,
-            "isGlobal": true,
-            "isHiddenWhenLocked": true
-          }
-        ],
-        "style": "pills",
-        "doNotRunWhenHidden": true,
-        "queryType": 0,
-        "resourceType": "microsoft.insights/components"
-      },
-      "conditionalVisibility": {
-        "parameterName": "screen",
-        "comparison": "isNotEqualTo"
-      },
-      "name": "parameters - 9",
-      "styleSettings": {
-        "margin": "-200px 0 0 0"
       }
     },
     {
@@ -998,7 +1226,7 @@
             "name": "jsonQueryOutputConversation",
             "type": 1,
             "isGlobal": true,
-            "query": "// jsonQueryOutputConversation\r\nlet raw = dynamic({jsonObject});\r\nlet _conversationId = raw.conversationId;\r\n\r\ntraces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| where orgId in (raw.orgIdFromDropDown)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where conversationId == _conversationId\r\n| where subscenario in (\"CSRAssignment\", \"CSRAssignment\",\"CSRAssignment\")\r\n| summarize arg_min(timestamp, *) by conversationId\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend QueueId = case(\r\n    isnotnull( parsedWorkItemDetails), tostring(parsedWorkItemDetails.QueueId),\r\n    \"\"\r\n) \r\n| extend channel = case(\r\n    isnotnull( parsedWorkItemDetails), tostring(parsedWorkItemDetails.StreamSource),\r\n    isnotnull(customDim[\"omnichannel.channel.type\"]), tostring(customDim[\"omnichannel.channel.type\"]),\r\n    \"\"\r\n)\r\n| extend assignmentMethod = parse_json(tostring(customDim[\"omnichannel.assignment.method\"]))\r\n| extend workstream = case(\r\n    isnotnull( parsedWorkItemDetails), tostring(parsedWorkItemDetails.WorkStreamId),\r\n    \"\"\r\n)\r\n| extend requiredCapacityUnit = case(\r\n    isnotnull( parsedWorkItemDetails), tostring(parsedWorkItemDetails.RequiredCapacityUnits),\r\n    \"\"\r\n)\r\n| extend unformattedTimestamp = tostring(timestamp)\r\n| extend initiated = tostring(format_datetime(timestamp, 'M/d/yyyy, h:mm:ss.fff tt'))\r\n| extend allowedPresence = case(\r\n    isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.AllowedPresences), \"\"\r\n)\r\n| extend json = pack(\"conversationId\",conversationId,\"channel\", channel, \"assignmentMethod\", assignmentMethod, \"workstream\",workstream, \"requiredCapacityUnit\", requiredCapacityUnit, \"initiated\", initiated, \"allowedPresence\", allowedPresence, \"unformattedTimestamp\",unformattedTimestamp)\r\n| project json",
+            "query": "\r\nlet raw = dynamic({jsonObject});\r\nlet _conversationId = raw.conversationId;\r\nlet orgIdFromDropDown = raw.orgIdFromDropDown;\r\n\r\n// Parse all traces\r\nlet tracesParsed = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"]),\r\n    timestamp = timestamp\r\n| where orgId in (orgIdFromDropDown)\r\n| where conversationId == _conversationId;\r\n\r\n// Get channel from ConversationCreated\r\nlet channelFromConversationCreated = tracesParsed\r\n| where subscenario == \"ConversationCreated\"\r\n| extend channel = tostring(customDim[\"omnichannel.channel.type\"])\r\n| summarize arg_max(timestamp, channel) by conversationId;\r\n\r\n// Get queueId and other fields from CSRAssignment\r\nlet csrAssignmentData = tracesParsed\r\n| where subscenario == \"CSRAssignment\"\r\n| extend parsedWorkItemDetails = parse_json(tostring(customDim[\"omnichannel.work_item.details\"]))\r\n| extend queueId = tostring(parsedWorkItemDetails.QueueId)\r\n| summarize arg_max(timestamp, queueId, customDim, parsedWorkItemDetails) by conversationId\r\n| extend \r\n    assignmentMethod =  iff(isnotnull(parsedWorkItemDetails),  parse_json(tostring(customDim[\"omnichannel.assignment.method\"])), \"\"),\r\n    workstream = iff(isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.WorkStreamId), \"\"),\r\n    requiredCapacityUnit = iff(isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.RequiredCapacityUnits), \"\"),\r\n    allowedPresence = iff(isnotnull(parsedWorkItemDetails), tostring(parsedWorkItemDetails.AllowedPresences), \"\"),\r\n    unformattedTimestamp = tostring(timestamp),\r\n    initiated = tostring(format_datetime(timestamp, 'M/d/yyyy, h:mm:ss.fff tt'))\r\n| project conversationId, queueId, assignmentMethod, workstream, requiredCapacityUnit, allowedPresence, unformattedTimestamp, initiated;\r\n\r\n// Get queueId from RouteToQueue or RTQ if CSRAssignment is missing\r\nlet routeToQueueData = tracesParsed\r\n| where subscenario in (\"RTQ\", \"RouteToQueue\")\r\n| extend rawResult = tostring(customDim[\"omnichannel.result\"])\r\n| extend resultJson = parse_json(rawResult)\r\n| extend queueId = tostring(resultJson.Id)\r\n| summarize arg_max(timestamp, queueId) by conversationId\r\n| where conversationId !in (csrAssignmentData)\r\n| extend \r\n    assignmentMethod = \"\",\r\n    workstream = \"\",\r\n    requiredCapacityUnit = \"\",\r\n    allowedPresence = \"\",\r\n    unformattedTimestamp = \"\",\r\n    initiated = \"\";\r\n\r\n// Combine queue sources\r\nlet finalQueueData = csrAssignmentData\r\n| union routeToQueueData;\r\n\r\n// Join with channel\r\nfinalQueueData\r\n| join kind=inner (channelFromConversationCreated) on conversationId\r\n| extend json = pack(\r\n    \"conversationId\", conversationId,\r\n    \"channel\", channel,\r\n    \"assignmentMethod\", assignmentMethod,\r\n    \"workstream\", workstream,\r\n    \"requiredCapacityUnit\", requiredCapacityUnit,\r\n    \"initiated\", initiated,\r\n    \"allowedPresence\", allowedPresence,\r\n    \"unformattedTimestamp\", unformattedTimestamp\r\n)\r\n| project json\r\n",
             "isHiddenWhenLocked": true,
             "queryType": 0,
             "resourceType": "microsoft.insights/components"
@@ -1055,108 +1283,6 @@
       "name": "parameters - 9 - Copy",
       "styleSettings": {
         "margin": "-200px 0 0 0"
-      }
-    },
-    {
-      "type": 9,
-      "content": {
-        "version": "KqlParameterItem/1.0",
-        "parameters": [
-          {
-            "id": "2efcfae8-e6bb-486a-9b35-5e11885e1e46",
-            "version": "KqlParameterItem/1.0",
-            "name": "csrdetailsjsonraw",
-            "type": 1,
-            "isGlobal": true,
-            "query": "//csrdetailsjsonraw\r\nlet raw = dynamic({jsonObject});\r\nlet agentId = tostring(raw.agentId); // Replace with actual agent ID\r\nlet inputTime = todatetime(raw.timestamp); // Replace with reference timestamp\r\nlet agentMapping = dynamic({agentNameJson}); // Agent ID to Name mapping JSON\r\n\r\n// Create table with agentId and agentName with fallback\r\nlet agentNameTable = range x from 1 to 1 step 1\r\n| extend agentId = agentId\r\n| extend agentName = coalesce(tostring(agentMapping[agentId]), \"Unknown Agent\")\r\n| project agentId, agentName;\r\n\r\nlet agentConfig = traces\r\n| where timestamp between (inputTime - 10d .. inputTime)\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| where orgId in (raw.orgIdFromDropDown)\r\n| where tostring(customDim[\"powerplatform.analytics.subscenario\"]) == \"CSRConfigurationDetails\"\r\n| where tostring(customDim[\"omnichannel.agent.id\"]) == agentId\r\n| top 1 by timestamp desc\r\n| extend\r\n    agentId = tostring(customDim[\"omnichannel.agent.id\"]),\r\n    MaxCapacityUnits = toint(customDim[\"omnichannel.max_capacity.units\"])\r\n| extend\r\n    Skills = parse_json(tostring(customDim[\"omnichannel.associated_skills\"])),\r\n    CapacityProfileIds = parse_json(tostring(customDim[\"omnichannel.capacity_profile.ids\"])),\r\n    QueueIds = parse_json(tostring(customDim[\"omnichannel.queue.ids\"]))\r\n| project agentId, Skills, CapacityProfileIds, MaxCapacityUnits, QueueIds;\r\n\r\n// Join agentNameTable and agentConfig on agentId\r\nagentNameTable\r\n| join kind=leftouter agentConfig on agentId\r\n| project agentId, agentName, Skills, CapacityProfileIds, MaxCapacityUnits, QueueIds\r\n| extend agentJSON = bag_pack(\"agentName\", agentName,\r\n                              \"agentId\", agentId,\r\n                              \"agentskills\", Skills,\r\n                              \"agentCapacityProfileIds\", CapacityProfileIds,\r\n                              \"agentMaxCapacityUnits\", MaxCapacityUnits,\r\n                              \"agentQueueIds\", QueueIds)\r\n| project agentJSON\r\n",
-            "isHiddenWhenLocked": true,
-            "queryType": 0,
-            "resourceType": "microsoft.insights/components"
-          }
-        ],
-        "style": "pills",
-        "doNotRunWhenHidden": true,
-        "queryType": 0,
-        "resourceType": "microsoft.insights/components"
-      },
-      "conditionalVisibilities": [
-        {
-          "parameterName": "jsonObject",
-          "comparison": "isNotEqualTo"
-        },
-        {
-          "parameterName": "screen",
-          "comparison": "isEqualTo",
-          "value": "csrdetails"
-        }
-      ],
-      "name": "parameters - 9 - Copy",
-      "styleSettings": {
-        "margin": "-200px 0 -50px 0"
-      }
-    },
-    {
-      "type": 9,
-      "content": {
-        "version": "KqlParameterItem/1.0",
-        "parameters": [
-          {
-            "id": "c39af63e-5605-4f60-9505-e481c310017d",
-            "version": "KqlParameterItem/1.0",
-            "name": "agentQueues",
-            "type": 1,
-            "isGlobal": true,
-            "query": "let raw = dynamic({csrdetailsjsonraw});\r\nlet parsed = raw;\r\nlet agentQueueIds = parsed.agentQueueIds;\r\nrange idx from 0 to array_length(agentQueueIds) - 1 step 1\r\n| extend htmlItem = strcat(\"<li>\", tostring(agentQueueIds[idx]), \"</li>\")\r\n| summarize htmlList = strcat_array(make_list(htmlItem), \"\")\r\n| project htmlList = strcat(\"<ol style='max-height: 90px; overflow-y: auto;'>\", coalesce(htmlList, \"No queues available\"), \"</ol>\")",
-            "isHiddenWhenLocked": true,
-            "queryType": 0,
-            "resourceType": "microsoft.insights/components"
-          },
-          {
-            "id": "874be050-77fd-4cca-9880-5d4ecb792451",
-            "version": "KqlParameterItem/1.0",
-            "name": "agentSkills",
-            "type": 1,
-            "isGlobal": true,
-            "query": "let raw = dynamic({csrdetailsjsonraw});\r\nlet parsed = raw;\r\nlet agentSkills = iif(isnull(parsed.agentskills), dynamic([]), parsed.agentskills);\r\ndatatable(dummy:int)[1]\r\n| mv-expand skill = agentSkills\r\n| extend htmlItem = strcat(\"<li>\", tostring(skill), \"</li>\")\r\n| summarize htmlList = strcat_array(make_list(htmlItem), \"\")\r\n| project htmlList = strcat(\"<ol style='max-height: 90px; overflow-y:auto;'>\", coalesce(htmlList, \"No skills available\"), \"</ol>\")",
-            "isHiddenWhenLocked": true,
-            "queryType": 0,
-            "resourceType": "microsoft.insights/components"
-          },
-          {
-            "id": "55273ab0-633c-4a9a-9ee2-44fdbfa4e4d1",
-            "version": "KqlParameterItem/1.0",
-            "name": "agentCapacityProfiles",
-            "type": 1,
-            "isGlobal": true,
-            "query": "let raw = dynamic({csrdetailsjsonraw});\r\nlet parsed = raw;\r\nlet agentCapacityProfileIds = iif(isnull(parsed.agentCapacityProfileIds), dynamic([]), parsed.agentCapacityProfileIds);\r\ndatatable(dummy:int)[1]\r\n| mv-expand id = agentCapacityProfileIds\r\n| extend htmlItem = strcat(\"<li>\", tostring(id), \"</li>\")\r\n| summarize htmlList = strcat_array(make_list(htmlItem), \"\")\r\n| project htmlList = strcat(\"<ol style='max-height: 90px; overflow-y:auto;'>\", coalesce(htmlList, \"No capcity profile available\"), \"</ol>\")",
-            "isHiddenWhenLocked": true,
-            "queryType": 0,
-            "resourceType": "microsoft.insights/components"
-          }
-        ],
-        "style": "pills",
-        "doNotRunWhenHidden": true,
-        "queryType": 0,
-        "resourceType": "microsoft.insights/components"
-      },
-      "conditionalVisibilities": [
-        {
-          "parameterName": "jsonObject",
-          "comparison": "isNotEqualTo"
-        },
-        {
-          "parameterName": "screen",
-          "comparison": "isEqualTo",
-          "value": "csrdetails"
-        },
-        {
-          "parameterName": "csrdetailsjsonraw",
-          "comparison": "isNotEqualTo"
-        }
-      ],
-      "name": "parameters - 9 - Copy - Copy",
-      "styleSettings": {
-        "margin": "-200px 0 -50px 0"
       }
     },
     {
@@ -1295,7 +1421,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet rawObject = dynamic({jsonObject});\r\nlet lastAttempts = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where orgId in (rawObject.orgIdFromDropDown)\r\n| where conversationId == tostring(raw.conversationId)\r\n| where subscenario in (\"CSRAssignment\")\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| extend lastAttempt = coalesce(tostring(format_datetime(timestamp, 'M/d/yyyy, h:mm:ss.fff tt')),\"--\")\r\n| project conversationId, lastAttempt;\r\n\r\ndatatable(dummy:int)[1]\r\n| extend\r\n    channel = coalesce(tostring(raw.channel),\"--\"),\r\n    assignmentMethod = coalesce(tostring(raw.assignmentMethod),\"--\"),\r\n    workstream = coalesce(tostring(raw.workstream),\"--\"),\r\n    requiredCapacityUnit = coalesce(tostring(raw.requiredCapacityUnit),\"--\"),\r\n    initiated = coalesce(tostring(raw.initiated),\"--\"),\r\n    conversationId = coalesce(tostring(raw.conversationId),\"--\"),\r\n    state = coalesce(tostring(rawObject.currentState),\"Open\"),\r\n    queue = coalesce(tostring(rawObject.queue),\"--\"),\r\n    allowedPresence = coalesce(tostring(raw.allowedPresence),\"--\"),\r\n    assignmentDuration = coalesce(tostring(rawObject.assignmentDuration), \"--\")\r\n| join kind=leftouter lastAttempts on conversationId\r\n| extend html = strcat(\r\n    '<div style=\"display: grid; grid-template-columns: 2fr 2fr; gap: 0px 0px;\">',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">ConversationID</span> : ', conversationId, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Initiated (UTC)</span> : ', initiated, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">State</span> : ', state, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Last attempt (UTC)</span> : ', lastAttempt, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Assignment Duration (seconds)</span> : ', assignmentDuration, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Channel</span> : ', channel, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Workstream</span> : ', workstream, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Required Capacity</span> : ', requiredCapacityUnit, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Queue</span> : ', queue, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Allowed presence</span> : ', allowedPresence, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Assignment method</span> : ', assignmentMethod, '</div></div>',\r\n    '</div>'\r\n)\r\n| project html",
+                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet rawObject = dynamic({jsonObject});\r\nlet recordTypeRaw = dynamic({recordtypejsonraw});\r\nlet lastAttempts = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where orgId in (rawObject.orgIdFromDropDown)\r\n| where conversationId == tostring(raw.conversationId)\r\n| where subscenario in (\"CSRAssignment\")\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| extend lastAttempt = coalesce(tostring(format_datetime(timestamp, 'M/d/yyyy, h:mm:ss.fff tt')),\"--\")\r\n| project conversationId, lastAttempt;\r\n\r\ndatatable(dummy:int)[1]\r\n| extend\r\n    channel = coalesce(tostring(raw.channel),\"--\"),\r\n    assignmentMethod = coalesce(tostring(raw.assignmentMethod),\"--\"),\r\n    workstream = coalesce(tostring(raw.workstream),\"--\"),\r\n    requiredCapacityUnit = coalesce(tostring(raw.requiredCapacityUnit),\"--\"),\r\n    initiated = coalesce(tostring(raw.initiated),\"--\"),\r\n    conversationId = coalesce(tostring(raw.conversationId),\"--\"),\r\n    state = coalesce(tostring(rawObject.currentState),\"Open\"),\r\n    queue = coalesce(tostring(rawObject.queue),\"--\"),\r\n    recordId = coalesce(tostring(rawObject.recordId),\"--\"),\r\n    allowedPresence = coalesce(tostring(raw.allowedPresence),\"--\"),\r\n    assignmentDuration = coalesce(tostring(rawObject.assignmentDuration), \"--\"),\r\n    recordType = coalesce(tostring(recordTypeRaw.entityLogicalName),\"--\")\r\n| join kind=leftouter lastAttempts on conversationId\r\n| extend html = strcat(\r\n    '<div style=\"display: grid; grid-template-columns: 2fr 2fr; gap: 0px 0px;\">',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">ConversationID</span> : ', conversationId, '</div></div>',\r\n        '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">RecordID</span> : ', recordId, '</div></div>',\r\n        '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Record Type</span> : ', recordType, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Initiated (UTC)</span> : ', initiated, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">State</span> : ', state, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Last attempt (UTC)</span> : ', lastAttempt, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Assignment Duration (seconds)</span> : ', assignmentDuration, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Channel</span> : ', channel, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Workstream</span> : ', workstream, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Required Capacity</span> : ', requiredCapacityUnit, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Queue</span> : ', queue, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Allowed presence</span> : ', allowedPresence, '</div></div>',\r\n    '<div style=\"margin-top: 8px; margin-bottom: 8px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Assignment method</span> : ', assignmentMethod, '</div></div>',\r\n    '</div>'\r\n)\r\n| project html",
                     "size": 1,
                     "queryType": 0,
                     "resourceType": "microsoft.insights/components",
@@ -1373,6 +1499,7 @@
                     "groupType": "editable",
                     "title": "Capacity profile",
                     "expandable": true,
+                    "expanded": true,
                     "items": [
                       {
                         "type": 1,
@@ -1400,6 +1527,7 @@
                     "groupType": "editable",
                     "title": " Required skills ",
                     "expandable": true,
+                    "expanded": true,
                     "items": [
                       {
                         "type": 1,
@@ -1427,6 +1555,7 @@
                     "groupType": "editable",
                     "title": "Ruleset information",
                     "expandable": true,
+                    "expanded": true,
                     "items": [
                       {
                         "type": 1,
@@ -1467,7 +1596,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet _conversationId = tostring(raw.conversationId);\r\n\r\nlet tracesParsed = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where isnotempty(conversationId) and isnotnull(conversationId)\r\n| where conversationId == _conversationId\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions)\r\n| sort by timestamp asc\r\n| project  Step = subscenario, Timestamp = timestamp\r\n;\r\n\r\ntracesParsed;",
+                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet _conversationId = tostring(raw.conversationId);\r\n\r\nlet tracesParsed = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where isnotempty(conversationId) and isnotnull(conversationId)\r\n| where conversationId == _conversationId\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions)\r\n| sort by timestamp asc\r\n| project  Step = subscenario, Timestamp = timestamp\r\n;\r\n\r\ntracesParsed;",
                     "size": 0,
                     "queryType": 0,
                     "resourceType": "microsoft.insights/components",
@@ -1557,7 +1686,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet rawObject = dynamic({jsonObject});\r\nlet lastAttempts = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| where orgId in (parse_json(rawObject).orgIdFromDropDown)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where conversationId == tostring(raw.conversationId)\r\n| where subscenario in (\"CSRAssignment\")\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| extend lastAttempt = coalesce(tostring(format_datetime(timestamp, 'M/d/yyyy, h:mm:ss.fff tt')),\"--\")\r\n| project conversationId, lastAttempt;\r\n\r\ndatatable(dummy:int)[1]\r\n| extend\r\n    channel = coalesce(tostring(raw.channel),\"--\"),\r\n    assignmentMethod = coalesce(tostring(raw.assignmentMethod),\"--\"),\r\n    workstream = coalesce(tostring(raw.workstream),\"--\"),\r\n    requiredCapacityUnit = coalesce(tostring(raw.requiredCapacityUnit),\"--\"),\r\n    initiated = coalesce(tostring(raw.initiated),\"--\"),\r\n    conversationId = coalesce(tostring(raw.conversationId),\"--\"),\r\n    state = coalesce(tostring(rawObject.currentState),\"Open\"),\r\n    queue = coalesce(tostring(rawObject.queue),\"--\"),\r\n    allowedPresence = coalesce(tostring(raw.allowedPresence),\"--\")\r\n| join kind=leftouter lastAttempts on conversationId\r\n| extend html = strcat(\r\n    '<div style=\"display: grid; grid-template-columns: 2fr 2fr; gap: 0px 0px;\">',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">ConversationID</span> : ', conversationId, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Initiated (UTC)</span> : ', initiated, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">State</span> : ', state, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Last attempt (UTC)</span> : ', lastAttempt, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Channel</span> : ', channel, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Workstream</span> : ', workstream, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Queue</span> : ', queue, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Allowed presence</span> : ', allowedPresence, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Assignment method</span> : ', assignmentMethod, '</div></div>',\r\n    '</div>'\r\n)\r\n| project html\r\n",
+                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet rawObject = dynamic({jsonObject});\r\nlet recordTypeRaw = dynamic({recordtypejsonraw});\r\nlet lastAttempts = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| where orgId in (parse_json(rawObject).orgIdFromDropDown)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where conversationId == tostring(raw.conversationId)\r\n| where subscenario in (\"CSRAssignment\")\r\n| summarize arg_max(timestamp, *) by conversationId\r\n| extend lastAttempt = coalesce(tostring(format_datetime(timestamp, 'M/d/yyyy, h:mm:ss.fff tt')),\"--\")\r\n| project conversationId, lastAttempt;\r\n\r\ndatatable(dummy:int)[1]\r\n| extend\r\n    channel = coalesce(tostring(raw.channel),\"--\"),\r\n    assignmentMethod = coalesce(tostring(raw.assignmentMethod),\"--\"),\r\n    workstream = coalesce(tostring(raw.workstream),\"--\"),\r\n    requiredCapacityUnit = coalesce(tostring(raw.requiredCapacityUnit),\"--\"),\r\n    initiated = coalesce(tostring(raw.initiated),\"--\"),\r\n    conversationId = coalesce(tostring(raw.conversationId),\"--\"),\r\n    state = coalesce(tostring(rawObject.currentState),\"Open\"),\r\n    queue = coalesce(tostring(rawObject.queue),\"--\"),\r\n    allowedPresence = coalesce(tostring(raw.allowedPresence),\"--\"),\r\n    recordId = coalesce(tostring(rawObject.recordId),\"--\"),\r\n    recordType = coalesce(tostring(recordTypeRaw.entityLogicalName),\"--\")\r\n| join kind=leftouter lastAttempts on conversationId\r\n| extend html = strcat(\r\n    '<div style=\"display: grid; grid-template-columns: 2fr 2fr; gap: 0px 0px;\">',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">ConversationID</span> : ', conversationId, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">RecordId</span> : ', recordId, '</div></div>',\r\n        '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Record Type</span> : ', recordType, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Initiated (UTC)</span> : ', initiated, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">State</span> : ', state, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Last attempt (UTC)</span> : ', lastAttempt, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Channel</span> : ', channel, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Workstream</span> : ', workstream, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Queue</span> : ', queue, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Allowed presence</span> : ', allowedPresence, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Assignment method</span> : ', assignmentMethod, '</div></div>',\r\n    '</div>'\r\n)\r\n| project html\r\n",
                     "size": 1,
                     "queryType": 0,
                     "resourceType": "microsoft.insights/components",
@@ -1658,7 +1787,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet _conversationId = tostring(raw.conversationId);\r\nlet _screen = '{screen}';\r\nlet _jsonObject = dynamic({jsonObject});\r\nlet agentNameJson = dynamic({agentNameJson});\r\nlet inputTimestamp = todatetime(raw.unformattedTimestamp); \r\nlet assignmentSubscenarios = dynamic([\"CSRAssignment\", \"CSRAssignment\", \"ManualAssignment\", \"TransferAssignment\", \"CSRAssignment\",\"SupervisorInitiatedTransfer\"]);\r\nlet c1ActionSubscenario = dynamic([\"CSRAccepted\",\"CSRRejected\",\"CSRNotificationTimeout\"]);\r\nlet tracesParsed = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| where orgId in (parse_json(_jsonObject).orgIdFromDropDown)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where isnotempty(conversationId) and isnotnull(conversationId)\r\n| where conversationId == _conversationId\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions)\r\n| project timestamp, conversationId, subscenario, customDim=parse_json(customDimensions)\r\n;\r\n\r\nlet mainTable = tracesParsed\r\n| extend type = tostring(customDim[\"type\"])\r\n| where type in (\"AssignmentURDiagnosticsEvent\", \"C1ActionsDiagnosticsEvent\",\"AssignmentManualDiagnosticsEvent\")\r\n| where subscenario in (assignmentSubscenarios) or subscenario in (c1ActionSubscenario)\r\n| extend parsedAssignmentStatus = parse_json(tostring(customDim[\"omnichannel.assignment.status\"]))\r\n| extend isAgentAssigned = tostring(parsedAssignmentStatus.IsAgentAssigned)\r\n| extend capacityProfiles = tostring(parsedAssignmentStatus.AgentDetails.CapacityProfiles)\r\n| extend agentId = case(\r\n    isAgentAssigned == \"true\", tostring(parsedAssignmentStatus.AgentDetails.AgentId),\r\n    tostring(customDim[\"omnichannel.target_agent.id\"])\r\n)\r\n| extend description = tostring(customDim[\"omnichannel.description\"])\r\n| extend result = case(\r\n    (subscenario in (assignmentSubscenarios) and isAgentAssigned == \"false\"), \"No eligible CSR found\",\r\n    \"\"\r\n)\r\n| extend reason = case(\r\n    (subscenario in (assignmentSubscenarios) and isAgentAssigned == \"true\"), \"CSR assigned\",\r\n    (subscenario in (assignmentSubscenarios) and isAgentAssigned == \"false\"), tostring(parsedAssignmentStatus.Reason),\r\n    isnotnull(description) or isnotempty(description), description,\r\n    \"\"\r\n)\r\n| sort by timestamp asc\r\n| extend prevScreenParams = tostring(_jsonObject)\r\n| extend jsonObject = tostring(pack(\"timestamp\", timestamp,\"conversationId\",conversationId,\"agentId\", agentId, \"previousScreen\", _screen, \"currentState\", _jsonObject.currentState, \"queue\", _jsonObject.queue,\"orgIdFromDropDown\", _jsonObject.orgIdFromDropDown))\r\n| extend CSR = case(\r\n    isnotempty(agentId), agentId,\r\n    \"No eligible CSR found\"\r\n)\r\n| extend screen = case(\r\n    isnotempty(agentId), \"csrdetails\",\r\n    \"assignmenteventdetails\"\r\n)\r\n| project \r\n  Timestamp = timestamp, \r\n  [\"Sub-scenario\"] = case(\r\n    subscenario in (assignmentSubscenarios), subscenario,\r\n    subscenario\r\n), \r\n  Result = reason,\r\n  CSR, \r\n  customDim,\r\n  jsonObject,\r\n  prevScreenParams,\r\n  screen;\r\n\r\nlet agentConfiguration = mainTable | where CSR !contains (\"No eligible CSR found\") | project Timestamp, CSR\r\n| join kind = leftouter (\r\n    traces\r\n    | extend customDim = parse_json(customDimensions)\r\n    | extend agentId = tostring(customDim[\"powerplatform.analytics.resource.id\"])\r\n    | extend subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n    | where subscenario == \"AgentConfiguration\" or subscenario == 'CSRConfigurationDetails'\r\n    | extend agentProfiles = tostring(customDim[\"omnichannel.capacity_profile.ids\"])\r\n    | mv-expand profileIds = parse_json(agentProfiles)\r\n    | project agentConfigRecordedTime = timestamp, profileIds, agentProfiles, agentId, subscenario, agentConfig = customDim\r\n    | order by agentConfigRecordedTime desc \r\n) on $left.CSR == $right.agentId\r\n| where agentConfigRecordedTime <= Timestamp;\r\n\r\nlet capacityprofiles1 = agentConfiguration\r\n| mv-expand profileIds = parse_json(agentProfiles)\r\n| project profileIds;\r\n\r\nlet capacityProfileEvents = mainTable | where CSR !contains (\"No eligible CSR found\") | project Timestamp, CSR\r\n| join kind = leftouter (\r\n    traces\r\n    | extend customDim = parse_json(customDimensions)\r\n    | extend orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n    | where orgId in (_jsonObject.orgIdFromDropDown) \r\n    | extend agentId = tostring(customDim[\"powerplatform.analytics.resource.id\"]) \r\n    | extend subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n    | where subscenario == \"CSRStatusandCapacityDetails\"\r\n    | extend capacityProfileStr = tostring(customDim[\"omnichannel.capacity_profile\"])\r\n    | extend capacityProfileJson = parse_json(capacityProfileStr)\r\n    | extend capacityProfileId = tostring(capacityProfileJson[\"CapacityProfileId\"])\r\n    | extend cavailableCapacityUnits = tostring(customDim[\"omnichannel.available_capacity.units\"])\r\n    | extend cpresence = tostring(customDim[\"omnichannel.current_base_presence\"])\r\n    | where capacityProfileId in (capacityprofiles1) \r\n    | project capacityProfileTimestamp = timestamp, capacityProfile = capacityProfileStr, agentId, capacityProfileId\r\n) on $left.CSR == $right.agentId\r\n| where capacityProfileTimestamp > Timestamp\r\n| summarize arg_min(capacityProfileTimestamp, *) by Timestamp, capacityProfileId\r\n| summarize beforeCapacityProfiles = make_list(parse_json(capacityProfile)) by Timestamp;\r\n\r\n//capacityProfileEvents;\r\n\r\nlet withCapacity = mainTable\r\n| join kind = leftouter (\r\n    traces\r\n    | where timestamp between ((inputTimestamp - 1d) .. inputTimestamp + 1d)\r\n    | extend customDim = parse_json(customDimensions) \r\n    | extend orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n    | where orgId in (parse_json(_jsonObject).orgIdFromDropDown)\r\n    | extend agentId = tostring(customDim[\"powerplatform.analytics.resource.id\"]) \r\n    | extend subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n    | extend availableCapacityUnits = tostring(customDim[\"omnichannel.available_capacity.units\"])\r\n    | extend presence = tostring(customDim[\"omnichannel.current_base_presence\"]) \r\n    | where subscenario == \"CSRStatusandCapacityDetails\"\r\n    | project statusCapacityHistoryRecordedTime = timestamp, agentId, presence, availableCapacityUnits\r\n) on $left.CSR == $right.agentId\r\n| where statusCapacityHistoryRecordedTime >= Timestamp and statusCapacityHistoryRecordedTime <= Timestamp + 1h or isnull(statusCapacityHistoryRecordedTime)\r\n| summarize arg_min(statusCapacityHistoryRecordedTime, *) by Timestamp\r\n| join kind = leftouter (capacityProfileEvents) on Timestamp\r\n| extend agentName = iif(CSR != \"No eligible CSR found\" and isnotempty(agentNameJson[CSR]), agentNameJson[CSR], CSR)\r\n| project Timestamp,\r\n  [\"Sub-scenario\"],\r\n  Result,\r\n  CSR = agentName,\r\n  customDim,\r\n  jsonObject,\r\n  prevScreenParams,\r\n  screen,\r\n  Presence = coalesce(presence, \"No data\"),\r\n  [\"Available capacity\"] = coalesce(availableCapacityUnits, \"No data\"),\r\n  [\"Capacity profile\"] = coalesce(beforeCapacityProfiles, \"No capacity profile found\")\r\n;\r\nwithCapacity\r\n| sort by Timestamp asc;",
+                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet _conversationId = tostring(raw.conversationId);\r\nlet _screen = '{screen}';\r\nlet _jsonObject = dynamic({jsonObject});\r\nlet agentNameJson = dynamic({agentNameJson});\r\nlet inputTimestamp = todatetime(raw.unformattedTimestamp); \r\nlet assignmentSubscenarios = dynamic([\"CSRAssignment\", \"CSRAssignment\", \"ManualAssignment\", \"TransferAssignment\", \"CSRAssignment\",\"SupervisorInitiatedTransfer\"]);\r\nlet c1ActionSubscenario = dynamic([\"CSRAccepted\",\"CSRRejected\",\"CSRNotificationTimeout\"]);\r\nlet tracesParsed = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| where orgId in (parse_json(_jsonObject).orgIdFromDropDown)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where isnotempty(conversationId) and isnotnull(conversationId)\r\n| where conversationId == _conversationId\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions)\r\n| project timestamp, conversationId, subscenario, customDim=parse_json(customDimensions)\r\n;\r\n\r\nlet mainTable = tracesParsed\r\n| extend type = tostring(customDim[\"type\"])\r\n| where type in (\"AssignmentURDiagnosticsEvent\", \"C1ActionsDiagnosticsEvent\",\"AssignmentManualDiagnosticsEvent\")\r\n| where subscenario in (assignmentSubscenarios) or subscenario in (c1ActionSubscenario)\r\n| extend parsedAssignmentStatus = parse_json(tostring(customDim[\"omnichannel.assignment.status\"]))\r\n| extend isAgentAssigned = tostring(parsedAssignmentStatus.IsAgentAssigned)\r\n| extend capacityProfiles = tostring(parsedAssignmentStatus.AgentDetails.CapacityProfiles)\r\n| extend agentId = case(\r\n    isAgentAssigned == \"true\", tostring(parsedAssignmentStatus.AgentDetails.AgentId),\r\n    tostring(customDim[\"omnichannel.target_agent.id\"])\r\n)\r\n| extend description = tostring(customDim[\"omnichannel.description\"])\r\n| extend result = case(\r\n    (subscenario in (assignmentSubscenarios) and isAgentAssigned == \"false\"), \"No eligible CSR found\",\r\n    \"\"\r\n)\r\n| extend reason = case(\r\n    (subscenario in (assignmentSubscenarios) and isAgentAssigned == \"true\"), \"CSR assigned\",\r\n    (subscenario in (assignmentSubscenarios) and isAgentAssigned == \"false\"), tostring(parsedAssignmentStatus.Reason),\r\n    isnotnull(description) or isnotempty(description), description,\r\n    \"\"\r\n)\r\n| sort by timestamp asc\r\n| extend prevScreenParams = tostring(_jsonObject)\r\n| extend jsonObject = tostring(pack(\"timestamp\", timestamp,\"conversationId\",conversationId,\"agentId\", agentId, \"previousScreen\", _screen, \"currentState\", _jsonObject.currentState, \"queue\", _jsonObject.queue,\"orgIdFromDropDown\", _jsonObject.orgIdFromDropDown, \"recordId\", _jsonObject.recordId))\r\n| extend CSR = case(\r\n    isnotempty(agentId), agentId,\r\n    \"No eligible CSR found\"\r\n)\r\n| extend screen = case(\r\n    isnotempty(agentId), \"csrdetails\",\r\n    \"assignmenteventdetails\"\r\n)\r\n| project \r\n  Timestamp = timestamp, \r\n  [\"Sub-scenario\"] = case(\r\n    subscenario in (assignmentSubscenarios), subscenario,\r\n    subscenario\r\n), \r\n  Result = reason,\r\n  CSR, \r\n  customDim,\r\n  jsonObject,\r\n  prevScreenParams,\r\n  screen;\r\n\r\nlet agentConfiguration = mainTable | where CSR !contains (\"No eligible CSR found\") | project Timestamp, CSR\r\n| join kind = leftouter (\r\n    traces\r\n    | extend customDim = parse_json(customDimensions)\r\n    | extend agentId = tostring(customDim[\"powerplatform.analytics.resource.id\"])\r\n    | extend subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n    | where subscenario == \"AgentConfiguration\" or subscenario == 'CSRConfigurationDetails'\r\n    | extend agentProfiles = tostring(customDim[\"omnichannel.capacity_profile.ids\"])\r\n    | mv-expand profileIds = parse_json(agentProfiles)\r\n    | project agentConfigRecordedTime = timestamp, profileIds, agentProfiles, agentId, subscenario, agentConfig = customDim\r\n    | order by agentConfigRecordedTime desc \r\n) on $left.CSR == $right.agentId\r\n| where agentConfigRecordedTime <= Timestamp;\r\n\r\nlet capacityprofiles1 = agentConfiguration\r\n| mv-expand profileIds = parse_json(agentProfiles)\r\n| project profileIds;\r\n\r\nlet capacityProfileEvents = mainTable | where CSR !contains (\"No eligible CSR found\") | project Timestamp, CSR\r\n| join kind = leftouter (\r\n    traces\r\n    | extend customDim = parse_json(customDimensions)\r\n    | extend orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n    | where orgId in (_jsonObject.orgIdFromDropDown) \r\n    | extend agentId = tostring(customDim[\"powerplatform.analytics.resource.id\"]) \r\n    | extend subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n    | where subscenario == \"CSRStatusandCapacityDetails\"\r\n    | extend capacityProfileStr = tostring(customDim[\"omnichannel.capacity_profile\"])\r\n    | extend capacityProfileJson = parse_json(capacityProfileStr)\r\n    | extend capacityProfileId = tostring(capacityProfileJson[\"CapacityProfileId\"])\r\n    | extend cavailableCapacityUnits = tostring(customDim[\"omnichannel.available_capacity.units\"])\r\n    | extend cpresence = tostring(customDim[\"omnichannel.current_base_presence\"])\r\n    | where capacityProfileId in (capacityprofiles1) \r\n    | project capacityProfileTimestamp = timestamp, capacityProfile = capacityProfileStr, agentId, capacityProfileId\r\n) on $left.CSR == $right.agentId\r\n| where capacityProfileTimestamp > Timestamp\r\n| summarize arg_min(capacityProfileTimestamp, *) by Timestamp, capacityProfileId\r\n| summarize beforeCapacityProfiles = make_list(parse_json(capacityProfile)) by Timestamp;\r\n\r\n//capacityProfileEvents;\r\n\r\nlet withCapacity = mainTable\r\n| join kind = leftouter (\r\n    traces\r\n    | where timestamp between ((inputTimestamp - 1d) .. inputTimestamp + 1d)\r\n    | extend customDim = parse_json(customDimensions) \r\n    | extend orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n    | where orgId in (parse_json(_jsonObject).orgIdFromDropDown)\r\n    | extend agentId = tostring(customDim[\"powerplatform.analytics.resource.id\"]) \r\n    | extend subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n    | extend availableCapacityUnits = tostring(customDim[\"omnichannel.available_capacity.units\"])\r\n    | extend presence = tostring(customDim[\"omnichannel.current_base_presence\"]) \r\n    | where subscenario == \"CSRStatusandCapacityDetails\"\r\n    | project statusCapacityHistoryRecordedTime = timestamp, agentId, presence, availableCapacityUnits\r\n) on $left.CSR == $right.agentId\r\n| where statusCapacityHistoryRecordedTime >= Timestamp and statusCapacityHistoryRecordedTime <= Timestamp + 1h or isnull(statusCapacityHistoryRecordedTime)\r\n| summarize arg_min(statusCapacityHistoryRecordedTime, *) by Timestamp\r\n| join kind = leftouter (capacityProfileEvents) on Timestamp\r\n| extend agentName = iif(CSR != \"No eligible CSR found\" and isnotempty(agentNameJson[CSR]), agentNameJson[CSR], CSR)\r\n| project Timestamp,\r\n  [\"Sub-scenario\"],\r\n  Result,\r\n  CSR = agentName,\r\n  customDim,\r\n  jsonObject,\r\n  prevScreenParams,\r\n  screen,\r\n  Presence = coalesce(presence, \"No data\"),\r\n  [\"Available capacity\"] = coalesce(availableCapacityUnits, \"No data\"),\r\n  [\"Capacity profile\"] = coalesce(beforeCapacityProfiles, \"No capacity profile found\")\r\n;\r\nwithCapacity\r\n| sort by Timestamp asc;",
                     "size": 0,
                     "queryType": 0,
                     "resourceType": "microsoft.insights/components",
@@ -1801,7 +1930,7 @@
                   "type": 3,
                   "content": {
                     "version": "KqlItem/1.0",
-                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet rawObject = dynamic({jsonObject});\r\n\r\ndatatable(dummy:int)[1]\r\n| extend\r\n    conversationId = coalesce(tostring(raw.conversationId),\"--\"),\r\n    timestamp = coalesce(tostring(format_datetime(todatetime(rawObject.timestamp), 'M/d/yyyy, h:mm:ss.fff tt')),\"--\"),\r\n    state = coalesce(tostring(rawObject.currentState),\"Open\"),\r\n    channel = coalesce(tostring(raw.channel),\"--\"),\r\n    workstream = coalesce(tostring(raw.workstream),\"--\"),\r\n    requiredCapacityUnit = coalesce(tostring(raw.requiredCapacityUnit),\"--\"),\r\n    queue = coalesce(tostring(rawObject.queue),\"--\"),\r\n    allowedPresence = coalesce(tostring(raw.allowedPresence),\"--\"),\r\n    assignmentMethod = coalesce(tostring(raw.assignmentMethod),\"--\")\r\n| extend html = strcat(\r\n    '<div style=\"display: grid; grid-template-columns: 2fr 2fr; gap: 0px 0px;\">',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">ConversationID</span> : ', conversationId, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Timestamp (UTC)</span> : ', timestamp, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">State</span> : ', state, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Channel</span> : ', channel, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Workstream</span> : ', workstream, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Required Capacity</span> : ', requiredCapacityUnit, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Queue</span> : ', queue, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Allowed presence</span> : ', allowedPresence, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Assignment method</span> : ', assignmentMethod, '</div></div>',\r\n    '</div>'\r\n)\r\n| project html",
+                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet rawObject = dynamic({jsonObject});\r\nlet recordTypeRaw = dynamic({recordtypejsonraw});\r\n\r\ndatatable(dummy:int)[1]\r\n| extend\r\n    conversationId = coalesce(tostring(raw.conversationId),\"--\"),\r\n    timestamp = coalesce(tostring(format_datetime(todatetime(rawObject.timestamp), 'M/d/yyyy, h:mm:ss.fff tt')),\"--\"),\r\n    state = coalesce(tostring(rawObject.currentState),\"Open\"),\r\n    channel = coalesce(tostring(raw.channel),\"--\"),\r\n    workstream = coalesce(tostring(raw.workstream),\"--\"),\r\n    requiredCapacityUnit = coalesce(tostring(raw.requiredCapacityUnit),\"--\"),\r\n    queue = coalesce(tostring(rawObject.queue),\"--\"),\r\n    allowedPresence = coalesce(tostring(raw.allowedPresence),\"--\"),\r\n    assignmentMethod = coalesce(tostring(raw.assignmentMethod),\"--\"),\r\n    recordId = coalesce(tostring(rawObject.recordId),\"--\"),\r\n    recordType = coalesce(tostring(recordTypeRaw.entityLogicalName),\"--\")\r\n| extend html = strcat(\r\n    '<div style=\"display: grid; grid-template-columns: 2fr 2fr; gap: 0px 0px;\">',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">ConversationID</span> : ', conversationId, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">RecordId</span> : ', recordId, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Record Type</span> : ', recordType, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Timestamp (UTC)</span> : ', timestamp, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">State</span> : ', state, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Channel</span> : ', channel, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Workstream</span> : ', workstream, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Required Capacity</span> : ', requiredCapacityUnit, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Queue</span> : ', queue, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Allowed presence</span> : ', allowedPresence, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Assignment method</span> : ', assignmentMethod, '</div></div>',\r\n    '</div>'\r\n)\r\n| project html",
                     "size": 1,
                     "queryType": 0,
                     "resourceType": "microsoft.insights/components",
@@ -1989,7 +2118,7 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let rawObject = dynamic({jsonObject});\r\nlet _conversationId = tostring(rawObject.conversationId);\r\nlet tracesParsed = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where isnotempty(conversationId) and isnotnull(conversationId)\r\n| where conversationId == _conversationId\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions)\r\n| sort by timestamp asc\r\n| project Timestamp = timestamp, Event = subscenario, [\"Custom Dimensions\"]=parse_json(customDimensions), [\"Conversation ID\"] = conversationId\r\n;\r\n\r\ntracesParsed;",
+              "query": "let rawObject = dynamic({jsonObject});\r\nlet _conversationId = tostring(rawObject.conversationId);\r\nlet tracesParsed = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| where isnotempty(conversationId) and isnotnull(conversationId)\r\n| where conversationId == _conversationId\r\n| summarize by timestamp, conversationId, subscenario, tostring(customDimensions)\r\n| sort by timestamp asc\r\n| project Timestamp = timestamp, Event = subscenario, [\"Custom Dimensions\"]=parse_json(customDimensions), [\"Conversation ID\"] = conversationId\r\n;\r\n\r\ntracesParsed;",
               "size": 0,
               "queryType": 0,
               "resourceType": "microsoft.insights/components",
@@ -2042,11 +2171,102 @@
         "groupType": "editable",
         "items": [
           {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "2efcfae8-e6bb-486a-9b35-5e11885e1e46",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "csrdetailsjsonraw",
+                  "type": 1,
+                  "isGlobal": true,
+                  "query": "//csrdetailsjsonraw\r\nlet raw = dynamic({jsonObject});\r\nlet agentId = tostring(raw.agentId); // Replace with actual agent ID\r\nlet inputTime = todatetime(raw.timestamp); // Replace with reference timestamp\r\nlet agentMapping = dynamic({agentNameJson}); // Agent ID to Name mapping JSON\r\n\r\n// Create table with agentId and agentName with fallback\r\nlet agentNameTable = range x from 1 to 1 step 1\r\n| extend agentId = agentId\r\n| extend agentName = coalesce(tostring(agentMapping[agentId]), \"Unknown Agent\")\r\n| project agentId, agentName;\r\n\r\nlet agentConfig = traces\r\n| where timestamp between (inputTime - 10d .. inputTime)\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    orgId = tostring(customDim[\"powerplatform.analytics.resource.organization.id\"])\r\n| where orgId in (raw.orgIdFromDropDown)\r\n| where tostring(customDim[\"powerplatform.analytics.subscenario\"]) == \"CSRConfigurationDetails\"\r\n| where tostring(customDim[\"omnichannel.agent.id\"]) == agentId\r\n| top 1 by timestamp desc\r\n| extend\r\n    agentId = tostring(customDim[\"omnichannel.agent.id\"]),\r\n    MaxCapacityUnits = toint(customDim[\"omnichannel.max_capacity.units\"])\r\n| extend\r\n    Skills = parse_json(tostring(customDim[\"omnichannel.associated_skills\"])),\r\n    CapacityProfileIds = parse_json(tostring(customDim[\"omnichannel.capacity_profile.ids\"])),\r\n    QueueIds = parse_json(tostring(customDim[\"omnichannel.queue.ids\"]))\r\n| project agentId, Skills, CapacityProfileIds, MaxCapacityUnits, QueueIds;\r\n\r\n// Join agentNameTable and agentConfig on agentId\r\nagentNameTable\r\n| join kind=leftouter agentConfig on agentId\r\n| project agentId, agentName, Skills, CapacityProfileIds, MaxCapacityUnits, QueueIds\r\n| extend agentJSON = bag_pack(\"agentName\", agentName,\r\n                              \"agentId\", agentId,\r\n                              \"agentskills\", Skills,\r\n                              \"agentCapacityProfileIds\", CapacityProfileIds,\r\n                              \"agentMaxCapacityUnits\", MaxCapacityUnits,\r\n                              \"agentQueueIds\", QueueIds)\r\n| project agentJSON\r\n",
+                  "queryType": 0,
+                  "resourceType": "microsoft.insights/components",
+                  "value": null
+                }
+              ],
+              "style": "pills",
+              "doNotRunWhenHidden": true,
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components"
+            },
+            "name": "parameters - 9 - Copy",
+            "styleSettings": {
+              "margin": "-200px 0 -50px 0"
+            }
+          },
+          {
             "type": 1,
             "content": {
               "json": "### CSR details"
             },
             "name": "text - 13 - Copy - Copy - Copy - Copy"
+          },
+          {
+            "type": 9,
+            "content": {
+              "version": "KqlParameterItem/1.0",
+              "parameters": [
+                {
+                  "id": "c39af63e-5605-4f60-9505-e481c310017d",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "agentQueues",
+                  "type": 1,
+                  "isGlobal": true,
+                  "query": "let raw = dynamic({csrdetailsjsonraw});\r\nlet parsed = raw;\r\nlet agentQueueIds = parsed.agentQueueIds;\r\nrange idx from 0 to array_length(agentQueueIds) - 1 step 1\r\n| extend htmlItem = strcat(\"<li>\", tostring(agentQueueIds[idx]), \"</li>\")\r\n| summarize htmlList = strcat_array(make_list(htmlItem), \"\")\r\n| project htmlList = strcat(\"<ol style='max-height: 90px; overflow-y: auto;'>\", coalesce(htmlList, \"No queues available\"), \"</ol>\")",
+                  "isHiddenWhenLocked": true,
+                  "queryType": 0,
+                  "resourceType": "microsoft.insights/components"
+                },
+                {
+                  "id": "874be050-77fd-4cca-9880-5d4ecb792451",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "agentSkills",
+                  "type": 1,
+                  "isGlobal": true,
+                  "query": "let raw = dynamic({csrdetailsjsonraw});\r\nlet parsed = raw;\r\nlet agentSkills = iif(isnull(parsed.agentskills), dynamic([]), parsed.agentskills);\r\ndatatable(dummy:int)[1]\r\n| mv-expand skill = agentSkills\r\n| extend htmlItem = strcat(\"<li>\", tostring(skill), \"</li>\")\r\n| summarize htmlList = strcat_array(make_list(htmlItem), \"\")\r\n| project htmlList = strcat(\"<ol style='max-height: 90px; overflow-y:auto;'>\", coalesce(htmlList, \"No skills available\"), \"</ol>\")",
+                  "isHiddenWhenLocked": true,
+                  "queryType": 0,
+                  "resourceType": "microsoft.insights/components"
+                },
+                {
+                  "id": "55273ab0-633c-4a9a-9ee2-44fdbfa4e4d1",
+                  "version": "KqlParameterItem/1.0",
+                  "name": "agentCapacityProfiles",
+                  "type": 1,
+                  "isGlobal": true,
+                  "query": "let raw = dynamic({csrdetailsjsonraw});\r\nlet parsed = raw;\r\nlet agentCapacityProfileIds = iif(isnull(parsed.agentCapacityProfileIds), dynamic([]), parsed.agentCapacityProfileIds);\r\ndatatable(dummy:int)[1]\r\n| mv-expand id = agentCapacityProfileIds\r\n| extend htmlItem = strcat(\"<li>\", tostring(id), \"</li>\")\r\n| summarize htmlList = strcat_array(make_list(htmlItem), \"\")\r\n| project htmlList = strcat(\"<ol style='max-height: 90px; overflow-y:auto;'>\", coalesce(htmlList, \"No capcity profile available\"), \"</ol>\")",
+                  "isHiddenWhenLocked": true,
+                  "queryType": 0,
+                  "resourceType": "microsoft.insights/components"
+                }
+              ],
+              "style": "pills",
+              "doNotRunWhenHidden": true,
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components"
+            },
+            "conditionalVisibilities": [
+              {
+                "parameterName": "jsonObject",
+                "comparison": "isNotEqualTo"
+              },
+              {
+                "parameterName": "screen",
+                "comparison": "isEqualTo",
+                "value": "csrdetails"
+              },
+              {
+                "parameterName": "csrdetailsjsonraw",
+                "comparison": "isNotEqualTo"
+              }
+            ],
+            "name": "parameters - 9 - Copy - Copy",
+            "styleSettings": {
+              "margin": "-200px 0 -50px 0"
+            }
           },
           {
             "type": 12,
@@ -2086,6 +2306,7 @@
                     "groupType": "editable",
                     "title": "Queues",
                     "expandable": true,
+                    "expanded": true,
                     "items": [
                       {
                         "type": 1,
@@ -2113,6 +2334,7 @@
                     "groupType": "editable",
                     "title": "Skills ",
                     "expandable": true,
+                    "expanded": true,
                     "items": [
                       {
                         "type": 1,
@@ -2140,6 +2362,7 @@
                     "groupType": "editable",
                     "title": "Capacity profile",
                     "expandable": true,
+                    "expanded": true,
                     "items": [
                       {
                         "type": 1,
@@ -2280,6 +2503,217 @@
       "styleSettings": {
         "margin": "-75px 0 0 0"
       }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 1,
+            "content": {
+              "json": "### Record Details"
+            },
+            "conditionalVisibility": {
+              "parameterName": "screen",
+              "comparison": "isEqualTo",
+              "value": "recorddetails"
+            },
+            "name": "recordetailstitle"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Information",
+              "expandable": true,
+              "expanded": true,
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "let raw = dynamic({jsonQueryOutputConversation});\r\nlet rawObject = dynamic({jsonObject});\r\nlet inputRecordId = tostring(rawObject.recordId);\r\n\r\n\r\nlet intakeInfo = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend \r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    recordId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    additionalInfo = parse_json(tostring(customDim[\"omnichannel.additional_info\"]))\r\n| where recordId == inputRecordId\r\n| where subscenario == \"Intake\"\r\n| summarize arg_max(timestamp, *) by recordId\r\n| summarize RoutedOn = max(timestamp) by RecordId = recordId, RecordType = tostring(additionalInfo.entitylogicalname);\r\n\r\n\r\ndatatable(dummy:int)[1]\r\n| extend\r\n    RecordId = coalesce(tostring(rawObject.recordId), \"--\")\r\n| join kind=leftouter intakeInfo on RecordId\r\n| extend RoutedOnStr = coalesce(tostring(format_datetime(RoutedOn, 'M/d/yyyy, h:mm:ss.fff tt')), \"--\")\r\n| extend html = strcat(\r\n    '<div style=\"display: grid; grid-template-columns: 2fr 2fr; gap: 0px 0px;\">',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Record ID</span> : ', RecordId, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Routed On (UTC)</span> : ', RoutedOnStr, '</div></div>',\r\n    '<div style=\"margin-top: 10px; margin-bottom: 10px;\"><div><span style=\"font-family: Segoe UI;font-size: 13px;font-weight: 400;line-height: 18px;color:#605E5C;\">Record Type</span> : ', RecordType, '</div></div>',\r\n    '</div>'\r\n)\r\n| project html\r\n",
+                    "size": 4,
+                    "queryType": 0,
+                    "resourceType": "microsoft.insights/components",
+                    "visualization": "card",
+                    "textSettings": {
+                      "style": "markdown"
+                    }
+                  },
+                  "name": "query - 0"
+                }
+              ]
+            },
+            "name": "information",
+            "styleSettings": {
+              "margin": "0 0 -75px 0"
+            }
+          },
+          {
+            "type": 11,
+            "content": {
+              "version": "LinkItem/1.0",
+              "style": "list",
+              "links": [
+                {
+                  "id": "07fb4a6e-101d-4766-a3ec-aae6776e35ee",
+                  "cellValue": "screen",
+                  "linkTarget": "WorkbookTemplate",
+                  "linkLabel": "View all events",
+                  "preText": "Record events:",
+                  "style": "link",
+                  "linkIsContextBlade": true,
+                  "workbookContext": {
+                    "componentIdSource": "workbook",
+                    "resourceIdsSource": "workbook",
+                    "templateIdSource": "parameter",
+                    "templateId": "templateId",
+                    "typeSource": "workbook",
+                    "gallerySource": "workbook",
+                    "locationSource": "workbook",
+                    "passSpecificParams": true,
+                    "templateParameters": [
+                      {
+                        "name": "screen",
+                        "source": "static",
+                        "value": "allrecordevents"
+                      },
+                      {
+                        "name": "jsonObject",
+                        "source": "parameter",
+                        "value": "jsonObject"
+                      },
+                      {
+                        "name": "prevScreenParams",
+                        "source": "parameter",
+                        "value": "jsonObject"
+                      },
+                      {
+                        "name": "previousScreen",
+                        "source": "static",
+                        "value": "recorddetails"
+                      }
+                    ],
+                    "viewerMode": false
+                  }
+                }
+              ]
+            },
+            "name": "allrecordevents"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let rawObject = dynamic({jsonObject});\r\nlet inputRecordId = tostring(rawObject.recordId);\r\n\r\n// Step 1: Get all ConversationCreated events with recordId\r\nlet createdEvents = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    recordId = tostring(customDim[\"omnichannel.record.id\"]),\r\n    createdTime = timestamp\r\n| where subscenario == \"ConversationCreated\" and recordId == inputRecordId\r\n| distinct  timestamp, conversationId, recordId, createdTime\r\n| sort by createdTime asc\r\n| serialize\r\n| extend idx = row_number()\r\n| extend prevCreatedTime = iff(idx == 1, datetime(null), prev(createdTime));\r\n\r\n\r\n// Step 2: Get all events that have same recordId\r\nlet recordEvents  = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend\r\n    recordId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    eventTimestamp = timestamp\r\n| where recordId == inputRecordId\r\n| distinct recordId, subscenario, eventTimestamp;\r\n\r\n// Step 3: Tag those recordId events to the right conversation window\r\nlet recordTimeline = createdEvents\r\n| join kind=inner (\r\n    recordEvents\r\n) on recordId\r\n| where \r\n    (isnull(prevCreatedTime) and eventTimestamp < createdTime)\r\n    or (eventTimestamp >= prevCreatedTime and eventTimestamp < createdTime)\r\n| extend conversationLabel = strcat(\"ConversationId: \", conversationId)\r\n| project conversationLabel, subscenario, eventTimestamp, createdTime, recordId, conversationId;\r\n\r\n// Step 4: Now get all events for those conversationIds\r\nlet conversationEvents = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| extend\r\n    conversationId = tostring(customDim[\"powerplatform.analytics.resource.id\"]),\r\n    subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"]),\r\n    eventTimestamp = timestamp\r\n| where conversationId in (createdEvents | project conversationId)\r\n| extend conversationLabel = strcat(\"ConversationId: \", conversationId)\r\n| project conversationId, conversationLabel, eventTimestamp, subscenario, source = \"Conversation Event\";\r\n\r\n//join allConversationEvents and conversationAdnRecordEvent to \r\n// Step 5: Union both and sort\r\nrecordTimeline\r\n| union conversationEvents\r\n| extend Timestamp = coalesce(tostring(format_datetime(eventTimestamp, 'M/d/yyyy, h:mm:ss.fff tt')), \"--\")\r\n| distinct conversationLabel, subscenario, Timestamp\r\n| sort by conversationLabel asc, Timestamp asc\r\n",
+              "size": 0,
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components",
+              "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "conversationLabel",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "subscenario",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "Initiated",
+                    "formatter": 6,
+                    "dateFormat": {
+                      "showUtcTime": true,
+                      "formatName": "shortDateTimePattern"
+                    }
+                  },
+                  {
+                    "columnMatch": "id",
+                    "formatter": 5
+                  },
+                  {
+                    "columnMatch": "parentId",
+                    "formatter": 5
+                  }
+                ],
+                "rowLimit": 10000,
+                "filter": true,
+                "hierarchySettings": {
+                  "treeType": 1,
+                  "groupBy": [
+                    "conversationLabel"
+                  ],
+                  "finalBy": "subscenario"
+                },
+                "labelSettings": [
+                  {
+                    "columnId": "conversationLabel",
+                    "label": "Step"
+                  },
+                  {
+                    "columnId": "Timestamp",
+                    "label": "Timestamp (UTC)"
+                  }
+                ]
+              },
+              "sortBy": []
+            },
+            "conditionalVisibility": {
+              "parameterName": "screen",
+              "comparison": "isEqualTo",
+              "value": "recorddetails"
+            },
+            "name": "RecordConversationDetailsTable",
+            "styleSettings": {
+              "margin": "0px"
+            }
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "screen",
+        "comparison": "isEqualTo",
+        "value": "recorddetails"
+      },
+      "name": "recorddetailsmaingroup",
+      "styleSettings": {
+        "margin": "-50px 0 0 0"
+      }
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "All Record Events",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "let rawObject = dynamic({jsonObject});\r\nlet _recordId = tostring(rawObject.recordId);\r\n\r\nlet tracesParsed = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| where customDim has _recordId\r\n| extend subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| extend recordId = iff(subscenario != \"ConversationCreated\" , tostring(customDim[\"powerplatform.analytics.resource.id\"]), tostring(customDim[\"omnichannel.record.id\"]))\r\n| where isnotempty(recordId) and isnotnull(recordId)\r\n| summarize by timestamp, recordId, subscenario, tostring(customDimensions)\r\n| sort by timestamp asc\r\n| project Timestamp = timestamp, RecordId = recordId, Subscenario = subscenario, CustomDimensions = parse_json(customDimensions);\r\n\r\ntracesParsed;",
+              "size": 0,
+              "queryType": 0,
+              "resourceType": "microsoft.insights/components",
+              "visualization": "table",
+              "gridSettings": {
+                "rowLimit": 10000
+              }
+            },
+            "name": "allrecordevents"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "screen",
+        "comparison": "isEqualTo",
+        "value": "allrecordevents"
+      },
+      "name": "allrecordevents"
     }
   ],
   "fallbackResourceIds": [
