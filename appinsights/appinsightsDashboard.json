@@ -2132,6 +2132,14 @@
                       "showUtcTime": true,
                       "formatName": "shortDateTimePattern"
                     }
+                  },
+                  {
+                    "columnMatch": "Custom Dimensions",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "CellDetails",
+                      "linkIsContextBlade": true
+                    }
                   }
                 ],
                 "labelSettings": [
@@ -2613,6 +2621,7 @@
               "size": 0,
               "queryType": 0,
               "resourceType": "microsoft.insights/components",
+              "visualization": "table",
               "gridSettings": {
                 "formatters": [
                   {
@@ -2695,12 +2704,22 @@
             "type": 3,
             "content": {
               "version": "KqlItem/1.0",
-              "query": "let rawObject = dynamic({jsonObject});\r\nlet _recordId = tostring(rawObject.recordId);\r\n\r\nlet tracesParsed = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| where customDim has _recordId\r\n| extend subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| extend recordId = iff(subscenario != \"ConversationCreated\" , tostring(customDim[\"powerplatform.analytics.resource.id\"]), tostring(customDim[\"omnichannel.record.id\"]))\r\n| where isnotempty(recordId) and isnotnull(recordId)\r\n| summarize by timestamp, recordId, subscenario, tostring(customDimensions)\r\n| sort by timestamp asc\r\n| project Timestamp = timestamp, RecordId = recordId, Subscenario = subscenario, CustomDimensions = parse_json(customDimensions);\r\n\r\ntracesParsed;",
+              "query": "let rawObject = dynamic({jsonObject});\r\nlet _recordId = tostring(rawObject.recordId);\r\n\r\nlet tracesParsed = traces\r\n| extend customDim = parse_json(customDimensions)\r\n| where customDim has _recordId\r\n| extend subscenario = tostring(customDim[\"powerplatform.analytics.subscenario\"])\r\n| extend recordId = iff(subscenario != \"ConversationCreated\" , tostring(customDim[\"powerplatform.analytics.resource.id\"]), tostring(customDim[\"omnichannel.record.id\"]))\r\n| where isnotempty(recordId) and isnotnull(recordId)\r\n| summarize by timestamp, recordId, subscenario, tostring(customDimensions)\r\n| sort by timestamp asc\r\n| project Timestamp = timestamp, RecordId = recordId, Subscenario = subscenario, [\"Custom Dimensions\"] = parse_json(customDimensions);\r\n\r\ntracesParsed;",
               "size": 0,
               "queryType": 0,
               "resourceType": "microsoft.insights/components",
               "visualization": "table",
               "gridSettings": {
+                "formatters": [
+                  {
+                    "columnMatch": "Custom Dimensions",
+                    "formatter": 7,
+                    "formatOptions": {
+                      "linkTarget": "CellDetails",
+                      "linkIsContextBlade": true
+                    }
+                  }
+                ],
                 "rowLimit": 10000
               }
             },
