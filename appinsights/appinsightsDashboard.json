@@ -2624,14 +2624,14 @@
               "visualization": "table",
               "gridSettings": {
                 "formatters": [
-                  {
-                    "columnMatch": "conversationLabel",
-                    "formatter": 5
-                  },
-                  {
-                    "columnMatch": "subscenario",
-                    "formatter": 5
-                  },
+                  // {
+                  //   "columnMatch": "conversationLabel",
+                  //   "formatter": 5
+                  // },
+                  // {
+                  //   "columnMatch": "subscenario",
+                  //   "formatter": 5
+                  // },
                   {
                     "columnMatch": "Initiated",
                     "formatter": 6,
@@ -2651,13 +2651,13 @@
                 ],
                 "rowLimit": 10000,
                 "filter": true,
-                "hierarchySettings": {
-                  "treeType": 1,
-                  "groupBy": [
-                    "conversationLabel"
-                  ],
-                  "finalBy": "subscenario"
-                },
+                // "hierarchySettings": {
+                //   "treeType": 1,
+                //   "groupBy": [
+                //     "conversationLabel"
+                //   ],
+                //   "finalBy": "subscenario"
+                // },
                 "labelSettings": [
                   {
                     "columnId": "conversationLabel",
