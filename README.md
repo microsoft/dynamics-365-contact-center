@@ -12,6 +12,17 @@ Built upon the Microsoft Azure, Power Platform, and core Dynamics 365 infrastruc
 2. Install Node [latest version](https://nodejs.org/en/download/package-manager)
 3. git clone `https://github.com/microsoft/dynamics-365-contact-center.git`
 
+## Build Environment
+ Recommended versions for compiling custom CTI drivers:
+ - Node: 22.x LTS (minimum supported: 16.20.x)
+ - npm: >=8 (minimum: >=7 for lockfile v2; use `npm ci` not `npm install`)
+ - TypeScript: 5.5.x–5.9.x (minimum: 4.9.5; earlier versions fail with loader/types)
+ - webpack: 5.x (must produce a single bundled JS file that registers `window.CCaaS.CTIDriver`)
+ - ts-loader: 9.x
+ - tsconfig key settings: `module: commonjs`, `target: es6` (If you change either, rebuild and test in the embedded environment to ensure the driver still loads.)
+
+> Disclaimer: Earlier Node (>=16.1.x) and TypeScript (>=4.9.5) versions may build, but only the listed minimums and recommendations are validated for deterministic single-file bundles and reliable runtime loading.
+
 # CTIDriver Setup
 
 The CTI driver serves as a bridge between the Microsoft Omnichannel Add-on and Salesforce CRM, allowing for the integration of telephony features into the CRM environment.
