@@ -55,7 +55,7 @@ a. **Upload Custom CTI Driver to Web Resource:**
 b. **Use the CCaaS URL with Web Resource:**
 
    ```url
-   https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://<dynamics-environment>.crm.dynamics.com&useCustomCTI=1&msdynembedmode=3
+   https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://<dynamics-environment>.crm.dynamics.com&useCustomCTI=1
    ```
 
 **Note:** To verify web resource loading, check browser console for the element:
@@ -77,7 +77,7 @@ b. **Host the compiled file externally:**
 - Use the CCaaS URL with external CTI driver:
 
    ```url
-   https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://<dynamics-environment>.crm.dynamics.com&useCustomCTI=1&ctiDriverUrl=<CDN-url>&msdynembedmode=3
+   https://<example-ccaas-domain>/widget/index.html?dynamicsUrl=https://<dynamics-environment>.crm.dynamics.com&useCustomCTI=1&ctiDriverUrl=<CDN-url>
    ```
 
 #### **Approach 3: Default CTI Driver**
@@ -88,7 +88,7 @@ Use the built-in default CTI driver without any custom implementation:
 2. Use the following URL format:
 
    ```url
-   https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0&msdynembedmode=3
+   https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0
    ```
 
 3. The system will automatically load the default CTI driver based on the environment
@@ -108,9 +108,9 @@ Use the built-in default CTI driver without any custom implementation:
 
 | useCustomCTI Parameter | App Setting | Expected Output | Example URL |
 |------------------------|-------------------|-----------------|-------------|
-| `useCustomCTI=1` | TRUE | Gets script from web resource (recommended) | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&msdynembedmode=3` |
-| `useCustomCTI=1` (deprecated) | FALSE | Gets script from ctiDriverUrl parameter | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&ctiDriverUrl=https://your-cdn-url.com/js/YourCTIDriver.js&msdynembedmode=3` |
-| `useCustomCTI=0` | Ignored | Uses default CTI driver (ignores ctiDriverUrl and web resource) | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0&msdynembedmode=3` |
+| `useCustomCTI=1` | TRUE | Gets script from web resource (recommended) | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1` |
+| `useCustomCTI=1` (deprecated) | FALSE | Gets script from ctiDriverUrl parameter | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=1&ctiDriverUrl=https://your-cdn-url.com/js/YourCTIDriver.js` |
+| `useCustomCTI=0` | Ignored | Uses default CTI driver (ignores ctiDriverUrl and web resource) | `https://ccaas-embed-test.azureedge.net/widget/index.html?dynamicsUrl=https://example.crm10.dynamics.com/&useCustomCTI=0` |
 
 **example-ccaas-domain**: `https://ccaas-embed-prod.azureedge.net`
 
