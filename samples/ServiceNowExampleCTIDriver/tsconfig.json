@@ -1,25 +1,19 @@
-/* 
+/*
   Copyright (c) Microsoft Corporation.
   Licensed under the MIT License.
 */
 {
-  "compileOnSave": false,
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "target": "es6",
     "outDir": "./dist",
-    "declaration": true,
-    "declarationMap": true,
-    "experimentalDecorators": true,
-    "moduleResolution": "node",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "resolveJsonModule": true,
-    "isolatedModules": true
-  }
+    "rootDir": "./src",
+    "baseUrl": "..",
+    "paths": {
+      "@ccaas/CCaaSEmbedSDK": ["./ICCaaSEmbedSDK/typings/CCaaSEmbedSDK.d.ts"],
+      "@ccaas/CCaaSEmbedSDK/enums": ["./ICCaaSEmbedSDK/typings/enums.ts"],
+      "@ccaas/ictiinterface": ["./ICTIInterface/typings/ICTI.d.ts"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

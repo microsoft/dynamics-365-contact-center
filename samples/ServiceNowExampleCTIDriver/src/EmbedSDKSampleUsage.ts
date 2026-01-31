@@ -17,34 +17,14 @@ import Microsoft, {
     ISentimentObject,
     ITranscriptMessage
 } from "@ccaas/CCaaSEmbedSDK";
-
-enum BasePresenceStatus {
-	AVAILABLE = "AVAILABLE",
-	AWAY = "AWAY",
-	BUSY = "BUSY",
-	BUSY_DO_NOT_DISTURB = "BUSY_DO_NOT_DISTURB",
-	OFFLINE = "OFFLINE"
-}
-
-enum NotificationLevels {
-	Success = 1,
-	Error = 2,
-	Warning = 3,
-	Information = 4
-}
-
-enum OCLiveWorkItemStatus {
-	Active = 2,
-	WrapUp = 5,
-	Closed = 4
-}
+import { BasePresenceStatus, NotificationLevels, OCLiveWorkItemStatus } from "@ccaas/CCaaSEmbedSDK/enums";
 
 const SERVICE_NOW_DOMAIN = "service-now.com";
 
 type EmbedSDK = typeof Microsoft.CCaaS.EmbedSDK;
 
 export function embedSDKSampleUsage(): void {
-    const embedSDK: EmbedSDK = (window as any).Microsoft.CCaaS.EmbedSDK;
+    const embedSDK: EmbedSDK | undefined = window.Microsoft?.CCaaS?.EmbedSDK;
 
     if (embedSDK) {
 
@@ -86,7 +66,7 @@ export function embedSDKSampleUsage(): void {
                             contactDetails.msdyn_source_crm_url &&
                             contactDetails.msdyn_source_crm_url.includes(SERVICE_NOW_DOMAIN)
                         ) {
-                            (window as any).openFrameAPI.openServiceNowForm({
+                            window.openFrameAPI?.openServiceNowForm({
                                 entity: "customer_contact",
                                 query: `sys_id=${contactDetails.msdyn_source_crm_id}`
                             });
@@ -110,7 +90,7 @@ export function embedSDKSampleUsage(): void {
                             accountDetails.msdyn_source_crm_url &&
                             accountDetails.msdyn_source_crm_url.includes(SERVICE_NOW_DOMAIN)
                         ) {
-                            (window as any).openFrameAPI.openServiceNowForm({
+                            window.openFrameAPI?.openServiceNowForm({
                                 entity: "customer_contact",
                                 query: `sys_id=${accountDetails.msdyn_source_crm_id}`
                             });
@@ -287,21 +267,21 @@ const retrieveMultipleRecords = (embedSDK: EmbedSDK, liveWorkItemId: string) => 
         .catch((error) => console.error("Embed SDK Failed to retrieve multiple records:", error));
 }
 
- const setSoftPhonePanelWidth = (width: number) => {
-    (window as any).openFrameAPI.setWidth(width);
-}
+const setSoftPhonePanelWidth = (width: number): void => {
+    window.openFrameAPI?.setWidth(width);
+};
 
- const setSoftPhonePanelHeight = (height: number) => {
-    (window as any).openFrameAPI.setHeight(height);
-}
+const setSoftPhonePanelHeight = (height: number): void => {
+    window.openFrameAPI?.setHeight(height);
+};
 
-const setSoftPhonePanelVisibility = (visible: boolean) => {
+const setSoftPhonePanelVisibility = (visible: boolean): void => {
     if (visible) {
-        (window as any).openFrameAPI.show();
-      } else {
-        (window as any).openFrameAPI.hide();
-      }
-}
+        window.openFrameAPI?.show();
+    } else {
+        window.openFrameAPI?.hide();
+    }
+};
 
 const getConversationDataUsingFetchXML = (embedSDK: EmbedSDK, liveWorkItemId: string) => {
     const fetchXmlQuery = `

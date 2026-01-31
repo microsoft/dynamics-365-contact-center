@@ -4,17 +4,6 @@
 import { ICTIInterface } from "@ccaas/ictiinterface";
 import { embedSDKSampleUsage } from "./EmbedSDKSampleUsage";
 
-declare global {
-    interface SalesForce {
-        opencti: any;
-    }
-    interface Window {
-        sforce: SalesForce;
-        CCaaS: any;
-        Microsoft: any;
-    }
-}
-
 const OPEN_CTI_VERSION = '54.0';
 
 class SFExampleCTIDriver implements ICTIInterface {

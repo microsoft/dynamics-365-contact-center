@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "..",
+    "declaration": true,
+    "declarationMap": true,
+    "paths": {
+      "@ccaas/CCaaSEmbedSDK": ["./ICCaaSEmbedSDK/typings/CCaaSEmbedSDK.d.ts"],
+      "@ccaas/CCaaSEmbedSDK/enums": ["./ICCaaSEmbedSDK/typings/enums.ts"],
+      "@ccaas/ictiinterface": ["./ICTIInterface/typings/ICTI.d.ts"]
+    }
+  },
+  "include": ["src/**/*", "../ICCaaSEmbedSDK/typings/globals.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

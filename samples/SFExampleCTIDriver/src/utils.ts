@@ -34,27 +34,28 @@ const CONVERSATION_TYPE = {
  * @returns {Promise<void>} A promise that resolves when the conversation is ready, or rejects with an error if any issues occur.
  */
 export async function conversationReady(conversationData: IConversationLoadedEventData, conversationDetails: Partial<IConversationData>): Promise<void> {
+    const opencti = window.sforce?.opencti;
+    if (!opencti) {
+        throw new Error('Salesforce OpenCTI not available');
+    }
 
-    return new Promise<void>(async (resolve, reject) => {
+    // Get conversation call type (example: inbound, outbound, etc.)
+    let conversationCallType = opencti.CALL_TYPE.INBOUND;
 
-        // Get conversation call type (example: inbound, outbound, etc.)
-        let conversationCallType = window.sforce.opencti.CALL_TYPE.INBOUND;
-
-        if (conversationDetails.msdyn_channel) {
-            if (Number(conversationDetails.msdyn_channel) === CONVERSATION_TYPE.VOICE || Number(conversationDetails.msdyn_channel) === CONVERSATION_TYPE.VOICE_CALL) {
-                if (conversationDetails.msdyn_isoutbound) {
-                    conversationCallType = window.sforce.opencti.CALL_TYPE.OUTBOUND;
-                }
+    if (conversationDetails.msdyn_channel) {
+        if (Number(conversationDetails.msdyn_channel) === CONVERSATION_TYPE.VOICE || Number(conversationDetails.msdyn_channel) === CONVERSATION_TYPE.VOICE_CALL) {
+            if (conversationDetails.msdyn_isoutbound) {
+                conversationCallType = opencti.CALL_TYPE.OUTBOUND;
             }
         }
+    }
 
-        // find if contact or account salesforce record available for given customer info
-        const { contactId, accountId } = await getContactOrAccountId(conversationData, conversationCallType);
+    // find if contact or account salesforce record available for given customer info
+    const { contactId, accountId } = await getContactOrAccountId(conversationData, conversationCallType);
 
-        if (contactId || accountId) {
-            screenPop(contactId || accountId);
-        }
-    });
+    if (contactId || accountId) {
+        await screenPop(contactId ?? accountId ?? '');
+    }
 }
 
 /**
@@ -62,9 +63,15 @@ export async function conversationReady(conversationData: IConversationLoadedEve
  * @param {ClickToDialCallbackFunction} callbackFuntion func to be registered for click-to-dial.
  * @returns void
  */
-export function onClickToDial(callbackFuntion): void {
-    window.sforce.opencti.enableClickToDial();
-    window.sforce.opencti.onClickToDial({
+export function onClickToDial(callbackFuntion: (payload: ClickDialPayloadInfo) => void): void {
+    const opencti = window.sforce?.opencti;
+    if (!opencti) {
+        console.warn('Salesforce OpenCTI not available for click-to-dial');
+        return;
+    }
+
+    opencti.enableClickToDial();
+    opencti.onClickToDial({
         listener: (payload) => {
             const clickDialPayload: ClickDialPayloadInfo = {
                 number: payload.number
@@ -81,12 +88,17 @@ export function onClickToDial(callbackFuntion): void {
  * Initiates a screen pop action in OpenCTI.
  *
  * @param {string} recordId - The ID of the record to be displayed in the screen pop.
- * @returns {Promise<string>} A promise that resolves with a success message upon successful screen pop, or rejects with an error message if screen pop fails.
+ * @returns {Promise<boolean>} A promise that resolves with success status, or rejects with an error message if screen pop fails.
  */
-function screenPop(recordId: string): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        window.sforce.opencti.screenPop({
-            type: window.sforce.opencti.SCREENPOP_TYPE.SOBJECT,
+function screenPop(recordId: string): Promise<boolean> {
+    const opencti = window.sforce?.opencti;
+    if (!opencti) {
+        return Promise.reject(new Error('Salesforce OpenCTI not available'));
+    }
+
+    return new Promise<boolean>((resolve, reject) => {
+        opencti.screenPop({
+            type: opencti.SCREENPOP_TYPE.SOBJECT,
             params: {
                 recordId: recordId
             },
@@ -94,7 +106,7 @@ function screenPop(recordId: string): Promise<string> {
                 if (response.success) {
                     resolve(response.success);
                 } else {
-                    reject(response.errors);
+                    reject(new Error(response.errors?.join(', ') ?? 'Screen pop failed'));
                 }
             }
         });
@@ -109,8 +121,13 @@ function screenPop(recordId: string): Promise<string> {
  * @returns {Promise<SFRecordInfo[]>} A promise that resolves with an array of records found from the search.
  */
 export async function searchForRecords(searchParam: string, callType: string): Promise<SFRecordInfo[]> {
+    const opencti = window.sforce?.opencti;
+    if (!opencti) {
+        return Promise.reject(new Error('Salesforce OpenCTI not available'));
+    }
+
     return new Promise((resolve, reject) => {
-        window.sforce.opencti.searchAndScreenPop({
+        opencti.searchAndScreenPop({
             searchParams: searchParam,
             callType: callType,
             deferred: true,
@@ -128,7 +145,7 @@ export async function searchForRecords(searchParam: string, callType: string): P
                     }
                     resolve(recordsArray);
                 } else {
-                    reject(response.errors);
+                    reject(new Error(response.errors?.join(', ') ?? 'Search failed'));
                 }
             }
         });
@@ -173,15 +190,15 @@ async function getRecords(conversationData: IConversationLoadedEventData, conver
     let records: SFRecordInfo[] = [];
 
     try {
-        if (checkIfNotEmtpy(CUSTOMERDATAENUM.PHONENUMBER, conversationData)) {
+        if (checkIfNotEmpty(CUSTOMERDATAENUM.PHONENUMBER, conversationData)) {
             records = await searchForRecords(conversationData.customerPhoneNumber, conversationCallType);
-        } else if (checkIfNotEmtpy(CUSTOMERDATAENUM.NAME, conversationData)) {
+        } else if (checkIfNotEmpty(CUSTOMERDATAENUM.NAME, conversationData)) {
             records = await searchForRecords(conversationData.customerName, conversationCallType);
         }
 
         return records;
-    } catch (errors) {
-        throw new Error(errors);
+    } catch (error) {
+        throw error instanceof Error ? error : new Error(String(error));
     }
 }
 
@@ -191,6 +208,6 @@ async function getRecords(conversationData: IConversationLoadedEventData, conver
  * @param customerData object to be search in
  * @returns boolean
  */
-function checkIfNotEmtpy(fieldName: string, customerData: IConversationLoadedEventData) {
+function checkIfNotEmpty(fieldName: string, customerData: IConversationLoadedEventData) {
     return customerData[fieldName] !== undefined && customerData[fieldName] !== null && customerData[fieldName] !== "";
 }

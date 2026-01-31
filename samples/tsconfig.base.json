@@ -1,0 +1,66 @@
+/*
+  Copyright (c) Microsoft Corporation.
+  Licensed under the MIT License.
+
+  Base TypeScript configuration for all CTI Driver samples.
+  Individual samples should extend this configuration.
+*/
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ES2020",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "experimentalDecorators": true,
+
+    /* Modules */
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* Type Checking - Strict Mode */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    /* Additional Checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+
+    /* Emit */
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "outDir": "./dist",
+
+    /* Interop Constraints */
+    "isolatedModules": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+
+    /* Path Mapping */
+    "baseUrl": ".",
+    "paths": {
+      "@ccaas/CCaaSEmbedSDK": ["./ICCaaSEmbedSDK/typings/CCaaSEmbedSDK.d.ts"],
+      "@ccaas/CCaaSEmbedSDK/enums": ["./ICCaaSEmbedSDK/typings/enums.ts"],
+      "@ccaas/ictiinterface": ["./ICTIInterface/typings/ICTI.d.ts"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
+}

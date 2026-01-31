@@ -42,7 +42,7 @@ class GenericExampleCTIDriver implements ICTIInterface {
             };
 
             script.onerror = function () {
-                resolve(true);
+                reject(new Error(`Failed to load CTI library script: ${source}`));
             };
             document.getElementsByTagName('head')[0].appendChild(script);
         })
@@ -55,9 +55,9 @@ class GenericExampleCTIDriver implements ICTIInterface {
  * If CCaaS namespace does not exist, it creates it as an empty object.
  * If CTIDriver object does not exist within CCaaS namespace, it assigns it the value of GenericExampleCTIDriver.
  */
-(window as any).CCaaS = (window as any).CCaaS || {};
-if (!(window as any).CCaaS.CTIDriver) {
-    (window as any).CCaaS.CTIDriver = GenericExampleCTIDriver;
+window.CCaaS = window.CCaaS || {};
+if (!window.CCaaS.CTIDriver) {
+    window.CCaaS.CTIDriver = GenericExampleCTIDriver;
 }
 
 export default GenericExampleCTIDriver;

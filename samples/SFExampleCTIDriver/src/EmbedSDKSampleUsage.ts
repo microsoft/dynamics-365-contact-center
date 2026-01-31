@@ -17,29 +17,9 @@ import Microsoft, {
     ISentimentObject,
     ITranscriptMessage
 } from "@ccaas/CCaaSEmbedSDK";
+import { BasePresenceStatus, NotificationLevels, OCLiveWorkItemStatus } from "@ccaas/CCaaSEmbedSDK/enums";
 
 import { conversationReady, onClickToDial } from "./utils";
-
-enum BasePresenceStatus {
-	AVAILABLE = "AVAILABLE",
-	AWAY = "AWAY",
-	BUSY = "BUSY",
-	BUSY_DO_NOT_DISTURB = "BUSY_DO_NOT_DISTURB",
-	OFFLINE = "OFFLINE"
-}
-
-enum NotificationLevels {
-	Success = 1,
-	Error = 2,
-	Warning = 3,
-	Information = 4
-}
-
-enum OCLiveWorkItemStatus {
-	Active = 2,
-	WrapUp = 5,
-	Closed = 4
-}
 
 type EmbedSDK = typeof Microsoft.CCaaS.EmbedSDK;
 
@@ -227,32 +207,37 @@ const retrieveMultipleRecords = (embedSDK: EmbedSDK, liveWorkItemId: string) => 
         .catch((error) => console.error("Embed SDK Failed to retrieve multiple records:", error));
 }
 
- const setSoftPhonePanelWidth = (width: number) => {
-    window.sforce.opencti.setSoftphonePanelWidth({
+const setSoftPhonePanelWidth = (width: number): void => {
+    window.sforce?.opencti?.setSoftphonePanelWidth({
         widthPX: width
     });
-}
+};
 
- const setSoftPhonePanelHeight = (height: number) => {
-    window.sforce.opencti.setSoftphonePanelHeight({
+const setSoftPhonePanelHeight = (height: number): void => {
+    window.sforce?.opencti?.setSoftphonePanelHeight({
         heightPX: height
     });
-}
+};
 
-export const setSoftPhonePanelVisibility = (status: boolean = true) => {
-    const isPanelVisible = window.sforce.opencti.isSoftphonePanelVisible({
+export const setSoftPhonePanelVisibility = (status: boolean = true): void => {
+    const opencti = window.sforce?.opencti;
+    if (!opencti) {
+        console.warn('Salesforce OpenCTI not available');
+        return;
+    }
+
+    opencti.isSoftphonePanelVisible({
         callback: (response) => {
-            if (response.success) {
-                return response.returnValue.visible
-            } else {
-                throw new Error(response.errors);
+            if (response.success && response.returnValue) {
+                const isCurrentlyVisible = response.returnValue.visible;
+                if (status !== isCurrentlyVisible) {
+                    opencti.setSoftphonePanelVisibility({
+                        visible: status
+                    });
+                }
+            } else if (!response.success && response.errors) {
+                console.error('Failed to check panel visibility:', response.errors.join(', '));
             }
         }
     });
-
-    if (status !== isPanelVisible) {
-        window.sforce.opencti.setSoftphonePanelVisibility({
-            visible: status
-        });
-    }
-}
+};

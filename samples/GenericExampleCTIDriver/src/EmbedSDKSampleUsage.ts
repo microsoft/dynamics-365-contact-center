@@ -1,4 +1,4 @@
-import Microsoft , {
+import Microsoft, {
     IAssignedConversationList,
     IConsultEventData,
     IConversationData,
@@ -17,30 +17,7 @@ import Microsoft , {
     ISentimentObject,
     ITranscriptMessage
 } from "@ccaas/CCaaSEmbedSDK";
-
-// to be moved to typings file
-enum BasePresenceStatus {
-	AVAILABLE = "AVAILABLE",
-	AWAY = "AWAY",
-	BUSY = "BUSY",
-	BUSY_DO_NOT_DISTURB = "BUSY_DO_NOT_DISTURB",
-	OFFLINE = "OFFLINE"
-}
-
-// to be moved to typings file
-enum NotificationLevels {
-	Success = 1,
-	Error = 2,
-	Warning = 3,
-	Information = 4
-}
-
-// to be moved to typings file
-enum OCLiveWorkItemStatus {
-	Active = 2,
-	WrapUp = 5,
-	Closed = 4
-}
+import { BasePresenceStatus, NotificationLevels, OCLiveWorkItemStatus } from "@ccaas/CCaaSEmbedSDK/enums";
 
 type EmbedSDK = typeof Microsoft.CCaaS.EmbedSDK;
 
