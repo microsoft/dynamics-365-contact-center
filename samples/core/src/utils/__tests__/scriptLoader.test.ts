@@ -6,7 +6,13 @@ import {
     loadScriptsSequential,
     loadScriptsParallel,
     ScriptLoadError,
-    ScriptLoadOptions
+    ScriptLoadOptions,
+    preloadResource,
+    preloadScript,
+    prefetchResource,
+    preconnect,
+    dnsPrefetch,
+    removeResourceHint
 } from '../scriptLoader';
 
 describe('ScriptLoader', () => {
@@ -368,6 +374,167 @@ describe('ScriptLoader', () => {
             const loadPromise = loadScript(options);
             mockScript.onload?.();
             await expect(loadPromise).resolves.toBeUndefined();
+        });
+    });
+
+    describe('preloadResource', () => {
+        let mockLink: HTMLLinkElement;
+
+        beforeEach(() => {
+            mockLink = {
+                rel: '',
+                href: '',
+                as: '',
+                crossOrigin: '',
+                integrity: ''
+            } as unknown as HTMLLinkElement;
+
+            jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
+            jest.spyOn(document, 'querySelector').mockReturnValue(null);
+            jest.spyOn(document.head, 'appendChild').mockReturnValue(mockLink);
+        });
+
+        it('should create preload link element', () => {
+            const link = preloadResource({ url: 'http://test.com/script.js', as: 'script' });
+
+            expect(mockLink.rel).toBe('preload');
+            expect(mockLink.href).toBe('http://test.com/script.js');
+            expect(mockLink.as).toBe('script');
+            expect(link).toBe(mockLink);
+        });
+
+        it('should set crossOrigin when provided', () => {
+            preloadResource({ url: 'http://test.com/script.js', as: 'script', crossOrigin: 'anonymous' });
+            expect(mockLink.crossOrigin).toBe('anonymous');
+        });
+
+        it('should set integrity when provided', () => {
+            preloadResource({ url: 'http://test.com/script.js', as: 'script', integrity: 'sha384-abc' });
+            expect(mockLink.integrity).toBe('sha384-abc');
+        });
+
+        it('should return existing link if already preloaded', () => {
+            const existingLink = document.createElement('link');
+            jest.spyOn(document, 'querySelector').mockReturnValue(existingLink);
+
+            const result = preloadResource({ url: 'http://test.com/script.js', as: 'script' });
+            expect(result).toBe(existingLink);
+        });
+    });
+
+    describe('preloadScript', () => {
+        beforeEach(() => {
+            const mockLink = { rel: '', href: '', as: '', crossOrigin: '', integrity: '' } as unknown as HTMLLinkElement;
+            jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
+            jest.spyOn(document, 'querySelector').mockReturnValue(null);
+            jest.spyOn(document.head, 'appendChild').mockReturnValue(mockLink);
+        });
+
+        it('should preload script with as="script"', () => {
+            const link = preloadScript('http://test.com/script.js');
+            expect(link.as).toBe('script');
+        });
+    });
+
+    describe('prefetchResource', () => {
+        let mockLink: HTMLLinkElement;
+
+        beforeEach(() => {
+            mockLink = { rel: '', href: '' } as unknown as HTMLLinkElement;
+            jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
+            jest.spyOn(document, 'querySelector').mockReturnValue(null);
+            jest.spyOn(document.head, 'appendChild').mockReturnValue(mockLink);
+        });
+
+        it('should create prefetch link element', () => {
+            prefetchResource('http://test.com/next-page.js');
+
+            expect(mockLink.rel).toBe('prefetch');
+            expect(mockLink.href).toBe('http://test.com/next-page.js');
+        });
+
+        it('should return existing link if already prefetched', () => {
+            const existingLink = document.createElement('link');
+            jest.spyOn(document, 'querySelector').mockReturnValue(existingLink);
+
+            const result = prefetchResource('http://test.com/script.js');
+            expect(result).toBe(existingLink);
+        });
+    });
+
+    describe('preconnect', () => {
+        let mockLink: HTMLLinkElement;
+
+        beforeEach(() => {
+            mockLink = { rel: '', href: '', crossOrigin: '' } as unknown as HTMLLinkElement;
+            jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
+            jest.spyOn(document, 'querySelector').mockReturnValue(null);
+            jest.spyOn(document.head, 'appendChild').mockReturnValue(mockLink);
+        });
+
+        it('should create preconnect link element', () => {
+            preconnect('https://api.example.com');
+
+            expect(mockLink.rel).toBe('preconnect');
+            expect(mockLink.href).toBe('https://api.example.com');
+        });
+
+        it('should set crossOrigin when provided', () => {
+            preconnect('https://api.example.com', { crossOrigin: 'anonymous' });
+            expect(mockLink.crossOrigin).toBe('anonymous');
+        });
+
+        it('should return existing link if already preconnected', () => {
+            const existingLink = document.createElement('link');
+            jest.spyOn(document, 'querySelector').mockReturnValue(existingLink);
+
+            const result = preconnect('https://api.example.com');
+            expect(result).toBe(existingLink);
+        });
+    });
+
+    describe('dnsPrefetch', () => {
+        let mockLink: HTMLLinkElement;
+
+        beforeEach(() => {
+            mockLink = { rel: '', href: '' } as unknown as HTMLLinkElement;
+            jest.spyOn(document, 'createElement').mockReturnValue(mockLink);
+            jest.spyOn(document, 'querySelector').mockReturnValue(null);
+            jest.spyOn(document.head, 'appendChild').mockReturnValue(mockLink);
+        });
+
+        it('should create dns-prefetch link element', () => {
+            dnsPrefetch('https://api.example.com');
+
+            expect(mockLink.rel).toBe('dns-prefetch');
+            expect(mockLink.href).toBe('https://api.example.com');
+        });
+
+        it('should return existing link if already prefetched', () => {
+            const existingLink = document.createElement('link');
+            jest.spyOn(document, 'querySelector').mockReturnValue(existingLink);
+
+            const result = dnsPrefetch('https://api.example.com');
+            expect(result).toBe(existingLink);
+        });
+    });
+
+    describe('removeResourceHint', () => {
+        it('should remove all resource hints for URL', () => {
+            const mockElement = { remove: jest.fn() };
+            jest.spyOn(document, 'querySelector').mockReturnValue(mockElement as unknown as Element);
+
+            removeResourceHint('http://test.com/script.js');
+
+            // Should be called for each hint type
+            expect(document.querySelector).toHaveBeenCalledWith(expect.stringContaining('preload'));
+            expect(mockElement.remove).toHaveBeenCalled();
+        });
+
+        it('should handle non-existent hints gracefully', () => {
+            jest.spyOn(document, 'querySelector').mockReturnValue(null);
+
+            expect(() => removeResourceHint('http://test.com/script.js')).not.toThrow();
         });
     });
 });

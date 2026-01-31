@@ -105,3 +105,178 @@ export async function loadScriptsSequential(urls: string[]): Promise<void> {
 export async function loadScriptsParallel(urls: string[]): Promise<void> {
     await Promise.all(urls.map(url => loadScript({ url })));
 }
+
+/**
+ * Preload hint types for resource loading
+ */
+export type PreloadAs = 'script' | 'style' | 'font' | 'image' | 'fetch';
+
+/**
+ * Options for preloading resources
+ */
+export interface PreloadOptions {
+    /** Resource URL to preload */
+    url: string;
+    /** Resource type */
+    as: PreloadAs;
+    /** CORS setting */
+    crossOrigin?: 'anonymous' | 'use-credentials';
+    /** Resource integrity hash */
+    integrity?: string;
+}
+
+/**
+ * Preloads a resource using link rel="preload".
+ * This hints to the browser to fetch the resource early.
+ *
+ * @param options - Preload options
+ * @returns The created link element
+ *
+ * @example
+ * ```typescript
+ * // Preload a script early in page load
+ * preloadResource({ url: 'https://example.com/script.js', as: 'script' });
+ *
+ * // Later, when needed, load it
+ * await loadScript({ url: 'https://example.com/script.js' });
+ * ```
+ */
+export function preloadResource(options: PreloadOptions): HTMLLinkElement {
+    const { url, as, crossOrigin, integrity } = options;
+
+    // Check if already preloaded
+    const existing = document.querySelector(`link[rel="preload"][href="${url}"]`);
+    if (existing) {
+        return existing as HTMLLinkElement;
+    }
+
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.href = url;
+    link.as = as;
+
+    if (crossOrigin) {
+        link.crossOrigin = crossOrigin;
+    }
+
+    if (integrity) {
+        link.integrity = integrity;
+    }
+
+    document.head.appendChild(link);
+    return link;
+}
+
+/**
+ * Preloads a script resource.
+ * Convenience wrapper for preloadResource with as='script'.
+ *
+ * @param url - Script URL to preload
+ * @param options - Optional settings
+ * @returns The created link element
+ */
+export function preloadScript(
+    url: string,
+    options: Omit<PreloadOptions, 'url' | 'as'> = {}
+): HTMLLinkElement {
+    return preloadResource({ ...options, url, as: 'script' });
+}
+
+/**
+ * Prefetches a resource for future navigation.
+ * Lower priority than preload, for resources needed on next page.
+ *
+ * @param url - Resource URL to prefetch
+ * @returns The created link element
+ */
+export function prefetchResource(url: string): HTMLLinkElement {
+    // Check if already prefetched
+    const existing = document.querySelector(`link[rel="prefetch"][href="${url}"]`);
+    if (existing) {
+        return existing as HTMLLinkElement;
+    }
+
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.href = url;
+    document.head.appendChild(link);
+    return link;
+}
+
+/**
+ * Preconnects to a domain to speed up future requests.
+ * Useful for third-party scripts or APIs.
+ *
+ * @param origin - Domain origin to preconnect to (e.g., 'https://api.example.com')
+ * @param options - Optional settings
+ * @returns The created link element
+ *
+ * @example
+ * ```typescript
+ * // Preconnect to Salesforce
+ * preconnect('https://salesforce.com');
+ * ```
+ */
+export function preconnect(
+    origin: string,
+    options: { crossOrigin?: 'anonymous' | 'use-credentials' } = {}
+): HTMLLinkElement {
+    // Check if already preconnected
+    const existing = document.querySelector(`link[rel="preconnect"][href="${origin}"]`);
+    if (existing) {
+        return existing as HTMLLinkElement;
+    }
+
+    const link = document.createElement('link');
+    link.rel = 'preconnect';
+    link.href = origin;
+
+    if (options.crossOrigin) {
+        link.crossOrigin = options.crossOrigin;
+    }
+
+    document.head.appendChild(link);
+    return link;
+}
+
+/**
+ * DNS prefetch for a domain.
+ * Lighter weight than preconnect, just resolves DNS.
+ *
+ * @param origin - Domain to prefetch DNS for
+ * @returns The created link element
+ */
+export function dnsPrefetch(origin: string): HTMLLinkElement {
+    // Check if already prefetched
+    const existing = document.querySelector(`link[rel="dns-prefetch"][href="${origin}"]`);
+    if (existing) {
+        return existing as HTMLLinkElement;
+    }
+
+    const link = document.createElement('link');
+    link.rel = 'dns-prefetch';
+    link.href = origin;
+    document.head.appendChild(link);
+    return link;
+}
+
+/**
+ * Removes a preload/prefetch/preconnect hint.
+ *
+ * @param url - The URL of the resource hint to remove
+ */
+export function removeResourceHint(url: string): void {
+    const selectors = [
+        `link[rel="preload"][href="${url}"]`,
+        `link[rel="prefetch"][href="${url}"]`,
+        `link[rel="preconnect"][href="${url}"]`,
+        `link[rel="dns-prefetch"][href="${url}"]`
+    ];
+
+    selectors.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.remove();
+        }
+    });
+}

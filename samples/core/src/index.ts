@@ -29,7 +29,15 @@ export {
     loadScriptsSequential,
     loadScriptsParallel,
     ScriptLoadError,
-    ScriptLoadOptions
+    ScriptLoadOptions,
+    preloadResource,
+    preloadScript,
+    prefetchResource,
+    preconnect,
+    dnsPrefetch,
+    removeResourceHint,
+    PreloadOptions,
+    PreloadAs
 } from './utils/scriptLoader';
 
 export {
@@ -50,3 +58,22 @@ export {
     createEventBus,
     globalEventBus
 } from './utils/eventBus';
+
+export {
+    debounce,
+    throttle,
+    scheduleIdleTask,
+    cancelIdleTask,
+    batch,
+    memoize
+} from './utils/performance';
+
+export {
+    ObjectPool,
+    ObjectPoolOptions,
+    ObjectFactory,
+    ObjectReset,
+    createObjectPool,
+    createSimpleObjectPool,
+    createArrayPool
+} from './utils/objectPool';

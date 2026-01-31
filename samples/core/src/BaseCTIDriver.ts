@@ -3,9 +3,10 @@
 
 import { ICTIInterface } from "@ccaas/ictiinterface";
 import { EmbedSDK, IConversationLoadedEventData, IPresence, ISentimentObject } from "@ccaas/CCaaSEmbedSDK";
-import { loadScript, ScriptLoadError } from "./utils/scriptLoader";
+import { loadScript, ScriptLoadError, preloadScript, preconnect } from "./utils/scriptLoader";
 import { Logger, createLogger, LogLevel } from "./utils/logger";
 import { EventBus, createEventBus, Subscription } from "./utils/eventBus";
+import { debounce, throttle, scheduleIdleTask, cancelIdleTask } from "./utils/performance";
 
 /**
  * Configuration options for CTI drivers
@@ -28,6 +29,15 @@ export interface CTIDriverConfig {
         /** Enable presence sync (default: true) */
         presenceSync?: boolean;
     };
+    /** Performance options */
+    performance?: {
+        /** Enable lazy event binding (default: true) */
+        lazyEventBinding?: boolean;
+        /** Debounce delay for sentiment changes in ms (default: 300) */
+        sentimentDebounceMs?: number;
+        /** Throttle delay for panel resize events in ms (default: 100) */
+        panelResizeThrottleMs?: number;
+    };
 }
 
 /**
@@ -42,6 +52,11 @@ const defaultConfig: Required<CTIDriverConfig> = {
         screenPop: true,
         clickToDial: true,
         presenceSync: true
+    },
+    performance: {
+        lazyEventBinding: true,
+        sentimentDebounceMs: 300,
+        panelResizeThrottleMs: 100
     }
 };
 
@@ -59,6 +74,12 @@ export interface CTIDriverEvents {
 /**
  * Abstract base class for CTI drivers.
  * Provides common functionality and hooks for platform-specific implementations.
+ *
+ * Performance features:
+ * - Lazy event binding: Non-critical events are bound during idle time
+ * - Debounced sentiment updates: Prevents excessive updates from rapid sentiment changes
+ * - Throttled panel resize: Limits DOM updates during panel resizing
+ * - Script preloading: Optionally preload platform libraries early
  *
  * @example
  * ```typescript
@@ -89,6 +110,15 @@ export abstract class BaseCTIDriver implements ICTIInterface {
     /** Active subscriptions for cleanup */
     private subscriptions: Subscription[] = [];
 
+    /** Pending idle task IDs for cleanup */
+    private pendingIdleTasks: number[] = [];
+
+    /** Debounced/throttled handlers for cleanup */
+    private debouncedHandlers: Array<{ cancel: () => void }> = [];
+
+    /** Track if driver has been destroyed */
+    private isDestroyed = false;
+
     constructor(config: Partial<CTIDriverConfig> = {}) {
         this.config = this.mergeConfig(config);
         this.logger = createLogger(this.config.name, {
@@ -105,6 +135,9 @@ export abstract class BaseCTIDriver implements ICTIInterface {
         this.logger.info('Initializing CTI driver...');
 
         try {
+            // Yield to browser to keep UI responsive
+            await Promise.resolve();
+
             // Get SDK reference
             this.sdk = this.getSDK();
             if (!this.sdk) {
@@ -130,16 +163,42 @@ export abstract class BaseCTIDriver implements ICTIInterface {
     /**
      * Bind event handlers from the CCaaS SDK.
      * Sets up all standard event subscriptions.
+     *
+     * Uses lazy binding for non-critical events to improve startup performance.
      */
     bindEvents(): void {
+        if (this.isDestroyed) {
+            this.logger.warn('Cannot bind events - driver has been destroyed');
+            return;
+        }
+
         this.logger.debug('Binding events...');
 
         try {
-            this.bindConversationEvents();
-            this.bindPresenceEvents();
-            this.bindNotificationEvents();
-            this.bindVoiceEvents();
-            this.bindCTIDriverEvents();
+            // Critical events - bind immediately
+            this.bindCriticalConversationEvents();
+
+            if (this.config.performance.lazyEventBinding) {
+                // Non-critical events - bind during idle time
+                this.scheduleIdleBinding(() => {
+                    this.bindNonCriticalConversationEvents();
+                    this.bindPresenceEvents();
+                });
+
+                this.scheduleIdleBinding(() => {
+                    this.bindNotificationEvents();
+                    this.bindVoiceEvents();
+                    this.bindCTIDriverEvents();
+                });
+            } else {
+                // Bind everything immediately
+                this.bindNonCriticalConversationEvents();
+                this.bindPresenceEvents();
+                this.bindNotificationEvents();
+                this.bindVoiceEvents();
+                this.bindCTIDriverEvents();
+            }
+
             this.bindPlatformSpecificEvents();
 
             this.logger.info('Events bound successfully');
@@ -159,18 +218,43 @@ export abstract class BaseCTIDriver implements ICTIInterface {
     }
 
     /**
-     * Cleanup resources and unsubscribe from events
+     * Cleanup resources and unsubscribe from events.
+     * Properly releases all references to prevent memory leaks.
      */
     destroy(): void {
-        this.logger.debug('Destroying CTI driver...');
+        if (this.isDestroyed) {
+            return;
+        }
 
+        this.logger.debug('Destroying CTI driver...');
+        this.isDestroyed = true;
+
+        // Cancel pending idle tasks
+        for (const taskId of this.pendingIdleTasks) {
+            cancelIdleTask(taskId);
+        }
+        this.pendingIdleTasks = [];
+
+        // Cancel debounced/throttled handlers
+        for (const handler of this.debouncedHandlers) {
+            handler.cancel();
+        }
+        this.debouncedHandlers = [];
+
+        // Unsubscribe from all events
         for (const subscription of this.subscriptions) {
             subscription.unsubscribe();
         }
         this.subscriptions = [];
 
+        // Clear event bus
         this.eventBus.removeAllListeners();
+
+        // Call cleanup hook
         this.onDestroyed();
+
+        // Nullify references
+        this.sdk = null!;
 
         this.logger.info('CTI driver destroyed');
     }
@@ -262,6 +346,24 @@ export abstract class BaseCTIDriver implements ICTIInterface {
     }
 
     /**
+     * Preload a script for faster loading later.
+     * Call this early (e.g., in constructor) to hint the browser to fetch the script.
+     */
+    protected preloadScript(url: string): void {
+        this.logger.debug(`Preloading script: ${url}`);
+        preloadScript(url);
+    }
+
+    /**
+     * Preconnect to a domain for faster subsequent requests.
+     * Call this early to establish connection to third-party domains.
+     */
+    protected preconnectToDomain(origin: string): void {
+        this.logger.debug(`Preconnecting to: ${origin}`);
+        preconnect(origin);
+    }
+
+    /**
      * Handle errors with logging and event emission
      */
     protected handleError(context: string, error: unknown): void {
@@ -289,11 +391,33 @@ export abstract class BaseCTIDriver implements ICTIInterface {
             features: {
                 ...defaultConfig.features,
                 ...config.features
+            },
+            performance: {
+                ...defaultConfig.performance,
+                ...config.performance
             }
         };
     }
 
-    private bindConversationEvents(): void {
+    /**
+     * Schedule a function to run during browser idle time
+     */
+    private scheduleIdleBinding(fn: () => void): void {
+        if (this.isDestroyed) return;
+
+        const taskId = scheduleIdleTask(() => {
+            if (!this.isDestroyed) {
+                fn();
+            }
+        }, { timeout: 2000 }); // Ensure it runs within 2 seconds
+
+        this.pendingIdleTasks.push(taskId);
+    }
+
+    /**
+     * Bind critical conversation events immediately
+     */
+    private bindCriticalConversationEvents(): void {
         this.sdk.conversation.onConversationLoaded((data) => {
             this.logger.debug('Conversation loaded', data);
             this.eventBus.emit('conversation:loaded', data);
@@ -303,6 +427,19 @@ export abstract class BaseCTIDriver implements ICTIInterface {
             }
         });
 
+        this.sdk.conversation.onAccept((data) => {
+            this.logger.debug('Conversation accepted', data);
+        });
+
+        this.sdk.conversation.onReject((data) => {
+            this.logger.debug('Conversation rejected', data);
+        });
+    }
+
+    /**
+     * Bind non-critical conversation events (can be deferred)
+     */
+    private bindNonCriticalConversationEvents(): void {
         this.sdk.conversation.onStatusChange((data) => {
             this.logger.debug('Conversation status changed', data);
         });
@@ -315,18 +452,20 @@ export abstract class BaseCTIDriver implements ICTIInterface {
             this.logger.debug('New message', data);
         });
 
-        this.sdk.conversation.onAccept((data) => {
-            this.logger.debug('Conversation accepted', data);
-        });
-
-        this.sdk.conversation.onReject((data) => {
-            this.logger.debug('Conversation rejected', data);
-        });
-
+        // Debounce sentiment changes to avoid excessive updates
         if (this.config.features.sentimentTracking) {
+            const debouncedSentimentHandler = debounce(
+                (data: ISentimentObject) => {
+                    this.eventBus.emit('sentiment:changed', data);
+                    this.onSentimentChange(data);
+                },
+                this.config.performance.sentimentDebounceMs
+            );
+
+            this.debouncedHandlers.push(debouncedSentimentHandler);
+
             this.sdk.conversation.onCustomerSentimentChange((data) => {
-                this.eventBus.emit('sentiment:changed', data);
-                this.onSentimentChange(data);
+                debouncedSentimentHandler(data);
             });
         }
     }
@@ -361,15 +500,29 @@ export abstract class BaseCTIDriver implements ICTIInterface {
     }
 
     private bindCTIDriverEvents(): void {
-        this.sdk.ctiDriver.onSoftPhonePanelHeightChange((height) => {
-            this.logger.debug('Panel height changed', { height });
-            this.onPanelHeightChange(height);
-        });
+        // Throttle panel resize events to prevent excessive updates
+        const throttleMs = this.config.performance.panelResizeThrottleMs;
 
-        this.sdk.ctiDriver.onSoftPhonePanelWidthChange((width) => {
-            this.logger.debug('Panel width changed', { width });
-            this.onPanelWidthChange(width);
-        });
+        const throttledHeightHandler = throttle(
+            (height: number) => {
+                this.logger.debug('Panel height changed', { height });
+                this.onPanelHeightChange(height);
+            },
+            throttleMs
+        );
+        this.debouncedHandlers.push(throttledHeightHandler);
+
+        const throttledWidthHandler = throttle(
+            (width: number) => {
+                this.logger.debug('Panel width changed', { width });
+                this.onPanelWidthChange(width);
+            },
+            throttleMs
+        );
+        this.debouncedHandlers.push(throttledWidthHandler);
+
+        this.sdk.ctiDriver.onSoftPhonePanelHeightChange(throttledHeightHandler);
+        this.sdk.ctiDriver.onSoftPhonePanelWidthChange(throttledWidthHandler);
 
         this.sdk.ctiDriver.onSoftPhonePanelVisibilityChange((visible) => {
             this.logger.debug('Panel visibility changed', { visible });

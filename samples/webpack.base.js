@@ -4,9 +4,17 @@
 /**
  * Base webpack configuration for all CTI Driver samples.
  * Provides common settings for development and production builds.
+ *
+ * Features:
+ * - Tree shaking with usedExports
+ * - Terser minification in production
+ * - Content hashing for cache busting
+ * - Bundle analysis support
+ * - Development server with HMR
  */
 
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 
 /**
  * Creates a webpack configuration with common settings
@@ -14,23 +22,33 @@ const path = require('path');
  * @param {string} options.entry - Entry point file path
  * @param {string} options.outputName - Output bundle name
  * @param {string} options.dirname - The __dirname of the calling config
+ * @param {Object} [options.externals] - External dependencies
  * @returns {Function} Webpack configuration function
  */
 module.exports = function createConfig(options) {
-    const { entry, outputName, dirname } = options;
+    const { entry, outputName, dirname, externals = {} } = options;
 
     return (env, argv) => {
         const isProduction = argv.mode === 'production';
+        const isAnalyze = env && env.analyze;
 
-        return {
+        const config = {
             entry: {
                 [outputName]: entry
             },
 
             output: {
-                filename: isProduction ? "[name].min.js" : "[name].js",
+                // Use content hash for cache busting in production
+                filename: isProduction ? "[name].[contenthash:8].min.js" : "[name].js",
                 path: path.resolve(dirname, "dist"),
-                clean: true
+                clean: true,
+                // Library output settings
+                library: {
+                    name: outputName,
+                    type: 'umd',
+                    export: 'default'
+                },
+                globalObject: 'this'
             },
 
             mode: isProduction ? 'production' : 'development',
@@ -43,8 +61,14 @@ module.exports = function createConfig(options) {
                 alias: {
                     "@ccaas/CCaaSEmbedSDK/enums": path.resolve(dirname, "../ICCaaSEmbedSDK/typings/enums.ts"),
                     "@ccaas/CCaaSEmbedSDK": path.resolve(dirname, "../ICCaaSEmbedSDK/typings/CCaaSEmbedSDK.d.ts"),
-                    "@ccaas/ictiinterface": path.resolve(dirname, "../ICTIInterface/typings/ICTI.d.ts")
+                    "@ccaas/ictiinterface": path.resolve(dirname, "../ICTIInterface/typings/ICTI.d.ts"),
+                    "@ccaas/core": path.resolve(dirname, "../core/src/index.ts")
                 }
+            },
+
+            // External dependencies that shouldn't be bundled
+            externals: {
+                ...externals
             },
 
             module: {
@@ -67,7 +91,34 @@ module.exports = function createConfig(options) {
 
             optimization: {
                 minimize: isProduction,
-                usedExports: true, // Tree shaking
+                minimizer: isProduction ? [
+                    new TerserPlugin({
+                        terserOptions: {
+                            compress: {
+                                drop_console: false, // Keep console for debugging
+                                drop_debugger: true,
+                                pure_funcs: ['console.debug'], // Remove debug logs in prod
+                                passes: 2 // Multiple passes for better compression
+                            },
+                            mangle: {
+                                safari10: true // Fix Safari 10 issues
+                            },
+                            format: {
+                                comments: false // Remove comments
+                            }
+                        },
+                        extractComments: false
+                    })
+                ] : [],
+                // Tree shaking
+                usedExports: true,
+                sideEffects: true,
+                // Module concatenation (scope hoisting)
+                concatenateModules: isProduction,
+                // Consistent module IDs for caching
+                moduleIds: isProduction ? 'deterministic' : 'named',
+                // Runtime chunk for better caching (optional, enable if needed)
+                // runtimeChunk: 'single',
             },
 
             // Development server configuration
@@ -81,6 +132,12 @@ module.exports = function createConfig(options) {
                 headers: {
                     "Access-Control-Allow-Origin": "*",
                 },
+                client: {
+                    overlay: {
+                        errors: true,
+                        warnings: false
+                    }
+                }
             },
 
             // Performance hints
@@ -90,13 +147,42 @@ module.exports = function createConfig(options) {
                 maxAssetSize: 250000,
             },
 
+            // Caching for faster rebuilds
+            cache: {
+                type: 'filesystem',
+                buildDependencies: {
+                    config: [__filename]
+                }
+            },
+
             stats: {
                 colors: true,
                 modules: false,
                 children: false,
                 chunks: false,
-                chunkModules: false
-            }
+                chunkModules: false,
+                // Show asset sizes
+                assets: true,
+                assetsSort: 'size'
+            },
+
+            plugins: []
         };
+
+        // Add bundle analyzer in analyze mode
+        if (isAnalyze) {
+            try {
+                const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+                config.plugins.push(new BundleAnalyzerPlugin({
+                    analyzerMode: 'static',
+                    reportFilename: 'bundle-report.html',
+                    openAnalyzer: true
+                }));
+            } catch (e) {
+                console.warn('webpack-bundle-analyzer not installed. Run: npm install --save-dev webpack-bundle-analyzer');
+            }
+        }
+
+        return config;
     };
 };

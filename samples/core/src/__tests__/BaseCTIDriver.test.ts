@@ -7,12 +7,34 @@ import { IConversationLoadedEventData, ISentimentObject, IPresence } from '@ccaa
 // Mock the script loader
 jest.mock('../utils/scriptLoader', () => ({
     loadScript: jest.fn().mockResolvedValue(undefined),
+    preloadScript: jest.fn(),
+    preconnect: jest.fn(),
     ScriptLoadError: class ScriptLoadError extends Error {
         constructor(public url: string, public reason: string, message?: string) {
             super(message || `Failed to load script: ${url} (${reason})`);
             this.name = 'ScriptLoadError';
         }
     }
+}));
+
+// Mock performance utilities to run synchronously in tests
+jest.mock('../utils/performance', () => ({
+    debounce: (fn: Function) => {
+        const debounced = (...args: any[]) => fn(...args);
+        debounced.cancel = jest.fn();
+        debounced.flush = jest.fn();
+        return debounced;
+    },
+    throttle: (fn: Function) => {
+        const throttled = (...args: any[]) => fn(...args);
+        throttled.cancel = jest.fn();
+        return throttled;
+    },
+    scheduleIdleTask: (fn: Function) => {
+        fn(); // Execute immediately in tests
+        return 1;
+    },
+    cancelIdleTask: jest.fn()
 }));
 
 /**
