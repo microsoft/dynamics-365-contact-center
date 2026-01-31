@@ -4,7 +4,7 @@
 const createConfig = require('../webpack.base.js');
 
 module.exports = createConfig({
-    entry: "./src/SFExampleCTIDriver.ts",
-    outputName: "SFExampleCTIDriver",
+    entry: "./src/SNExampleCTIDriver.ts",
+    outputName: "SNCTIDriver",
     dirname: __dirname
 });

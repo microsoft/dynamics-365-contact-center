@@ -1,9 +1,13 @@
 {
   "name": "sf-example-ctidriver",
   "version": "1.0.0",
-  "description": "This is sample SF Example CTIDriver package",
+  "description": "Salesforce CTI Driver for D365 Contact Center",
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack --mode development",
+    "build:prod": "webpack --mode production",
+    "build:watch": "webpack --mode development --watch",
+    "dev": "webpack serve --mode development",
+    "clean": "rimraf dist"
   },
   "dependencies": {
     "@ccaas/CCaaSEmbedSDK": "file:../ICCaaSEmbedSDK/typings",
@@ -14,6 +18,7 @@
     "typescript": "^5.4.3",
     "webpack": "^5.91.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4"
+    "webpack-dev-server": "^5.0.4",
+    "rimraf": "^5.0.0"
   }
 }

@@ -17,27 +17,7 @@ import Microsoft, {
     ISentimentObject,
     ITranscriptMessage
 } from "@ccaas/CCaaSEmbedSDK";
-
-enum BasePresenceStatus {
-	AVAILABLE = "AVAILABLE",
-	AWAY = "AWAY",
-	BUSY = "BUSY",
-	BUSY_DO_NOT_DISTURB = "BUSY_DO_NOT_DISTURB",
-	OFFLINE = "OFFLINE"
-}
-
-enum NotificationLevels {
-	Success = 1,
-	Error = 2,
-	Warning = 3,
-	Information = 4
-}
-
-enum OCLiveWorkItemStatus {
-	Active = 2,
-	WrapUp = 5,
-	Closed = 4
-}
+import { BasePresenceStatus, NotificationLevels, OCLiveWorkItemStatus } from "@ccaas/CCaaSEmbedSDK/enums";
 
 const SERVICE_NOW_DOMAIN = "service-now.com";
 

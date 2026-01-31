@@ -1,6 +1,16 @@
 {
 	"name": "CCaaSEmbedSDK",
 	"version": "1.0.0",
-	"description": "",
-	"typings": "CCaaSEmbedSDK.d.ts"
+	"description": "CCaaS Embed SDK type definitions and enums",
+	"main": "index.js",
+	"typings": "CCaaSEmbedSDK.d.ts",
+	"exports": {
+		".": {
+			"types": "./CCaaSEmbedSDK.d.ts"
+		},
+		"./enums": {
+			"types": "./enums.d.ts",
+			"default": "./enums.js"
+		}
+	}
 }
