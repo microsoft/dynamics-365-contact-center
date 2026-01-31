@@ -77,3 +77,50 @@ export {
     createSimpleObjectPool,
     createArrayPool
 } from './utils/objectPool';
+
+export {
+    withRetry,
+    createRetryableOperation,
+    withRetryOrThrow,
+    RetryOptions,
+    RetryResult,
+    RetryError,
+    RetryConditions
+} from './utils/retry';
+
+export {
+    CircuitBreaker,
+    CircuitBreakerOptions,
+    CircuitBreakerStats,
+    CircuitState,
+    CircuitOpenError,
+    createCircuitBreaker,
+    withCircuitBreaker
+} from './utils/circuitBreaker';
+
+export {
+    withTimeout,
+    createTimeoutController,
+    withAbortableTimeout,
+    delay,
+    cancellableDelay,
+    raceWithTimeout,
+    allWithTimeout,
+    TimeoutError,
+    TimeoutController
+} from './utils/timeout';
+
+export {
+    Telemetry,
+    TelemetryConfig,
+    TelemetryEvent,
+    TelemetryProvider,
+    getTelemetry,
+    configureTelemetry,
+    createTelemetry,
+    createConsoleProvider,
+    createNoopProvider,
+    createBufferedProvider,
+    createCompositeProvider,
+    BufferedProvider
+} from './utils/telemetry';

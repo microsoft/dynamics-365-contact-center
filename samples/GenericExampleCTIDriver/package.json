@@ -15,13 +15,13 @@
     "@ccaas/ictiinterface": "file:../ICTIInterface/typings"
   },
   "devDependencies": {
-    "terser-webpack-plugin": "^5.3.10",
+    "rimraf": "^5.0.0",
+    "terser-webpack-plugin": "^5.3.16",
     "ts-loader": "^9.5.1",
     "typescript": "^5.4.3",
     "webpack": "^5.91.0",
     "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4",
-    "rimraf": "^5.0.0"
+    "webpack-dev-server": "^5.0.4"
   }
 }

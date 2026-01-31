@@ -12,8 +12,8 @@ class SNExampleCTIDriver implements ICTIInterface {
      * @returns Promise void
      */
     public initialize(): Promise<boolean> {
-        let isServiceNowPresent = typeof (window as any).openFrameAPI !== 'undefined'
-        if (isServiceNowPresent === false) {
+        const isServiceNowPresent = typeof window.openFrameAPI !== 'undefined';
+        if (!isServiceNowPresent) {
             const openCTIurlPath = `/scripts/openframe/latest/openFrameAPI.min.js`;
             const servicenoworgdomain: string = window.location.ancestorOrigins[0];
             const source = `${servicenoworgdomain}${openCTIurlPath}`;
@@ -56,9 +56,9 @@ class SNExampleCTIDriver implements ICTIInterface {
 
 }
 
-(window as any).CCaaS = (window as any).CCaaS || {};
-if (!(window as any).CCaaS.CTIDriver) {
-    (window as any).CCaaS.CTIDriver = SNExampleCTIDriver;
+window.CCaaS = window.CCaaS ?? {};
+if (!window.CCaaS.CTIDriver) {
+    window.CCaaS.CTIDriver = SNExampleCTIDriver;
 }
 
 export default SNExampleCTIDriver;

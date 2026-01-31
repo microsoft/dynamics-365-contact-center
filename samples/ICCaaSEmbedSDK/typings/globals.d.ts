@@ -133,6 +133,16 @@ declare namespace ServiceNowOpenFrame {
         setVisible(visible: boolean): void;
 
         /**
+         * Show the softphone panel
+         */
+        show(): void;
+
+        /**
+         * Hide the softphone panel
+         */
+        hide(): void;
+
+        /**
          * Check if the panel is visible
          */
         isVisible(): boolean;

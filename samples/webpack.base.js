@@ -78,13 +78,13 @@ module.exports = function createConfig(options) {
                         use: {
                             loader: "ts-loader",
                             options: {
-                                transpileOnly: !isProduction, // Faster builds in dev
+                                transpileOnly: true, // Skip type checking (use tsc separately)
                                 compilerOptions: {
                                     sourceMap: true
                                 }
                             }
                         },
-                        exclude: /node_modules/
+                        exclude: [/node_modules/, /__tests__/, /\.test\.ts$/]
                     }
                 ]
             },
