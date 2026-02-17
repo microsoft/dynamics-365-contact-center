@@ -24,7 +24,7 @@ export type LogLevel = "info" | "warn" | "error" | "ok";
 export enum FailoverStatus {
     /** Currently probing an endpoint */
     Probing = "probing",
-    /** Connected to the primary (Azure Front Door) endpoint */
+    /** Connected to the primary endpoint */
     Primary = "primary",
     /** Failover active — using the fallback endpoint */
     Fallback = "fallback",
@@ -33,7 +33,7 @@ export enum FailoverStatus {
 }
 
 export interface FailoverConfig {
-    /** The preferred CCaaS widget URL (Azure Front Door). */
+    /** The preferred CCaaS widget URL . */
     primaryUrl: string;
     /** The disaster-recovery CCaaS widget URL (e.g. GCC Blob Storage). */
     fallbackUrl: string;
@@ -106,7 +106,7 @@ export class FailoverManager {
 
         if (primaryOk) {
             this.activeSource = "primary";
-            this.setStatus(FailoverStatus.Primary, "Connected to primary endpoint (Azure Front Door)");
+            this.setStatus(FailoverStatus.Primary, "Connected to primary endpoint ");
             this.log(`Primary endpoint reachable — using ${this.hostname(this.config.primaryUrl)}`, "ok");
             return { url: this.config.primaryUrl, source: "primary" };
         }
@@ -139,7 +139,7 @@ export class FailoverManager {
 
         if (primaryOk) {
             this.activeSource = "primary";
-            this.setStatus(FailoverStatus.Primary, "Connected to primary endpoint (Azure Front Door)");
+            this.setStatus(FailoverStatus.Primary, "Connected to primary endpoint ");
             this.log("Switched back to primary endpoint.", "ok");
             return { url: this.config.primaryUrl, source: "primary" };
         }
