@@ -9,8 +9,8 @@
  *   <script src="failover.js"></script>
  *   <script>
  *     CCaaSFailover.init({
- *       primaryUrl:  "https://PRIMARY/widget/index.html?dynamicsUrl=ORG&useCustomCTI=1",
- *       fallbackUrl: "https://FALLBACK/widget/index.html?dynamicsUrl=ORG&useCustomCTI=1",
+ *       primaryUrl:  "https://PRIMARY/widget/index.html?dynamicsUrl=ORG",
+ *       fallbackUrl: "https://FALLBACK/?dynamicsUrl=ORG",
  *       iframeId:    "ccaas-widget"
  *     });
  *   </script>
