@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CCaaS Widget — Failover</title>
+</head>
+<body style="font-family:Segoe UI,sans-serif; margin:24px;">
+
+    <h2>CCaaS Widget with Failover</h2>
+    <iframe id="ccaas-widget" style="width:100%;height:500px;border:1px solid #ccc;"></iframe>
+
+    <script src="failover.js"></script>
+    <script>
+        // Edit these two URLs for your environment
+        CCaaSFailover.init({
+            primaryUrl:  "https://PRIMARY_HOST/widget/index.html?dynamicsUrl=<org>",
+            fallbackUrl: "https://go.microsoft.com/fwlink/?linkid=2353518&dynamicsUrl=<org>",
+            iframeId:    "ccaas-widget"
+        });
+    </script>
+</body>
+</html>
