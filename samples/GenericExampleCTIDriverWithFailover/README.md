@@ -29,7 +29,14 @@ README.md
    });
    ```
 
-2. Open the HTML file in a browser (or serve it from any static host).
+2. Serve locally:
+
+   ```bash
+   cd samples/GenericExampleCTIDriverWithFailover
+   npx serve . -l 3000
+   ```
+
+3. Open `http://localhost:3000/failover-sample.html` in a browser.
 
 ### Integrate into your own page
 

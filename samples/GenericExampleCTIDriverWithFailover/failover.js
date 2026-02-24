@@ -21,39 +21,48 @@ var CCaaSFailover = (function () {
 
     var TIMEOUT = 10000; // 10-second probe timeout
 
-    /** Probe a URL via no-cors fetch. Returns Promise<boolean>. */
-    function probe(url) {
+    /**
+     * Probe a URL via fetch. Returns Promise<boolean>.
+     * Uses cors mode so HTTP 5xx is detected. Falls back to no-cors
+     * automatically if the server doesn't send CORS headers.
+     */
+    async function probe(url) {
         var ctrl = new AbortController();
         var t = setTimeout(function () { ctrl.abort(); }, TIMEOUT);
-        return fetch(url + (url.indexOf("?") !== -1 ? "&" : "?") + "_p=" + Date.now(), {
-            mode: "no-cors", cache: "no-store", signal: ctrl.signal
-        }).then(function () { clearTimeout(t); return true; })
-          .catch(function () { clearTimeout(t); return false; });
+        var target = url + (url.indexOf("?") !== -1 ? "&" : "?") + "_p=" + Date.now();
+        try {
+            var res = await fetch(target, {
+                mode: "cors", cache: "no-store", signal: ctrl.signal
+            });
+            clearTimeout(t);
+            return res.ok; // true for 2xx, false for 4xx/5xx
+        } catch (_) {
+            clearTimeout(t);
+            return false;
+        }
     }
 
     /** Probe primary then fallback; load the first reachable URL into the iframe. */
-    function init(cfg) {
+    async function init(cfg) {
         var iframe = document.getElementById(cfg.iframeId);
         if (!iframe) throw new Error('No iframe with id "' + cfg.iframeId + '"');
 
         console.log("[Failover] Probing primary…");
 
-        probe(cfg.primaryUrl).then(function (ok) {
-            if (ok) {
-                console.log("[Failover] Primary reachable — loading.");
-                iframe.src = cfg.primaryUrl;
-                return;
-            }
-            console.warn("[Failover] Primary unreachable — trying fallback…");
-            probe(cfg.fallbackUrl).then(function (ok2) {
-                if (ok2) {
-                    console.warn("[Failover] Using fallback endpoint.");
-                    iframe.src = cfg.fallbackUrl;
-                } else {
-                    console.error("[Failover] Both endpoints unreachable.");
-                }
-            });
-        });
+        if (await probe(cfg.primaryUrl)) {
+            console.log("[Failover] Primary reachable — loading.");
+            iframe.src = cfg.primaryUrl;
+            return;
+        }
+
+        console.warn("[Failover] Primary unreachable — trying fallback…");
+
+        if (await probe(cfg.fallbackUrl)) {
+            console.warn("[Failover] Using fallback endpoint.");
+            iframe.src = cfg.fallbackUrl;
+        } else {
+            console.error("[Failover] Both endpoints unreachable.");
+        }
     }
 
     return { init: init, probe: probe };
